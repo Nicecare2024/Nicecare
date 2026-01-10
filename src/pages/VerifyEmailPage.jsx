@@ -35,13 +35,22 @@ export default function VerifyEmailPage() {
       // Reload user to get latest emailVerified status
       await currentUser.reload();
       
-      if (currentUser.emailVerified) {
+      // Get fresh user data after reload
+      const { emailVerified } = currentUser;
+      
+      if (emailVerified) {
         navigate('/dashboard');
       } else {
         setError('Email not verified yet. Please check your inbox and click the verification link.');
       }
     } catch (err) {
-      setError('Failed to check verification status.');
+      console.error('Verification check error:', err);
+      // Handle network errors gracefully
+      if (err.code === 'auth/network-request-failed' || err.message?.includes('network')) {
+        setError('Network error. Please check your connection and try again.');
+      } else {
+        setError('Failed to check verification status. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
