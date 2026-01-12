@@ -2,6 +2,7 @@ import Navbar from '../components/Navbar';
 import CustomerForm from '../components/CustomerForm';
 import CustomerTable from '../components/CustomerTable';
 import { useCustomers } from '../hooks/useCustomers';
+import { useState } from 'react';
 
 export default function DashboardPage() {
   const {
@@ -10,15 +11,30 @@ export default function DashboardPage() {
     error,
     addingCustomer,
     addCustomer,
+    updateCustomer,
     updateCustomerStatus,
     deleteCustomer,
   } = useCustomers();
+
+  const [updatingCustomer, setUpdatingCustomer] = useState(false);
 
   async function handleAddCustomer(formData) {
     try {
       await addCustomer(formData);
     } catch (err) {
       alert('Failed to add customer. Please try again.');
+    }
+  }
+
+  async function handleUpdateCustomer(customerId, formData) {
+    setUpdatingCustomer(true);
+    try {
+      await updateCustomer(customerId, formData);
+    } catch (err) {
+      alert('Failed to update customer. Please try again.');
+      throw err;
+    } finally {
+      setUpdatingCustomer(false);
     }
   }
 
@@ -56,7 +72,9 @@ export default function DashboardPage() {
             <CustomerTable
               customers={customers}
               onUpdateStatus={handleUpdateStatus}
+              onUpdateCustomer={handleUpdateCustomer}
               onDelete={handleDeleteCustomer}
+              updatingCustomer={updatingCustomer}
             />
           )}
         </div>

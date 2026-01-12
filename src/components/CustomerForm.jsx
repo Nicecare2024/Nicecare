@@ -1,26 +1,127 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+// Constants for dropdown options
+const STATUS_OPTIONS = [
+  'Select',
+  'Submitted',
+  'Device Received',
+  'Under Diagnosis',
+  'Waiting for Parts',
+  'Repair in Progress',
+  'Quality Check',
+  'Ready for Pickup',
+  'Delivered',
+  'Cancelled',
+  'Unrepairable',
+];
+
+const DEVICE_TYPES = ['Phone', 'Tablet', 'Laptop', 'Wearable', 'Other'];
+const BRANDS = ['Apple', 'Samsung', 'Google', 'OnePlus', 'Xiaomi', 'Motorola', 'LG', 'Other'];
+const CARRIERS = ['AT&T', 'Verizon', 'T-Mobile', 'Sprint', 'Unlocked', 'Other'];
+const CUSTOMER_TYPES = ['Walk-in', 'Online', 'Corporate', 'Warranty'];
+const CONTACT_METHODS = ['Call', 'SMS', 'Email'];
+const ISSUE_CATEGORIES = ['Screen', 'Battery', 'Charging Port', 'Camera', 'Software', 'Water Damage', 'Other'];
+const REPAIR_TYPES = ['Repair', 'Diagnostic Only', 'Data Recovery'];
+const PRIORITY_LEVELS = ['Normal', 'Urgent', 'Same-day'];
+const PARTS_TYPES = ['OEM', 'Aftermarket'];
+
+// Initial form state with all fields
+const getInitialFormData = () => ({
+  // Basic customer info (minimal)
+  name: '',
+  email: '',
+  phone: '',
+  address: '',
+  submissionDate: new Date().toISOString().slice(0, 10),
+  expectedDate: '',
+  status: 'Select',
+  notes: '',
+  // Extended customer info
+  alternatePhone: '',
+  customerType: '',
+  preferredContact: '',
+  // Device information
+  deviceType: '',
+  brand: '',
+  model: '',
+  imei: '',
+  carrier: '',
+  // Repair details
+  issueCategory: '',
+  issueDescription: '',
+  repairType: '',
+  priority: '',
+  // Cost & parts
+  estimatedCost: '',
+  advancePaid: '',
+  partsType: '',
+  // Additional dates
+  deviceReceivedDate: '',
+  repairStartDate: '',
+});
+
+const AUTOSAVE_KEY = 'customerFormAutosave';
+const FORM_MODE_KEY = 'customerFormMode';
 
 export default function CustomerForm({ onSubmit, loading }) {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    submissionDate: new Date().toISOString().slice(0, 10),
-    expectedDate: '',
-    status: 'Select',
-    notes: '',
+  const [formMode, setFormMode] = useState(() => {
+    return localStorage.getItem(FORM_MODE_KEY) || 'minimal';
+  });
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem(AUTOSAVE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Update submission date to today if it's an old autosave
+        return { ...getInitialFormData(), ...parsed, submissionDate: new Date().toISOString().slice(0, 10) };
+      } catch {
+        return getInitialFormData();
+      }
+    }
+    return getInitialFormData();
   });
   const [error, setError] = useState('');
+  const [warning, setWarning] = useState('');
+  const [expandedSections, setExpandedSections] = useState({
+    customerInfo: true,
+    deviceInfo: true,
+    repairDetails: true,
+    costParts: true,
+  });
+
+  // Persist form mode preference
+  useEffect(() => {
+    localStorage.setItem(FORM_MODE_KEY, formMode);
+  }, [formMode]);
+
+  // Autosave form data
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(formData));
+    }, 500); // Debounce autosave by 500ms
+    return () => clearTimeout(timeoutId);
+  }, [formData]);
+
+  function toggleSection(section) {
+    setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  }
 
   function handleChange(e) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setWarning(''); // Clear warning on change
+  }
+
+  // Validate IMEI format (15 digits)
+  function validateIMEI(imei) {
+    if (!imei) return true; // Optional field
+    return /^\d{15}$/.test(imei);
   }
 
   function handleSubmit(e) {
     e.preventDefault();
     setError('');
+    setWarning('');
 
     const today = new Date().toISOString().slice(0, 10);
 
@@ -42,43 +143,54 @@ export default function CustomerForm({ onSubmit, loading }) {
       return;
     }
 
+    // Soft validation for IMEI (warning, not blocking)
+    if (formData.imei && !validateIMEI(formData.imei)) {
+      setWarning('IMEI should be 15 digits. Proceeding anyway...');
+    }
+
     onSubmit(formData);
 
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      address: '',
-      submissionDate: new Date().toISOString().slice(0, 10),
-      expectedDate: '',
-      status: 'Select',
-      notes: '',
-    });
+    // Reset form and clear autosave
+    const initialData = getInitialFormData();
+    setFormData(initialData);
+    localStorage.removeItem(AUTOSAVE_KEY);
   }
 
   function handleReset() {
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      address: '',
-      submissionDate: new Date().toISOString().slice(0, 10),
-      expectedDate: '',
-      status: 'Select',
-      notes: '',
-    });
+    const initialData = getInitialFormData();
+    setFormData(initialData);
+    localStorage.removeItem(AUTOSAVE_KEY);
     setError('');
+    setWarning('');
   }
 
   return (
     <section className="card">
+      {/* Form Mode Toggle */}
+      <div className="form-mode-toggle">
+        <button
+          type="button"
+          className={`toggle-btn ${formMode === 'minimal' ? 'active' : ''}`}
+          onClick={() => setFormMode('minimal')}
+        >
+          📱 Minimal
+        </button>
+        <button
+          type="button"
+          className={`toggle-btn ${formMode === 'detailed' ? 'active' : ''}`}
+          onClick={() => setFormMode('detailed')}
+        >
+          💻 Detailed
+        </button>
+      </div>
+
       <h3>New Customer Submission</h3>
 
       <form onSubmit={handleSubmit}>
+        {/* Basic Info - Always visible */}
         <div className="row two">
           <div>
-            <label className="label">Name</label>
+            <label className="label">Name *</label>
             <input
               name="name"
               className="input"
@@ -120,9 +232,279 @@ export default function CustomerForm({ onSubmit, loading }) {
           </div>
         </div>
 
+        {/* Extended Customer Info - Detailed mode only */}
+        {formMode === 'detailed' && (
+          <div className="collapsible-section">
+            <button
+              type="button"
+              className="section-header"
+              onClick={() => toggleSection('customerInfo')}
+            >
+              <span>👤 Extended Customer Info</span>
+              <span className="toggle-icon">{expandedSections.customerInfo ? '▼' : '▶'}</span>
+            </button>
+            {expandedSections.customerInfo && (
+              <div className="section-content">
+                <div className="row three">
+                  <div>
+                    <label className="label">Alternate Phone</label>
+                    <input
+                      name="alternatePhone"
+                      className="input"
+                      value={formData.alternatePhone}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Customer Type</label>
+                    <select
+                      name="customerType"
+                      className="select"
+                      value={formData.customerType}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select Type</option>
+                      {CUSTOMER_TYPES.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="label">Preferred Contact</label>
+                    <select
+                      name="preferredContact"
+                      className="select"
+                      value={formData.preferredContact}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select Method</option>
+                      {CONTACT_METHODS.map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Device Information - Detailed mode only */}
+        {formMode === 'detailed' && (
+          <div className="collapsible-section">
+            <button
+              type="button"
+              className="section-header"
+              onClick={() => toggleSection('deviceInfo')}
+            >
+              <span>📱 Device Information</span>
+              <span className="toggle-icon">{expandedSections.deviceInfo ? '▼' : '▶'}</span>
+            </button>
+            {expandedSections.deviceInfo && (
+              <div className="section-content">
+                <div className="row three">
+                  <div>
+                    <label className="label">Device Type</label>
+                    <select
+                      name="deviceType"
+                      className="select"
+                      value={formData.deviceType}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select Type</option>
+                      {DEVICE_TYPES.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="label">Brand</label>
+                    <select
+                      name="brand"
+                      className="select"
+                      value={formData.brand}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select Brand</option>
+                      {BRANDS.map((b) => (
+                        <option key={b} value={b}>{b}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="label">Model</label>
+                    <input
+                      name="model"
+                      className="input"
+                      placeholder="e.g., iPhone 13 Pro"
+                      value={formData.model}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+                <div className="row two">
+                  <div>
+                    <label className="label">IMEI / Serial Number</label>
+                    <input
+                      name="imei"
+                      className="input"
+                      placeholder="15-digit IMEI"
+                      value={formData.imei}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Carrier</label>
+                    <select
+                      name="carrier"
+                      className="select"
+                      value={formData.carrier}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select Carrier</option>
+                      {CARRIERS.map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Repair Details - Detailed mode only */}
+        {formMode === 'detailed' && (
+          <div className="collapsible-section">
+            <button
+              type="button"
+              className="section-header"
+              onClick={() => toggleSection('repairDetails')}
+            >
+              <span>🔧 Repair Details</span>
+              <span className="toggle-icon">{expandedSections.repairDetails ? '▼' : '▶'}</span>
+            </button>
+            {expandedSections.repairDetails && (
+              <div className="section-content">
+                <div className="row three">
+                  <div>
+                    <label className="label">Issue Category</label>
+                    <select
+                      name="issueCategory"
+                      className="select"
+                      value={formData.issueCategory}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select Issue</option>
+                      {ISSUE_CATEGORIES.map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="label">Repair Type</label>
+                    <select
+                      name="repairType"
+                      className="select"
+                      value={formData.repairType}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select Type</option>
+                      {REPAIR_TYPES.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="label">Priority</label>
+                    <select
+                      name="priority"
+                      className="select"
+                      value={formData.priority}
+                      onChange={handleChange}
+                    >
+                      <option value="">Normal</option>
+                      {PRIORITY_LEVELS.map((p) => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="label">Issue Description</label>
+                  <textarea
+                    name="issueDescription"
+                    className="textarea"
+                    value={formData.issueDescription}
+                    onChange={handleChange}
+                    placeholder="Describe the issue in detail..."
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Cost & Parts - Detailed mode only */}
+        {formMode === 'detailed' && (
+          <div className="collapsible-section">
+            <button
+              type="button"
+              className="section-header"
+              onClick={() => toggleSection('costParts')}
+            >
+              <span>💰 Cost & Parts</span>
+              <span className="toggle-icon">{expandedSections.costParts ? '▼' : '▶'}</span>
+            </button>
+            {expandedSections.costParts && (
+              <div className="section-content">
+                <div className="row three">
+                  <div>
+                    <label className="label">Estimated Cost ($)</label>
+                    <input
+                      name="estimatedCost"
+                      type="number"
+                      className="input"
+                      placeholder="0.00"
+                      value={formData.estimatedCost}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Advance Paid ($)</label>
+                    <input
+                      name="advancePaid"
+                      type="number"
+                      className="input"
+                      placeholder="0.00"
+                      value={formData.advancePaid}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Parts Type</label>
+                    <select
+                      name="partsType"
+                      className="select"
+                      value={formData.partsType}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select Type</option>
+                      {PARTS_TYPES.map((p) => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Dates & Status - Always visible */}
         <div className="row three">
           <div>
-            <label className="label">Submission Date</label>
+            <label className="label">Submission Date *</label>
             <input
               name="submissionDate"
               type="date"
@@ -133,19 +515,16 @@ export default function CustomerForm({ onSubmit, loading }) {
             />
           </div>
           <div>
-            <label className="label">Status</label>
+            <label className="label">Status *</label>
             <select
               name="status"
               className="select"
               value={formData.status}
               onChange={handleChange}
             >
-              <option value="Select">Select</option>
-              <option value="Submitted">Submitted</option>
-              <option value="In Queue">In Queue</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
-              <option value="Deliverable">Deliverable</option>
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
             </select>
           </div>
           <div>
@@ -160,6 +539,32 @@ export default function CustomerForm({ onSubmit, loading }) {
           </div>
         </div>
 
+        {/* Additional Dates - Detailed mode only */}
+        {formMode === 'detailed' && (
+          <div className="row two">
+            <div>
+              <label className="label">Device Received Date</label>
+              <input
+                name="deviceReceivedDate"
+                type="date"
+                className="input"
+                value={formData.deviceReceivedDate}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label className="label">Repair Start Date</label>
+              <input
+                name="repairStartDate"
+                type="date"
+                className="input"
+                value={formData.repairStartDate}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+        )}
+
         <div>
           <label className="label">Notes</label>
           <textarea
@@ -171,6 +576,7 @@ export default function CustomerForm({ onSubmit, loading }) {
           />
         </div>
 
+        {warning && <div className="warning-message">⚠️ {warning}</div>}
         {error && <div className="error-message">{error}</div>}
 
         <div style={{ marginTop: '20px', display: 'flex', gap: '12px' }}>

@@ -89,6 +89,21 @@ export function useCustomers() {
     }
   }
 
+  async function updateCustomer(customerId, customerData) {
+    if (!currentUser) throw new Error('Not authenticated');
+
+    try {
+      const customerRef = doc(db, 'customers', customerId);
+      await updateDoc(customerRef, {
+        ...customerData,
+        updatedAt: serverTimestamp(),
+      });
+    } catch (err) {
+      console.error('Error updating customer:', err);
+      throw err;
+    }
+  }
+
   async function deleteCustomer(customerId) {
     if (!currentUser) throw new Error('Not authenticated');
 
@@ -107,6 +122,7 @@ export function useCustomers() {
     error,
     addingCustomer,
     addCustomer,
+    updateCustomer,
     updateCustomerStatus,
     deleteCustomer,
   };

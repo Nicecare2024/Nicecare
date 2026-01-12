@@ -20,7 +20,7 @@ export default function Navbar() {
     <header className="navbar">
       <div className="brand">
         <span className="brand-icon">🛠️</span>
-        Remote Shop Support
+        <span>Remote Shop Support</span>
       </div>
       <div className="navbar-right">
         <span className="user-email">{currentUser?.email}</span>
@@ -31,8 +31,8 @@ export default function Navbar() {
         >
           {theme === 'light' ? '🌙' : '☀️'}
         </button>
-        <button className="btn-outline" onClick={handleLogout}>
-          Logout
+        <button className="btn-outline logout-btn" onClick={handleLogout}>
+          <span>↪</span> Logout
         </button>
       </div>
     </header>

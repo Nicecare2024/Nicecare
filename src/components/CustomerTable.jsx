@@ -1,9 +1,54 @@
 import { useState, useMemo } from 'react';
+import EditCustomerModal from './EditCustomerModal';
 
-const STATUS_OPTIONS = ['Select', 'Submitted', 'In Queue', 'In Progress', 'Completed', 'Deliverable'];
+const STATUS_OPTIONS = [
+  'Select',
+  'Submitted',
+  'Device Received',
+  'Under Diagnosis',
+  'Waiting for Parts',
+  'Repair in Progress',
+  'Quality Check',
+  'Ready for Pickup',
+  'Delivered',
+  'Cancelled',
+  'Unrepairable',
+];
 
-export default function CustomerTable({ customers, onUpdateStatus, onDelete }) {
+// Helper to display value or N/A
+const displayValue = (value) => {
+  if (value === undefined || value === null || value === '') {
+    return <span className="detail-value na">N/A</span>;
+  }
+  return <span className="detail-value">{value}</span>;
+};
+
+// Helper to format currency
+const formatCurrency = (value) => {
+  if (!value) return <span className="detail-value na">N/A</span>;
+  return <span className="detail-value">${parseFloat(value).toFixed(2)}</span>;
+};
+
+// Helper to get status badge class
+const getStatusClass = (status) => {
+  return status?.toLowerCase().replace(/\s+/g, '-') || '';
+};
+
+// Status badge component
+const StatusBadge = ({ status }) => {
+  const statusClass = getStatusClass(status);
+  return (
+    <span className={`status-badge ${statusClass}`}>
+      {status}
+    </span>
+  );
+};
+
+export default function CustomerTable({ customers, onUpdateStatus, onUpdateCustomer, onDelete, updatingCustomer }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [expandedRows, setExpandedRows] = useState(new Set());
+  const [editingCustomer, setEditingCustomer] = useState(null);
+  const [editingStatusId, setEditingStatusId] = useState(null);
 
   const filteredCustomers = useMemo(() => {
     if (!searchTerm) return customers;
@@ -13,21 +58,72 @@ export default function CustomerTable({ customers, onUpdateStatus, onDelete }) {
       return (
         customer.name?.toLowerCase().includes(term) ||
         customer.phone?.toLowerCase().includes(term) ||
-        customer.email?.toLowerCase().includes(term)
+        customer.email?.toLowerCase().includes(term) ||
+        customer.imei?.toLowerCase().includes(term) ||
+        customer.model?.toLowerCase().includes(term)
       );
     });
   }, [customers, searchTerm]);
 
+  function toggleExpand(id) {
+    setExpandedRows((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  }
+
+  // Check if customer has detailed data
+  function hasDetailedData(customer) {
+    return (
+      customer.deviceType ||
+      customer.brand ||
+      customer.model ||
+      customer.imei ||
+      customer.issueCategory ||
+      customer.estimatedCost ||
+      customer.customerType
+    );
+  }
+
   function handleExport() {
-    const headers = ['Name', 'Email', 'Phone', 'Address', 'Submission Date', 'Expected Date', 'Status', 'Notes'];
+    const headers = [
+      'Name', 'Email', 'Phone', 'Address', 'Alternate Phone', 'Customer Type', 'Preferred Contact',
+      'Device Type', 'Brand', 'Model', 'IMEI', 'Carrier',
+      'Issue Category', 'Issue Description', 'Repair Type', 'Priority',
+      'Estimated Cost', 'Advance Paid', 'Parts Type',
+      'Submission Date', 'Expected Date', 'Device Received Date', 'Repair Start Date',
+      'Status', 'Notes'
+    ];
     const rows = filteredCustomers.map((c) => {
       return [
         c.name || '',
         c.email || '',
         c.phone || '',
         c.address || '',
+        c.alternatePhone || '',
+        c.customerType || '',
+        c.preferredContact || '',
+        c.deviceType || '',
+        c.brand || '',
+        c.model || '',
+        c.imei || '',
+        c.carrier || '',
+        c.issueCategory || '',
+        c.issueDescription || '',
+        c.repairType || '',
+        c.priority || '',
+        c.estimatedCost || '',
+        c.advancePaid || '',
+        c.partsType || '',
         c.submissionDate || '',
         c.expectedDate || '',
+        c.deviceReceivedDate || '',
+        c.repairStartDate || '',
         c.status || '',
         c.notes || '',
       ].map((v) => (v.includes(',') || v.includes('"') ? `"${v.replace(/"/g, '""')}"` : v));
@@ -44,6 +140,19 @@ export default function CustomerTable({ customers, onUpdateStatus, onDelete }) {
   function handleDelete(id) {
     if (window.confirm('Are you sure you want to delete this record?')) {
       onDelete(id);
+    }
+  }
+
+  function handleEdit(customer) {
+    setEditingCustomer(customer);
+  }
+
+  async function handleSaveEdit(formData) {
+    try {
+      await onUpdateCustomer(editingCustomer.id, formData);
+      setEditingCustomer(null);
+    } catch (err) {
+      console.error('Error saving customer:', err);
     }
   }
 
@@ -79,6 +188,7 @@ export default function CustomerTable({ customers, onUpdateStatus, onDelete }) {
           <table className="table">
             <thead>
               <tr>
+                <th></th>
                 <th>Name</th>
                 <th>Contact</th>
                 <th>Dates</th>
@@ -89,45 +199,217 @@ export default function CustomerTable({ customers, onUpdateStatus, onDelete }) {
             </thead>
             <tbody>
               {filteredCustomers.map((customer) => (
-                <tr key={customer.id}>
-                  <td>{customer.name}</td>
-                  <td>
-                    {customer.phone || '-'}
-                    <br />
-                    {customer.email || '-'}
-                  </td>
-                  <td>
-                    {customer.submissionDate}
-                    <br />
-                    {customer.expectedDate || '-'}
-                  </td>
-                  <td>
-                    <select
-                      className="inline-select"
-                      value={customer.status}
-                      onChange={(e) => onUpdateStatus(customer.id, e.target.value)}
-                    >
-                      {STATUS_OPTIONS.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>{customer.notes || '-'}</td>
-                  <td>
-                    <button
-                      className="btn-outline btn-danger"
-                      onClick={() => handleDelete(customer.id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
+                <>
+                  <tr key={customer.id}>
+                    <td>
+                      <button
+                        className="expand-btn"
+                        onClick={() => toggleExpand(customer.id)}
+                        title={expandedRows.has(customer.id) ? 'Collapse details' : 'Expand details'}
+                      >
+                        {expandedRows.has(customer.id) ? '▼' : '▶'}
+                      </button>
+                    </td>
+                    <td>
+                      <span className="customer-name">{customer.name}</span>
+                      {customer.customerType && (
+                        <span className="customer-type-tag">{customer.customerType}</span>
+                      )}
+                    </td>
+                    <td>
+                      <div className="contact-info">
+                        <span className="contact-phone">{customer.phone || '—'}</span>
+                        <span className="contact-email">{customer.email || '—'}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="date-info">
+                        <span className="date-label">In:</span> {customer.submissionDate}
+                        <br />
+                        <span className="date-label">Due:</span> {customer.expectedDate || '—'}
+                      </div>
+                    </td>
+                    <td>
+                      {editingStatusId === customer.id ? (
+                        <select
+                          className="inline-select"
+                          value={customer.status}
+                          onChange={(e) => {
+                            onUpdateStatus(customer.id, e.target.value);
+                            setEditingStatusId(null);
+                          }}
+                          onBlur={() => setEditingStatusId(null)}
+                          autoFocus
+                        >
+                          {STATUS_OPTIONS.map((s) => (
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <button 
+                          className="status-badge-btn"
+                          onClick={() => setEditingStatusId(customer.id)}
+                          title="Click to change status"
+                        >
+                          <StatusBadge status={customer.status} />
+                        </button>
+                      )}
+                    </td>
+                    <td>
+                      <span className="notes-preview">{customer.notes || '—'}</span>
+                    </td>
+                    <td>
+                      <div className="action-buttons">
+                        <button
+                          className="btn-outline"
+                          onClick={() => handleEdit(customer)}
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button
+                          className="btn-outline btn-danger"
+                          onClick={() => handleDelete(customer.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  {expandedRows.has(customer.id) && (
+                    <tr key={`${customer.id}-details`} className="expanded-details">
+                      <td colSpan="7">
+                        <div className="details-grid">
+                          {/* Customer Info */}
+                          <div className="detail-group">
+                            <h4>👤 Customer Info</h4>
+                            <div className="detail-item">
+                              <span className="detail-label">Customer Type</span>
+                              {displayValue(customer.customerType)}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Preferred Contact</span>
+                              {displayValue(customer.preferredContact)}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Alternate Phone</span>
+                              {displayValue(customer.alternatePhone)}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Address</span>
+                              {displayValue(customer.address)}
+                            </div>
+                          </div>
+
+                          {/* Device Info */}
+                          <div className="detail-group">
+                            <h4>📱 Device Info</h4>
+                            <div className="detail-item">
+                              <span className="detail-label">Device Type</span>
+                              {displayValue(customer.deviceType)}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Brand / Model</span>
+                              {displayValue(customer.brand && customer.model ? `${customer.brand} ${customer.model}` : customer.brand || customer.model)}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">IMEI / Serial</span>
+                              {displayValue(customer.imei)}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Carrier</span>
+                              {displayValue(customer.carrier)}
+                            </div>
+                          </div>
+
+                          {/* Repair Details */}
+                          <div className="detail-group">
+                            <h4>🔧 Repair Details</h4>
+                            <div className="detail-item">
+                              <span className="detail-label">Issue Category</span>
+                              {displayValue(customer.issueCategory)}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Repair Type</span>
+                              {displayValue(customer.repairType)}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Priority</span>
+                              {displayValue(customer.priority)}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Issue Description</span>
+                              {displayValue(customer.issueDescription)}
+                            </div>
+                          </div>
+
+                          {/* Cost & Parts */}
+                          <div className="detail-group">
+                            <h4>💰 Cost & Parts</h4>
+                            <div className="detail-item">
+                              <span className="detail-label">Estimated Cost</span>
+                              {formatCurrency(customer.estimatedCost)}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Advance Paid</span>
+                              {formatCurrency(customer.advancePaid)}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Balance Due</span>
+                              {customer.estimatedCost ? (
+                                <span className="detail-value">
+                                  ${(parseFloat(customer.estimatedCost || 0) - parseFloat(customer.advancePaid || 0)).toFixed(2)}
+                                </span>
+                              ) : (
+                                <span className="detail-value na">N/A</span>
+                              )}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Parts Type</span>
+                              {displayValue(customer.partsType)}
+                            </div>
+                          </div>
+
+                          {/* Additional Dates */}
+                          <div className="detail-group">
+                            <h4>📅 Timeline</h4>
+                            <div className="detail-item">
+                              <span className="detail-label">Submitted</span>
+                              {displayValue(customer.submissionDate)}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Device Received</span>
+                              {displayValue(customer.deviceReceivedDate)}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Repair Started</span>
+                              {displayValue(customer.repairStartDate)}
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Expected Completion</span>
+                              {displayValue(customer.expectedDate)}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
               ))}
             </tbody>
           </table>
         </div>
+      )}
+
+      {/* Edit Customer Modal */}
+      {editingCustomer && (
+        <EditCustomerModal
+          customer={editingCustomer}
+          onSave={handleSaveEdit}
+          onClose={() => setEditingCustomer(null)}
+          loading={updatingCustomer}
+        />
       )}
     </section>
   );
