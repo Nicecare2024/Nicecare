@@ -10,7 +10,6 @@ import SignupPage from './pages/SignupPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
 import DashboardPage from './pages/DashboardPage';
-
 // Landing Page
 import LandingPage from './pages/LandingPage';
 
@@ -71,6 +70,7 @@ function App() {
           <Route path="/login" element={<Navigate to="/crm/login" replace />} />
           <Route path="/signup" element={<Navigate to="/crm/signup" replace />} />
           <Route path="/dashboard" element={<Navigate to="/crm/dashboard" replace />} />
+          <Route path="/verify-email" element={<Navigate to="/crm/verify-email" replace />} />
 
           {/* ===== Inventory Routes ===== */}
           <Route path="/inventory/*" element={

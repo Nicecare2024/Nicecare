@@ -5,11 +5,11 @@ export default function ProtectedRoute({ children }) {
   const { currentUser } = useAuth();
 
   if (!currentUser) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/crm/login" replace />;
   }
 
   if (!currentUser.emailVerified) {
-    return <Navigate to="/verify-email" replace />;
+    return <Navigate to="/crm/verify-email" replace />;
   }
 
   return children;

@@ -111,20 +111,29 @@ export default function LoginPage() {
       const user = await login(email, password);
       
       if (!user.emailVerified) {
-        navigate('/verify-email');
+        navigate('/crm/verify-email');
       } else {
-        navigate('/dashboard');
+        navigate('/crm/dashboard');
       }
     } catch (err) {
-      setError(getErrorMessage(err.code));
+      // Log the full error for debugging
+      console.error('Login error:', err);
+      console.error('Error code:', err?.code);
+      console.error('Error message:', err?.message);
+      
+      // Extract error code - Firebase errors have err.code, but handle other cases
+      const errorCode = err?.code || err?.error?.code || null;
+      const errorMessage = getErrorMessage(errorCode, err?.message);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   }
 
-  function getErrorMessage(code) {
+  function getErrorMessage(code, fallbackMessage) {
     switch (code) {
       case 'auth/invalid-credential':
+      case 'auth/invalid-email':
         return 'Invalid email or password';
       case 'auth/user-not-found':
         return 'No account found with this email';
@@ -132,8 +141,13 @@ export default function LoginPage() {
         return 'Incorrect password';
       case 'auth/too-many-requests':
         return 'Too many failed attempts. Please try again later';
+      case 'auth/user-disabled':
+        return 'This account has been disabled. Please contact support.';
+      case 'auth/network-request-failed':
+        return 'Network error. Please check your internet connection and try again.';
       default:
-        return 'Failed to sign in. Please try again';
+        // If we have a fallback message, use it; otherwise use generic message
+        return fallbackMessage || 'Failed to sign in. Please try again';
     }
   }
 
@@ -233,7 +247,7 @@ export default function LoginPage() {
           </form>
 
           <div className="auth-links">
-            <Link to="/forgot-password">Forgot Password?</Link>
+            <Link to="/crm/forgot-password">Forgot Password?</Link>
             <span>
               Don't have an account? <Link to="/signup">Sign Up</Link>
             </span>

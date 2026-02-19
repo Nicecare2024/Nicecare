@@ -39,7 +39,7 @@ export default function VerifyEmailPage() {
       const { emailVerified } = currentUser;
       
       if (emailVerified) {
-        navigate('/dashboard');
+        navigate('/crm/dashboard');
       } else {
         setError('Email not verified yet. Please check your inbox and click the verification link.');
       }
@@ -58,7 +58,7 @@ export default function VerifyEmailPage() {
 
   async function handleLogout() {
     await logout();
-    navigate('/login');
+    navigate('/crm/login');
   }
 
   return (
