@@ -207,15 +207,20 @@ export default function ProductManagement() {
           </div>
         )}
 
-        {/* Low Stock Warning */}
+        {/* Low Stock Warning - Enhanced */}
         {lowStockProducts.length > 0 && (
-          <div className="alert alert-warning">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-              <line x1="12" y1="9" x2="12" y2="13"/>
-              <line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-            {lowStockProducts.length} product{lowStockProducts.length !== 1 ? 's' : ''} running low on stock!
+          <div className="low-stock-warning-banner">
+            <div className="warning-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <div className="warning-content">
+              <strong>Low Stock Alert!</strong>
+              <span>{lowStockProducts.length} product{lowStockProducts.length !== 1 ? 's' : ''} running low on stock</span>
+            </div>
           </div>
         )}
 
@@ -495,57 +500,71 @@ export default function ProductManagement() {
             </div>
           ) : (
             <div className="table-container">
-              <table className="data-table">
+              <table className="data-table enhanced-table">
                 <thead>
                   <tr>
-                    <th>Product</th>
+                    <th>PRODUCT</th>
                     <th>SKU</th>
-                    <th>Category</th>
-                    <th>Store</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                    <th>Actions</th>
+                    <th>CATEGORY</th>
+                    <th>STORE</th>
+                    <th>PRICE</th>
+                    <th>STOCK STATUS</th>
+                    <th>ACTIONS</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredProducts.map((product) => {
-                    const isLowStock = product.quantity <= (product.lowStockThreshold || 10);
+                    const stock = product.quantity || 0;
+                    const threshold = product.lowStockThreshold || 10;
+                    let stockStatus = 'in-stock';
+                    let stockLabel = 'In Stock';
+                    
+                    if (stock === 0) {
+                      stockStatus = 'out-of-stock';
+                      stockLabel = 'Out of Stock';
+                    } else if (stock <= threshold) {
+                      stockStatus = 'low-stock';
+                      stockLabel = 'Low Stock';
+                    }
+                    
                     return (
-                      <tr key={product.id} className={isLowStock ? 'low-stock-row' : ''}>
+                      <tr key={product.id} className="table-row-hover">
                         <td>
-                          <div className="product-cell">
-                            <strong>{product.name}</strong>
+                          <div className="product-info">
+                            <div className="product-name">{product.name}</div>
                             {product.description && (
-                              <span className="product-desc">{product.description}</span>
+                              <div className="product-description">{product.description}</div>
                             )}
                           </div>
                         </td>
-                        <td>{product.sku || '-'}</td>
+                        <td>
+                          <span className="sku-text">{product.sku || '-'}</span>
+                        </td>
                         <td>
                           {product.category ? (
                             <span className="category-badge">{product.category}</span>
-                          ) : '-'}
+                          ) : (
+                            <span className="text-muted">-</span>
+                          )}
                         </td>
                         <td>
                           <span className="store-badge">{product.storeName || 'Unknown'}</span>
                         </td>
-                        <td>{formatCurrency(product.price)}</td>
                         <td>
-                          <span className={`stock-badge ${isLowStock ? 'low' : 'normal'}`}>
-                            {product.quantity}
-                            {isLowStock && (
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                                <line x1="12" y1="9" x2="12" y2="13"/>
-                                <line x1="12" y1="17" x2="12.01" y2="17"/>
-                              </svg>
-                            )}
-                          </span>
+                          <span className="price-text">{formatCurrency(product.price)}</span>
+                        </td>
+                        <td>
+                          <div className="stock-status-wrapper">
+                            <span className={`stock-status-badge ${stockStatus}`}>
+                              {stockLabel}
+                            </span>
+                            <span className="stock-quantity">({stock} units)</span>
+                          </div>
                         </td>
                         <td>
                           <div className="action-buttons">
                             <button 
-                              className="btn-icon" 
+                              className="btn-icon btn-icon-update" 
                               onClick={() => {
                                 setShowStockModal(product);
                                 setStockChange({ quantity: 0, reason: '' });
@@ -560,9 +579,9 @@ export default function ProductManagement() {
                               </svg>
                             </button>
                             <button 
-                              className="btn-icon" 
+                              className="btn-icon btn-icon-edit" 
                               onClick={() => handleEdit(product)}
-                              title="Edit"
+                              title="Edit Product"
                             >
                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -570,9 +589,9 @@ export default function ProductManagement() {
                               </svg>
                             </button>
                             <button 
-                              className="btn-icon danger" 
+                              className="btn-icon btn-icon-delete" 
                               onClick={() => handleDelete(product.id, product.name)}
-                              title="Delete"
+                              title="Delete Product"
                             >
                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <polyline points="3 6 5 6 21 6"/>

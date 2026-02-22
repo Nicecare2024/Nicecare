@@ -202,45 +202,51 @@ export default function StoreManagement() {
             </div>
           ) : (
             <div className="table-container">
-              <table className="data-table">
+              <table className="data-table enhanced-table">
                 <thead>
                   <tr>
-                    <th>Store Name</th>
-                    <th>Address</th>
-                    <th>Contact</th>
-                    <th>Manager</th>
-                    <th>Employees</th>
-                    <th>Products</th>
-                    <th>Actions</th>
+                    <th>STORE NAME</th>
+                    <th>ADDRESS</th>
+                    <th>CONTACT</th>
+                    <th>MANAGER</th>
+                    <th>EMPLOYEES</th>
+                    <th>PRODUCTS</th>
+                    <th>ACTIONS</th>
                   </tr>
                 </thead>
                 <tbody>
                   {stores.map((store) => (
-                    <tr key={store.id}>
+                    <tr key={store.id} className="table-row-hover">
                       <td>
-                        <strong>{store.name}</strong>
-                      </td>
-                      <td>{store.address || '-'}</td>
-                      <td>
-                        <div className="contact-info">
-                          {store.phone && <span>{store.phone}</span>}
-                          {store.email && <span>{store.email}</span>}
-                          {!store.phone && !store.email && '-'}
+                        <div className="store-name-cell">
+                          <strong>{store.name}</strong>
                         </div>
                       </td>
-                      <td>{store.manager || '-'}</td>
                       <td>
-                        <span className="badge">{store.employeeCount || 0}</span>
+                        <span className="address-text">{store.address || '-'}</span>
                       </td>
                       <td>
-                        <span className="badge">{store.productCount || 0}</span>
+                        <div className="contact-info-cell">
+                          {store.phone && <div className="contact-item">{store.phone}</div>}
+                          {store.email && <div className="contact-item email">{store.email}</div>}
+                          {!store.phone && !store.email && <span className="text-muted">-</span>}
+                        </div>
+                      </td>
+                      <td>
+                        <span className="manager-text">{store.manager || '-'}</span>
+                      </td>
+                      <td>
+                        <span className="count-badge employees-badge">{store.employeeCount || 0}</span>
+                      </td>
+                      <td>
+                        <span className="count-badge products-badge">{store.productCount || 0}</span>
                       </td>
                       <td>
                         <div className="action-buttons">
                           <button 
-                            className="btn-icon" 
+                            className="btn-icon btn-icon-edit" 
                             onClick={() => handleEdit(store)}
-                            title="Edit"
+                            title="Edit Store"
                           >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -248,9 +254,9 @@ export default function StoreManagement() {
                             </svg>
                           </button>
                           <button 
-                            className="btn-icon danger" 
+                            className="btn-icon btn-icon-delete" 
                             onClick={() => handleDelete(store.id, store.name)}
-                            title="Delete"
+                            title="Delete Store"
                           >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="3 6 5 6 21 6"/>
