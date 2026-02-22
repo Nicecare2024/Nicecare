@@ -181,7 +181,7 @@ export default function StoreManagement() {
         <div className="card">
           <div className="card-header">
             <h2>Your Stores</h2>
-            <span className="badge">{stores.length} stores</span>
+            <span className="badge">{stores.length} {stores.length === 1 ? 'Store' : 'Stores'} Found</span>
           </div>
 
           {loading ? (
@@ -202,51 +202,58 @@ export default function StoreManagement() {
             </div>
           ) : (
             <div className="table-container">
-              <table className="data-table enhanced-table">
+              <table className="data-table enhanced-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
-                    <th>STORE NAME</th>
-                    <th>ADDRESS</th>
-                    <th>CONTACT</th>
-                    <th>MANAGER</th>
-                    <th>EMPLOYEES</th>
-                    <th>PRODUCTS</th>
-                    <th>ACTIONS</th>
+                    <th style={{ padding: '12px 16px', color: '#6b7280', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #f0f0f0', minWidth: '120px' }}>STORE NAME</th>
+                    <th style={{ padding: '12px 16px', color: '#6b7280', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #f0f0f0' }}>ADDRESS</th>
+                    <th style={{ padding: '12px 16px', color: '#6b7280', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #f0f0f0' }}>CONTACT</th>
+                    <th style={{ padding: '12px 16px', color: '#6b7280', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #f0f0f0' }}>MANAGER</th>
+                    <th style={{ padding: '12px 16px', color: '#6b7280', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #f0f0f0' }}>EMPLOYEES</th>
+                    <th style={{ padding: '12px 16px', color: '#6b7280', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #f0f0f0' }}>PRODUCTS</th>
+                    <th style={{ padding: '12px 16px', color: '#6b7280', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #f0f0f0' }}>ACTIONS</th>
                   </tr>
                 </thead>
                 <tbody>
                   {stores.map((store) => (
-                    <tr key={store.id} className="table-row-hover">
-                      <td>
+                    <tr 
+                      key={store.id} 
+                      style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.2s', cursor: 'pointer' }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#f8faff'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <td style={{ padding: '12px 16px', minWidth: '120px' }}>
                         <div className="store-name-cell">
                           <strong>{store.name}</strong>
                         </div>
                       </td>
-                      <td>
+                      <td style={{ padding: '12px 16px' }}>
                         <span className="address-text">{store.address || '-'}</span>
                       </td>
-                      <td>
-                        <div className="contact-info-cell">
-                          {store.phone && <div className="contact-item">{store.phone}</div>}
-                          {store.email && <div className="contact-item email">{store.email}</div>}
+                      <td style={{ padding: '12px 16px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          {store.phone && <div style={{ fontWeight: 'bold' }}>{store.phone}</div>}
+                          {store.email && <div style={{ fontSize: '12px', color: '#6b7280' }}>{store.email}</div>}
                           {!store.phone && !store.email && <span className="text-muted">-</span>}
                         </div>
                       </td>
-                      <td>
+                      <td style={{ padding: '12px 16px' }}>
                         <span className="manager-text">{store.manager || '-'}</span>
                       </td>
-                      <td>
+                      <td style={{ padding: '12px 16px' }}>
                         <span className="count-badge employees-badge">{store.employeeCount || 0}</span>
                       </td>
-                      <td>
+                      <td style={{ padding: '12px 16px' }}>
                         <span className="count-badge products-badge">{store.productCount || 0}</span>
                       </td>
-                      <td>
+                      <td style={{ padding: '12px 16px' }}>
                         <div className="action-buttons">
                           <button 
                             className="btn-icon btn-icon-edit" 
                             onClick={() => handleEdit(store)}
-                            title="Edit Store"
+                            title="Edit"
+                            onMouseEnter={(e) => e.currentTarget.style.color = '#3b82f6'}
+                            onMouseLeave={(e) => e.currentTarget.style.color = '#6366f1'}
                           >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -256,7 +263,9 @@ export default function StoreManagement() {
                           <button 
                             className="btn-icon btn-icon-delete" 
                             onClick={() => handleDelete(store.id, store.name)}
-                            title="Delete Store"
+                            title="Delete"
+                            onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
+                            onMouseLeave={(e) => e.currentTarget.style.color = '#ef4444'}
                           >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="3 6 5 6 21 6"/>
