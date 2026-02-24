@@ -360,7 +360,7 @@ export default function EmployeeManagement() {
           </div>
         ) : (
           <div className="table-container">
-            <table className="data-table">
+            <table className="data-table inventory-list-table">
               <thead>
                 <tr>
                   <th>Employee</th>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 import { useInventoryAuth } from '../../context/InventoryAuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -15,12 +16,16 @@ export default function InventorySignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   // Employee form state
   const [inviteCode, setInviteCode] = useState(initialInviteCode);
   const [employeeEmail, setEmployeeEmail] = useState('');
   const [employeePassword, setEmployeePassword] = useState('');
   const [employeeConfirmPassword, setEmployeeConfirmPassword] = useState('');
+  const [showEmployeePassword, setShowEmployeePassword] = useState(false);
+  const [showEmployeeConfirmPassword, setShowEmployeeConfirmPassword] = useState(false);
   const [invitationDetails, setInvitationDetails] = useState(null);
   const [checkingInvite, setCheckingInvite] = useState(false);
   
@@ -31,6 +36,41 @@ export default function InventorySignupPage() {
   const { signupMaster, signupEmployee, checkInvitation } = useInventoryAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+
+  // Password strength calculation
+  const calculatePasswordStrength = (pwd) => {
+    if (!pwd) return { strength: 'weak', score: 0 };
+    
+    const hasMinLength = pwd.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(pwd);
+    const hasLowerCase = /[a-z]/.test(pwd);
+    const hasNumber = /[0-9]/.test(pwd);
+    const hasSpecial = /[!@#$%^&*]/.test(pwd);
+    
+    const checks = {
+      minLength: hasMinLength,
+      uppercase: hasUpperCase,
+      number: hasNumber,
+      special: hasSpecial
+    };
+    
+    if (pwd.length < 6) {
+      return { strength: 'weak', score: 1, checks };
+    }
+    
+    if (hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecial) {
+      return { strength: 'strong', score: 3, checks };
+    }
+    
+    if (pwd.length >= 6 && ((hasLowerCase || hasUpperCase) && hasNumber)) {
+      return { strength: 'medium', score: 2, checks };
+    }
+    
+    return { strength: 'weak', score: 1, checks };
+  };
+
+  const masterPasswordStrength = calculatePasswordStrength(password);
+  const employeePasswordStrength = calculatePasswordStrength(employeePassword);
 
   // Auto-check invitation code if provided in URL
   useEffect(() => {
@@ -345,28 +385,113 @@ export default function InventorySignupPage() {
 
                 <div className="form-group">
                   <label className="label">Password</label>
-                  <input
-                    type="password"
-                    className="input"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Create a strong password"
-                    required
-                    autoComplete="new-password"
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      className="input"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Create a strong password"
+                      required
+                      autoComplete="new-password"
+                      style={{ paddingRight: '40px' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: '#9ca3af'
+                      }}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                  {password && (
+                    <>
+                      <div style={{ display: 'flex', gap: '4px', marginTop: '8px' }}>
+                        <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: masterPasswordStrength.score >= 1 ? (masterPasswordStrength.strength === 'weak' ? '#ef4444' : masterPasswordStrength.strength === 'medium' ? '#f59e0b' : '#22c55e') : '#e5e7eb' }}></div>
+                        <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: masterPasswordStrength.score >= 2 ? (masterPasswordStrength.strength === 'medium' ? '#f59e0b' : '#22c55e') : '#e5e7eb' }}></div>
+                        <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: masterPasswordStrength.score >= 3 ? '#22c55e' : '#e5e7eb' }}></div>
+                      </div>
+                      <div style={{ fontSize: '12px', marginTop: '4px', color: masterPasswordStrength.strength === 'weak' ? '#ef4444' : masterPasswordStrength.strength === 'medium' ? '#f59e0b' : '#22c55e', fontWeight: '600' }}>
+                        {masterPasswordStrength.strength.charAt(0).toUpperCase() + masterPasswordStrength.strength.slice(1)}
+                      </div>
+                      <div style={{ fontSize: '11px', marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <div style={{ color: masterPasswordStrength.checks.minLength ? '#22c55e' : '#9ca3af' }}>
+                          {masterPasswordStrength.checks.minLength ? '✓' : '○'} At least 8 characters
+                        </div>
+                        <div style={{ color: masterPasswordStrength.checks.uppercase ? '#22c55e' : '#9ca3af' }}>
+                          {masterPasswordStrength.checks.uppercase ? '✓' : '○'} One uppercase letter
+                        </div>
+                        <div style={{ color: masterPasswordStrength.checks.number ? '#22c55e' : '#9ca3af' }}>
+                          {masterPasswordStrength.checks.number ? '✓' : '○'} One number
+                        </div>
+                        <div style={{ color: masterPasswordStrength.checks.special ? '#22c55e' : '#9ca3af' }}>
+                          {masterPasswordStrength.checks.special ? '✓' : '○'} One special character (!@#$)
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <div className="form-group">
                   <label className="label">Confirm Password</label>
-                  <input
-                    type="password"
-                    className="input"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirm your password"
-                    required
-                    autoComplete="new-password"
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      className="input"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm your password"
+                      required
+                      autoComplete="new-password"
+                      style={{
+                        paddingRight: '40px',
+                        borderColor: confirmPassword && password && confirmPassword === password ? '#22c55e' : confirmPassword && password && confirmPassword !== password ? '#ef4444' : ''
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: '#9ca3af'
+                      }}
+                      aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                    >
+                      {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                  {confirmPassword && password && confirmPassword === password && (
+                    <small style={{ color: '#22c55e', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                      Passwords match ✓
+                    </small>
+                  )}
+                  {confirmPassword && password && confirmPassword !== password && (
+                    <small style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                      Passwords don't match
+                    </small>
+                  )}
                 </div>
 
                 <button 
@@ -460,15 +585,64 @@ export default function InventorySignupPage() {
 
                 <div className="form-group">
                   <label className="label">Password</label>
-                  <input
-                    type="password"
-                    className="input"
-                    value={employeePassword}
-                    onChange={(e) => setEmployeePassword(e.target.value)}
-                    placeholder="Create a password"
-                    required
-                    autoComplete="new-password"
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showEmployeePassword ? "text" : "password"}
+                      className="input"
+                      value={employeePassword}
+                      onChange={(e) => setEmployeePassword(e.target.value)}
+                      placeholder="Create a password"
+                      required
+                      autoComplete="new-password"
+                      style={{ paddingRight: '40px' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowEmployeePassword(!showEmployeePassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: '#9ca3af'
+                      }}
+                      aria-label={showEmployeePassword ? "Hide password" : "Show password"}
+                    >
+                      {showEmployeePassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                  {employeePassword && (
+                    <>
+                      <div style={{ display: 'flex', gap: '4px', marginTop: '8px' }}>
+                        <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: employeePasswordStrength.score >= 1 ? (employeePasswordStrength.strength === 'weak' ? '#ef4444' : employeePasswordStrength.strength === 'medium' ? '#f59e0b' : '#22c55e') : '#e5e7eb' }}></div>
+                        <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: employeePasswordStrength.score >= 2 ? (employeePasswordStrength.strength === 'medium' ? '#f59e0b' : '#22c55e') : '#e5e7eb' }}></div>
+                        <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: employeePasswordStrength.score >= 3 ? '#22c55e' : '#e5e7eb' }}></div>
+                      </div>
+                      <div style={{ fontSize: '12px', marginTop: '4px', color: employeePasswordStrength.strength === 'weak' ? '#ef4444' : employeePasswordStrength.strength === 'medium' ? '#f59e0b' : '#22c55e', fontWeight: '600' }}>
+                        {employeePasswordStrength.strength.charAt(0).toUpperCase() + employeePasswordStrength.strength.slice(1)}
+                      </div>
+                      <div style={{ fontSize: '11px', marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <div style={{ color: employeePasswordStrength.checks.minLength ? '#22c55e' : '#9ca3af' }}>
+                          {employeePasswordStrength.checks.minLength ? '✓' : '○'} At least 8 characters
+                        </div>
+                        <div style={{ color: employeePasswordStrength.checks.uppercase ? '#22c55e' : '#9ca3af' }}>
+                          {employeePasswordStrength.checks.uppercase ? '✓' : '○'} One uppercase letter
+                        </div>
+                        <div style={{ color: employeePasswordStrength.checks.number ? '#22c55e' : '#9ca3af' }}>
+                          {employeePasswordStrength.checks.number ? '✓' : '○'} One number
+                        </div>
+                        <div style={{ color: employeePasswordStrength.checks.special ? '#22c55e' : '#9ca3af' }}>
+                          {employeePasswordStrength.checks.special ? '✓' : '○'} One special character (!@#$)
+                        </div>
+                      </div>
+                    </>
+                  )}
                   <small className="input-hint">
                     If you already have an account (e.g., CRM), use your existing password
                   </small>
@@ -476,15 +650,51 @@ export default function InventorySignupPage() {
 
                 <div className="form-group">
                   <label className="label">Confirm Password</label>
-                  <input
-                    type="password"
-                    className="input"
-                    value={employeeConfirmPassword}
-                    onChange={(e) => setEmployeeConfirmPassword(e.target.value)}
-                    placeholder="Confirm your password"
-                    required
-                    autoComplete="new-password"
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showEmployeeConfirmPassword ? "text" : "password"}
+                      className="input"
+                      value={employeeConfirmPassword}
+                      onChange={(e) => setEmployeeConfirmPassword(e.target.value)}
+                      placeholder="Confirm your password"
+                      required
+                      autoComplete="new-password"
+                      style={{
+                        paddingRight: '40px',
+                        borderColor: employeeConfirmPassword && employeePassword && employeeConfirmPassword === employeePassword ? '#22c55e' : employeeConfirmPassword && employeePassword && employeeConfirmPassword !== employeePassword ? '#ef4444' : ''
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowEmployeeConfirmPassword(!showEmployeeConfirmPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: '#9ca3af'
+                      }}
+                      aria-label={showEmployeeConfirmPassword ? "Hide password" : "Show password"}
+                    >
+                      {showEmployeeConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                  {employeeConfirmPassword && employeePassword && employeeConfirmPassword === employeePassword && (
+                    <small style={{ color: '#22c55e', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                      Passwords match ✓
+                    </small>
+                  )}
+                  {employeeConfirmPassword && employeePassword && employeeConfirmPassword !== employeePassword && (
+                    <small style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                      Passwords don't match
+                    </small>
+                  )}
                 </div>
 
                 <button 

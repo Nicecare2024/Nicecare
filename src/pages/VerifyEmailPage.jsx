@@ -7,7 +7,6 @@ export default function VerifyEmailPage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
   const { currentUser, resendVerificationEmail, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -122,3 +121,4 @@ export default function VerifyEmailPage() {
     </div>
   );
 }
+

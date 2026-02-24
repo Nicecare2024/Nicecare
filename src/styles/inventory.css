@@ -33,7 +33,7 @@
 }
 
 .inventory-brand::before {
-  content: '';
+  /* content: ''; */
   position: absolute;
   inset: 0;
   background: 
@@ -2104,7 +2104,7 @@
 }
 
 .modern-item:hover {
-  transform: translateX(4px);
+  transform: translateY(-2px);
   box-shadow: -4px 0 0 var(--color-primary);
 }
 
@@ -3436,7 +3436,7 @@
 }
 
 .pos-product-card::before {
-  content: '';
+  /* content: ''; */
   position: absolute;
   top: 0;
   left: 0;
@@ -4755,3 +4755,1388 @@
   box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2);
 }
 
+/* ===== Enterprise Inventory Module UI ===== */
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.page-header {
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.page-header h1 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.page-header p {
+  margin-top: 0.35rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.card {
+  border-radius: 16px;
+  border: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-card);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 650;
+  color: var(--text-primary);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.32rem 0.72rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+.form-card h2 {
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.form-grid.three-col {
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-primary);
+}
+
+.filters-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--border-primary);
+  background: var(--bg-secondary);
+}
+
+.filters-bar .filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 180px;
+}
+
+.filters-bar .filter-group label {
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.search-box {
+  flex: 1;
+  min-width: 260px;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border-primary);
+  border-radius: 10px;
+  background: var(--bg-primary);
+}
+
+.search-box svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.search-box .input {
+  border: none;
+  box-shadow: none;
+  padding: 0.2rem 0;
+  background: transparent;
+}
+
+.search-box .input:focus {
+  box-shadow: none;
+}
+
+.table-container {
+  border: 1px solid var(--border-primary);
+  border-radius: 14px;
+  background: var(--bg-secondary);
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  min-width: 860px;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  padding: 0.8rem 0.95rem;
+  text-align: left;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-primary);
+  background: color-mix(in srgb, var(--bg-primary) 70%, transparent);
+}
+
+.data-table td {
+  padding: 0.86rem 0.95rem;
+  border-bottom: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover td {
+  background: color-mix(in srgb, var(--accent-light) 34%, transparent);
+}
+
+/* Inventory list tables (stores, employees, products, sales): left-align all cells, border every td/th */
+.inventory-list-table th,
+.inventory-list-table td {
+  text-align: left;
+  border: 1px solid var(--border-primary);
+}
+.inventory-list-table .align-center,
+.inventory-list-table .align-right {
+  text-align: left !important;
+}
+.inventory-list-table tbody tr:last-child td {
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.align-center {
+  text-align: center !important;
+}
+
+.align-right {
+  text-align: right !important;
+}
+
+.store-name-cell strong,
+.product-info .product-name {
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+
+.address-text,
+.manager-text,
+.sku-text,
+.product-description {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.product-description {
+  margin-top: 0.22rem;
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contact-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.16rem;
+}
+
+.contact-phone {
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.contact-email {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.2rem 0.52rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.employees-badge {
+  background: rgba(124, 58, 237, 0.12);
+  color: #7c3aed;
+}
+
+.products-badge {
+  background: rgba(14, 165, 233, 0.14);
+  color: #0284c7;
+}
+
+/* Modal body padding (stock modal, credentials modal, etc.) */
+.modal-content .modal-body {
+  padding: 1.5rem 24px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Actions column: prevent wrapping so buttons stay visible when Actions is clicked */
+.actions-cell {
+  min-width: 140px;
+  white-space: nowrap;
+}
+
+.action-buttons {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.btn-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-primary);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.btn-icon-edit {
+  color: var(--accent);
+}
+
+.btn-icon-edit:hover {
+  background: rgba(37, 99, 235, 0.1);
+  border-color: rgba(37, 99, 235, 0.32);
+}
+
+.btn-icon-delete,
+.btn-icon.danger {
+  color: var(--danger);
+}
+
+.btn-icon-delete:hover,
+.btn-icon.danger:hover {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.35);
+}
+
+.btn-icon-update {
+  color: var(--warning);
+}
+
+.btn-icon-update:hover {
+  background: rgba(217, 119, 6, 0.1);
+  border-color: rgba(217, 119, 6, 0.35);
+}
+
+.btn-icon.warning {
+  color: var(--warning);
+}
+
+.btn-icon.warning:hover {
+  background: rgba(217, 119, 6, 0.1);
+}
+
+.btn-icon.success {
+  color: var(--success);
+}
+
+.btn-icon.success:hover {
+  background: rgba(5, 150, 105, 0.1);
+}
+
+.employee-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.employee-cell .avatar {
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent) 0%, #38bdf8 100%);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inactive-row td {
+  opacity: 0.68;
+}
+
+.dashboard-content .store-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.58rem;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--accent);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
+  font-size: 0.73rem;
+  font-weight: 600;
+}
+
+.price-text {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stock-status-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.stock-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stock-status-badge.in-stock {
+  background: rgba(5, 150, 105, 0.12);
+  color: var(--success);
+}
+
+.stock-status-badge.low-stock {
+  background: rgba(217, 119, 6, 0.14);
+  color: var(--warning);
+}
+
+.stock-status-badge.out-of-stock {
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--danger);
+}
+
+.stock-quantity {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+}
+
+.stock-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.stock-input-group .input {
+  max-width: 120px;
+  text-align: center;
+}
+
+.loading-state,
+.error-state {
+  min-height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--border-primary);
+  border-radius: 10px;
+  margin-top: 0.5rem;
+  font-size: 0.94rem;
+}
+
+.loading-state {
+  color: var(--text-secondary);
+}
+
+.error-state {
+  color: var(--danger);
+  border-color: rgba(220, 38, 38, 0.35);
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 10px;
+  border: 1px solid;
+  font-size: 0.86rem;
+}
+
+.alert-error {
+  border-color: rgba(220, 38, 38, 0.35);
+  background: rgba(220, 38, 38, 0.08);
+  color: var(--danger);
+}
+
+.alert-warning {
+  border-color: rgba(217, 119, 6, 0.35);
+  background: rgba(217, 119, 6, 0.08);
+  color: var(--warning);
+}
+
+.alert-link {
+  margin-left: 0.25rem;
+  font-weight: 700;
+}
+
+.low-stock-warning-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  border: 1px solid rgba(217, 119, 6, 0.35);
+  background: rgba(217, 119, 6, 0.08);
+  border-radius: 12px;
+  padding: 0.65rem 0.9rem;
+}
+
+.warning-icon {
+  color: var(--warning);
+}
+
+.warning-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  color: var(--warning);
+  font-size: 0.8rem;
+}
+
+.warning-content strong {
+  font-size: 0.83rem;
+}
+
+.report-card .date-range {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.report-section {
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  padding: 0.95rem;
+  background: var(--bg-primary);
+}
+
+.report-section h3 {
+  font-size: 0.9rem;
+  margin-bottom: 0.7rem;
+  color: var(--text-primary);
+}
+
+.payment-item,
+.daily-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--border-primary);
+  font-size: 0.84rem;
+}
+
+.payment-item:last-child,
+.daily-item:last-child {
+  border-bottom: none;
+}
+
+.payment-item .amount,
+.daily-item .amount {
+  font-weight: 700;
+}
+
+.customer-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.customer-cell span {
+  font-weight: 600;
+}
+
+.customer-cell small {
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+}
+
+.items-count {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.payment-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.52rem;
+  border-radius: 999px;
+  font-size: 0.71rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.payment-badge.cash {
+  background: rgba(5, 150, 105, 0.14);
+  color: var(--success);
+}
+
+.payment-badge.card {
+  background: rgba(37, 99, 235, 0.14);
+  color: var(--accent);
+}
+
+.payment-badge.upi,
+.payment-badge.bank,
+.payment-badge.transfer {
+  background: rgba(124, 58, 237, 0.14);
+  color: #7c3aed;
+}
+
+.stat-icon.sales svg,
+.stat-icon.average svg,
+.stat-icon.today svg {
+  stroke: var(--accent);
+}
+
+@media (max-width: 980px) {
+  .report-grid,
+  .form-grid.three-col {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 1.55rem;
+  }
+
+  .form-grid,
+  .form-grid.three-col,
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters-bar {
+    align-items: stretch;
+  }
+
+  .filters-bar .filter-group,
+  .search-box {
+    min-width: 100%;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions .btn,
+  .form-actions .btn-outline {
+    width: 100%;
+  }
+
+  .table-container {
+    border-radius: 12px;
+  }
+}
+
+
+/* ===== ENHANCED SEXY FORM CARD STYLING ===== */
+
+/* Animated gradient border effect */
+.form-card::before {
+  background: linear-gradient(90deg, 
+    #3b82f6 0%, 
+    #8b5cf6 25%, 
+    #ec4899 50%, 
+    #f59e0b 75%, 
+    #3b82f6 100%);
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Enhanced form card with glassmorphism effect */
+.form-card {
+  backdrop-filter: blur(10px);
+}
+
+[data-theme="light"] .form-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(255, 255, 255, 0.9) 100%);
+}
+
+[data-theme="dark"] .form-card {
+  background: linear-gradient(135deg, 
+    rgba(31, 41, 55, 0.95) 0%, 
+    rgba(17, 24, 39, 0.9) 100%);
+}
+
+/* Animated form card title */
+.form-card h2 {
+  position: relative;
+  padding-left: 3rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.form-card h2::before {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-50%) translateX(4px); }
+}
+
+/* Enhanced input fields with focus glow */
+.form-group .input:focus,
+.form-group .select:focus,
+.form-group .textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 
+    0 0 0 4px rgba(59, 130, 246, 0.1),
+    0 4px 12px rgba(59, 130, 246, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Animated label on focus */
+.form-group .label::before {
+  /* content: ''; */
+  width: 4px;
+  height: 0;
+  background: linear-gradient(180deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 2px;
+  transition: height 0.3s ease;
+}
+
+.form-group:focus-within .label::before {
+  height: 16px;
+}
+
+.form-group:focus-within .label {
+  color: #3b82f6;
+  transform: translateX(4px);
+}
+
+/* Enhanced buttons with ripple effect */
+.form-actions .btn-primary {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.form-actions .btn-primary::before {
+  /* content: ''; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.form-actions .btn-primary:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.form-actions .btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5);
+}
+
+/* Enhanced outline button */
+.form-actions .btn-outline {
+  position: relative;
+  overflow: hidden;
+}
+
+.form-actions .btn-outline::before {
+  /* content: ''; */
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.form-actions .btn-outline:hover::before {
+  left: 100%;
+}
+
+.form-actions .btn-outline:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+/* Form grid with stagger animation */
+.form-grid .form-group {
+  animation: slideInUp 0.5s ease-out backwards;
+}
+
+.form-grid .form-group:nth-child(1) { animation-delay: 0.05s; }
+.form-grid .form-group:nth-child(2) { animation-delay: 0.1s; }
+.form-grid .form-group:nth-child(3) { animation-delay: 0.15s; }
+.form-grid .form-group:nth-child(4) { animation-delay: 0.2s; }
+.form-grid .form-group:nth-child(5) { animation-delay: 0.25s; }
+.form-grid .form-group:nth-child(6) { animation-delay: 0.3s; }
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced modal */
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.modal-content {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Enhanced modal header */
+.modal-header {
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.05) 0%, 
+    rgba(139, 92, 246, 0.05) 100%);
+  position: relative;
+}
+
+.modal-header::after {
+  /* content: ''; */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease infinite;
+}
+
+/* Enhanced modal close button */
+.modal-close:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+  transform: rotate(90deg) scale(1.1);
+}
+
+/* Stock input group enhancement */
+.stock-input-group {
+  background: var(--bg-secondary);
+  padding: 0.5rem;
+  border-radius: 12px;
+  border: 2px solid var(--border-primary);
+  transition: all 0.3s ease;
+}
+
+.stock-input-group:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.stock-input-group .btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.stock-input-group .btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.stock-input-group .btn:active {
+  transform: scale(0.95);
+}
+
+/* Page header enhancement */
+/* page-header::after removed */
+
+@keyframes expandWidth {
+  from { width: 0; }
+  to { width: 100px; }
+}
+
+.page-header h1 {
+  animation: fadeInScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Enhanced card hover */
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Input hint animation */
+.form-group:focus-within .input-hint {
+  color: #3b82f6;
+  transform: translateX(4px);
+}
+
+/* Add subtle pulse to primary buttons */
+.btn-primary {
+  animation: subtlePulse 3s ease-in-out infinite;
+}
+
+@keyframes subtlePulse {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.6);
+  }
+}
+
+/* Form actions animation */
+.form-actions {
+  animation: slideInUp 0.5s ease-out 0.3s backwards;
+}
+
+/* Fix for blue border line when modal opens */
+body:focus,
+body:focus-visible,
+html:focus,
+html:focus-visible {
+  outline: none !important;
+  border: none !important;
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Remove focus outline from modal overlay */
+.modal-overlay:focus,
+.modal-overlay:focus-visible {
+  outline: none !important;
+}
+
+/* Remove any unwanted borders from main containers */
+.dashboard-content:focus,
+.dashboard-content:focus-visible,
+main:focus,
+main:focus-visible {
+  outline: none !important;
+  border: none !important;
+}
+
+/* Ensure only interactive elements get focus styles */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Remove default focus from non-interactive elements */
+div:focus,
+section:focus,
+article:focus,
+header:focus,
+footer:focus,
+nav:focus {
+  outline: none !important;
+}
+
+/* AGGRESSIVE FIX - Remove all unwanted focus borders */
+* {
+  outline: none !important;
+}
+
+*:focus {
+  outline: none !important;
+}
+
+*:focus-visible {
+  outline: none !important;
+}
+
+/* Re-enable focus only for interactive elements for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 2px !important;
+}
+
+/* Specifically target body and html */
+html,
+html *,
+body,
+body * {
+  outline: none !important;
+}
+
+html:focus,
+html:focus-visible,
+body:focus,
+body:focus-visible {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove any borders that might appear */
+.dashboard-content,
+.page-header,
+.card,
+.form-card,
+main,
+section,
+div {
+  outline: none !important;
+}
+
+.dashboard-content:focus,
+.page-header:focus,
+.card:focus,
+.form-card:focus,
+main:focus,
+section:focus,
+div:focus {
+  outline: none !important;
+  border: none !important;
+}
+
+/* Modal specific fixes */
+.modal-overlay,
+.modal-content,
+.modal-header,
+.modal-body {
+  outline: none !important;
+}
+
+.modal-overlay:focus,
+.modal-content:focus,
+.modal-header:focus,
+.modal-body:focus {
+  outline: none !important;
+  border: none !important;
+}
+
+/* ULTIMATE FIX - Remove ALL possible focus indicators and borders */
+*,
+*::before,
+*::after {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+html,
+body {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove any progress bars or loading indicators */
+progress,
+progress::-webkit-progress-bar,
+progress::-webkit-progress-value,
+progress::-moz-progress-bar {
+  display: none !important;
+}
+
+/* Remove any browser default focus rings */
+::-moz-focus-inner {
+  border: 0 !important;
+}
+
+:-moz-focusring {
+  outline: none !important;
+}
+
+/* Remove Chrome/Edge focus ring */
+:focus {
+  outline: none !important;
+}
+
+:focus-visible {
+  outline: none !important;
+}
+
+/* Remove any selection highlights that might look like borders */
+::selection {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+::-moz-selection {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+/* Specifically target any blue borders */
+[style*="border"][style*="blue"],
+[style*="outline"][style*="blue"] {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Remove any fixed position elements that might be causing the line */
+body::before,
+body::after,
+html::before,
+html::after {
+  display: none !important;
+}
+
+/* Only show focus for keyboard navigation on interactive elements */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 2px !important;
+}
+
+/* Remove any transform or transition artifacts */
+* {
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Hide any elements that might be causing the blue line */
+.chatbot-wrapper,
+.inventory-chatbot-wrapper,
+.confetti-container {
+  display: none !important;
+}
+
+/* Remove any pseudo-elements that might be causing lines */
+body::before,
+body::after,
+html::before,
+html::after,
+#root::before,
+#root::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Remove any borders from fixed elements */
+[style*="position: fixed"],
+[style*="position:fixed"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Specifically target bottom-left area */
+*[style*="bottom"][style*="left"] {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Remove any progress indicators */
+[role="progressbar"],
+.progress,
+.progress-bar,
+.loading-bar {
+  display: none !important;
+}
+
+/* Remove any notification badges or indicators */
+.badge,
+.notification-badge,
+.indicator {
+  border: none !important;
+  outline: none !important;
+}
+
+/* CHATBOT FIX - Remove all borders and outlines from chatbot */
+.inventory-chatbot-wrapper,
+.inventory-chatbot-toggle,
+.inventory-chatbot-container,
+.chatbot-wrapper {
+  border: none !important;
+  outline: none !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.inventory-chatbot-toggle:focus,
+.inventory-chatbot-toggle:focus-visible {
+  outline: none !important;
+  border: none !important;
+}
+
+/* Remove any blue borders from chatbot elements */
+.inventory-chatbot-wrapper *,
+.chatbot-wrapper * {
+  border-color: transparent !important;
+}
+
+.inventory-chatbot-wrapper::before,
+.inventory-chatbot-wrapper::after,
+.inventory-chatbot-toggle::before,
+.inventory-chatbot-toggle::after {
+  display: none !important;
+}
+
+/* NUCLEAR OPTION - Remove ALL possible borders everywhere */
+html * {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Only add borders back where explicitly needed */
+.input,
+.select,
+.textarea,
+.card,
+.modal-content,
+.table-container,
+.form-card {
+  border: 1px solid var(--border-primary) !important;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border: 2px solid var(--accent) !important;
+}
+
+/* Remove borders from buttons */
+button,
+.btn,
+.btn-primary,
+.btn-outline {
+  border: none !important;
+}
+
+.btn-outline {
+  border: 2px solid var(--border-primary) !important;
+}
+
+.btn-outline:hover {
+  border: 2px solid #3b82f6 !important;
+}
+
+/* ===== FORCE VERTICAL GRID LINES ON ALL TABLES ===== */
+.data-table th,
+.data-table td {
+  border-right: 1px solid var(--border-primary) !important;
+  border-left: 1px solid var(--border-primary) !important;
+}
+
+.data-table th:first-child,
+.data-table td:first-child {
+  border-left: none !important;
+}
+
+.data-table th:last-child,
+.data-table td:last-child {
+  border-right: none !important;
+}
+
+/* Ensure table has borders */
+.table-container {
+  border: 1px solid var(--border-primary) !important;
+}
+
+/* Make sure borders are visible */
+.data-table {
+  border-collapse: collapse !important;
+}
+
+.data-table thead th {
+  border-bottom: 2px solid var(--border-primary) !important;
+}
+
+.data-table tbody td {
+  border-bottom: 1px solid var(--border-primary) !important;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* ===== SUPER AGGRESSIVE GRID LINES ===== */
+.enhanced-table th,
+.enhanced-table td,
+.inventory-list-table th,
+.inventory-list-table td {
+  border-right: 1px solid #e5e7eb !important;
+  border-left: 1px solid #e5e7eb !important;
+}
+
+[data-theme="dark"] .enhanced-table th,
+[data-theme="dark"] .enhanced-table td,
+[data-theme="dark"] .inventory-list-table th,
+[data-theme="dark"] .inventory-list-table td {
+  border-right: 1px solid #374151 !important;
+  border-left: 1px solid #374151 !important;
+}
+
+.enhanced-table th:first-child,
+.enhanced-table td:first-child,
+.inventory-list-table th:first-child,
+.inventory-list-table td:first-child {
+  border-left: none !important;
+}
+
+.enhanced-table th:last-child,
+.enhanced-table td:last-child,
+.inventory-list-table th:last-child,
+.inventory-list-table td:last-child {
+  border-right: none !important;
+}

@@ -116,6 +116,17 @@ export default function StoreManagement() {
               </div>
 
               <div className="form-group">
+                <label className="label">Address</label>
+                <input
+                  type="text"
+                  className="input"
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  placeholder="e.g., 123 Main St, City, State"
+                />
+              </div>
+
+              <div className="form-group">
                 <label className="label">Phone</label>
                 <input
                   type="tel"
@@ -147,17 +158,6 @@ export default function StoreManagement() {
                   placeholder="e.g., John Smith"
                 />
               </div>
-
-              <div className="form-group full-width">
-                <label className="label">Address</label>
-                <textarea
-                  className="textarea"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  placeholder="Enter store address"
-                  rows={2}
-                />
-              </div>
             </div>
 
             <div className="form-actions">
@@ -176,7 +176,7 @@ export default function StoreManagement() {
       <div className="card">
         <div className="card-header">
           <h2>Your Stores</h2>
-          <span className="badge">{stores.length} stores</span>
+          <span className="badge">{stores.length} {stores.length === 1 ? 'Store' : 'Stores'} Found</span>
         </div>
 
         {loading ? (
@@ -197,43 +197,52 @@ export default function StoreManagement() {
           </div>
         ) : (
           <div className="table-container">
-            <table className="data-table">
+            <table className="data-table enhanced-table inventory-list-table">
               <thead>
                 <tr>
                   <th>Store Name</th>
                   <th>Address</th>
                   <th>Contact</th>
                   <th>Manager</th>
-                  <th>Employees</th>
-                  <th>Products</th>
-                  <th>Actions</th>
+                  <th className="align-center">Employees</th>
+                  <th className="align-center">Products</th>
+                  <th className="align-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {stores.map((store) => (
-                  <tr key={store.id}>
+                  <tr
+                    key={store.id}
+                    className="table-row-hover"
+                  >
                     <td>
-                      <strong>{store.name}</strong>
-                    </td>
-                    <td>{store.address || '-'}</td>
-                    <td>
-                      <div className="contact-info">
-                        {store.phone && <span>{store.phone}</span>}
-                        {store.email && <span>{store.email}</span>}
-                        {!store.phone && !store.email && '-'}
+                      <div className="store-name-cell">
+                        <strong>{store.name}</strong>
                       </div>
                     </td>
-                    <td>{store.manager || '-'}</td>
                     <td>
-                      <span className="badge">{store.employeeCount || 0}</span>
+                      <span className="address-text">{store.address || '-'}</span>
                     </td>
                     <td>
-                      <span className="badge">{store.productCount || 0}</span>
+                      <div className="contact-stack">
+                        {store.phone && <div className="contact-phone">{store.phone}</div>}
+                        {store.email && <div className="contact-email">{store.email}</div>}
+                        {!store.phone && !store.email && <span className="text-muted">-</span>}
+                      </div>
                     </td>
                     <td>
+                      <span className="manager-text">{store.manager || '-'}</span>
+                    </td>
+                    <td className="align-center">
+                      <span className="count-badge employees-badge">{store.employeeCount || 0}</span>
+                    </td>
+                    <td className="align-center">
+                      <span className="count-badge products-badge">{store.productCount || 0}</span>
+                    </td>
+                    <td className="align-center">
                       <div className="action-buttons">
                         <button
-                          className="btn-icon"
+                          className="btn-icon btn-icon-edit"
                           onClick={() => handleEdit(store)}
                           title="Edit"
                         >
@@ -243,7 +252,7 @@ export default function StoreManagement() {
                           </svg>
                         </button>
                         <button
-                          className="btn-icon danger"
+                          className="btn-icon btn-icon-delete"
                           onClick={() => handleDelete(store.id, store.name)}
                           title="Delete"
                         >
