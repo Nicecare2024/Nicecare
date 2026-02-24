@@ -6070,3 +6070,42 @@ button,
 .btn-outline:hover {
   border: 2px solid #3b82f6 !important;
 }
+
+/* ===== FORCE VERTICAL GRID LINES ON ALL TABLES ===== */
+.data-table th,
+.data-table td {
+  border-right: 1px solid var(--border-primary) !important;
+  border-left: 1px solid var(--border-primary) !important;
+}
+
+.data-table th:first-child,
+.data-table td:first-child {
+  border-left: none !important;
+}
+
+.data-table th:last-child,
+.data-table td:last-child {
+  border-right: none !important;
+}
+
+/* Ensure table has borders */
+.table-container {
+  border: 1px solid var(--border-primary) !important;
+}
+
+/* Make sure borders are visible */
+.data-table {
+  border-collapse: collapse !important;
+}
+
+.data-table thead th {
+  border-bottom: 2px solid var(--border-primary) !important;
+}
+
+.data-table tbody td {
+  border-bottom: 1px solid var(--border-primary) !important;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none !important;
+}

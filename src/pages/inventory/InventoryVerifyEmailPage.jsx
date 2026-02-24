@@ -17,7 +17,10 @@ export default function InventoryVerifyEmailPage() {
     if (!currentUser) {
       navigate('/inventory/login');
     } else if (currentUser.emailVerified) {
-      navigate('/inventory/dashboard');
+      // Show success message for 2 seconds then redirect
+      setTimeout(() => {
+        navigate('/inventory/dashboard');
+      }, 3000);
     }
   }, [currentUser, navigate]);
 
@@ -59,6 +62,78 @@ export default function InventoryVerifyEmailPage() {
 
   if (!currentUser) {
     return null;
+  }
+
+  // Show success state if email is verified
+  if (currentUser.emailVerified) {
+    return (
+      <div className="auth-page inventory-auth">
+        <div className="auth-brand-panel inventory-brand">
+          <div className="auth-brand-content">
+            <div className="brand-logo inventory-logo">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+            <h1 className="brand-title">Success!</h1>
+            <p className="brand-tagline">Your account is ready</p>
+          </div>
+        </div>
+
+        <div className="auth-form-panel">
+          <div className="auth-form-container">
+            <div className="success-animation">
+              <div className="success-checkmark">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+            </div>
+
+            <div className="form-header" style={{ textAlign: 'center' }}>
+              <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Your email has been verified</h2>
+              <p style={{ fontSize: '1.125rem', color: 'var(--text-secondary)' }}>
+                You can now sign in with your new account
+              </p>
+            </div>
+
+            <div className="verify-actions" style={{ marginTop: '2rem' }}>
+              <button 
+                onClick={() => navigate('/inventory/dashboard')}
+                className="btn btn-full btn-inventory"
+                style={{ 
+                  padding: '1rem 2rem',
+                  fontSize: '1.125rem',
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.4)'
+                }}
+              >
+                Continue to Dashboard
+              </button>
+            </div>
+
+            <div style={{ 
+              marginTop: '2rem', 
+              textAlign: 'center',
+              padding: '1rem',
+              background: 'rgba(16, 185, 129, 0.1)',
+              borderRadius: '12px',
+              border: '1px solid rgba(16, 185, 129, 0.2)'
+            }}>
+              <p style={{ 
+                margin: 0, 
+                color: 'var(--text-secondary)',
+                fontSize: '0.875rem'
+              }}>
+                Redirecting you to the dashboard in a moment...
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
