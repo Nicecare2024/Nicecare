@@ -1,4 +1,4 @@
-import { useState, useRef, useLayoutEffect } from 'react';
+import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { useProducts } from '../../hooks/useProducts';
 import { useStores } from '../../hooks/useStores';
 
@@ -27,6 +27,18 @@ export default function ProductManagement() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (showStockModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showStockModal]);
 
   const categories = [
     'Electronics',

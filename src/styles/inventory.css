@@ -1,4 +1,4 @@
-﻿/* ===== Inventory Management Styles ===== */
+/* ===== Inventory Management Styles ===== */
 
 /* ===== Authentication Pages ===== */
 .auth-page.inventory-auth {
@@ -33,7 +33,7 @@
 }
 
 .inventory-brand::before {
-  content: '';
+  /* content: ''; */
   position: absolute;
   inset: 0;
   background: 
@@ -3436,7 +3436,7 @@
 }
 
 .pos-product-card::before {
-  content: '';
+  /* content: ''; */
   position: absolute;
   top: 0;
   left: 0;
@@ -5511,7 +5511,7 @@
 
 /* Animated label on focus */
 .form-group .label::before {
-  content: '';
+  /* content: ''; */
   width: 4px;
   height: 0;
   background: linear-gradient(180deg, #3b82f6 0%, #8b5cf6 100%);
@@ -5537,7 +5537,7 @@
 }
 
 .form-actions .btn-primary::before {
-  content: '';
+  /* content: ''; */
   position: absolute;
   top: 50%;
   left: 50%;
@@ -5566,7 +5566,7 @@
 }
 
 .form-actions .btn-outline::before {
-  content: '';
+  /* content: ''; */
   position: absolute;
   top: 0;
   left: -100%;
@@ -5641,7 +5641,7 @@
 }
 
 .modal-header::after {
-  content: '';
+  /* content: ''; */
   position: absolute;
   bottom: 0;
   left: 0;
@@ -5690,17 +5690,7 @@
 }
 
 /* Page header enhancement */
-.page-header::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100px;
-  height: 4px;
-  background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
-  border-radius: 2px;
-  animation: expandWidth 1s ease-out;
-}
+/* page-header::after removed */
 
 @keyframes expandWidth {
   from { width: 0; }
@@ -5751,4 +5741,332 @@
 /* Form actions animation */
 .form-actions {
   animation: slideInUp 0.5s ease-out 0.3s backwards;
+}
+
+/* Fix for blue border line when modal opens */
+body:focus,
+body:focus-visible,
+html:focus,
+html:focus-visible {
+  outline: none !important;
+  border: none !important;
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Remove focus outline from modal overlay */
+.modal-overlay:focus,
+.modal-overlay:focus-visible {
+  outline: none !important;
+}
+
+/* Remove any unwanted borders from main containers */
+.dashboard-content:focus,
+.dashboard-content:focus-visible,
+main:focus,
+main:focus-visible {
+  outline: none !important;
+  border: none !important;
+}
+
+/* Ensure only interactive elements get focus styles */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Remove default focus from non-interactive elements */
+div:focus,
+section:focus,
+article:focus,
+header:focus,
+footer:focus,
+nav:focus {
+  outline: none !important;
+}
+
+/* AGGRESSIVE FIX - Remove all unwanted focus borders */
+* {
+  outline: none !important;
+}
+
+*:focus {
+  outline: none !important;
+}
+
+*:focus-visible {
+  outline: none !important;
+}
+
+/* Re-enable focus only for interactive elements for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 2px !important;
+}
+
+/* Specifically target body and html */
+html,
+html *,
+body,
+body * {
+  outline: none !important;
+}
+
+html:focus,
+html:focus-visible,
+body:focus,
+body:focus-visible {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove any borders that might appear */
+.dashboard-content,
+.page-header,
+.card,
+.form-card,
+main,
+section,
+div {
+  outline: none !important;
+}
+
+.dashboard-content:focus,
+.page-header:focus,
+.card:focus,
+.form-card:focus,
+main:focus,
+section:focus,
+div:focus {
+  outline: none !important;
+  border: none !important;
+}
+
+/* Modal specific fixes */
+.modal-overlay,
+.modal-content,
+.modal-header,
+.modal-body {
+  outline: none !important;
+}
+
+.modal-overlay:focus,
+.modal-content:focus,
+.modal-header:focus,
+.modal-body:focus {
+  outline: none !important;
+  border: none !important;
+}
+
+/* ULTIMATE FIX - Remove ALL possible focus indicators and borders */
+*,
+*::before,
+*::after {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+html,
+body {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove any progress bars or loading indicators */
+progress,
+progress::-webkit-progress-bar,
+progress::-webkit-progress-value,
+progress::-moz-progress-bar {
+  display: none !important;
+}
+
+/* Remove any browser default focus rings */
+::-moz-focus-inner {
+  border: 0 !important;
+}
+
+:-moz-focusring {
+  outline: none !important;
+}
+
+/* Remove Chrome/Edge focus ring */
+:focus {
+  outline: none !important;
+}
+
+:focus-visible {
+  outline: none !important;
+}
+
+/* Remove any selection highlights that might look like borders */
+::selection {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+::-moz-selection {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+/* Specifically target any blue borders */
+[style*="border"][style*="blue"],
+[style*="outline"][style*="blue"] {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Remove any fixed position elements that might be causing the line */
+body::before,
+body::after,
+html::before,
+html::after {
+  display: none !important;
+}
+
+/* Only show focus for keyboard navigation on interactive elements */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 2px !important;
+}
+
+/* Remove any transform or transition artifacts */
+* {
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Hide any elements that might be causing the blue line */
+.chatbot-wrapper,
+.inventory-chatbot-wrapper,
+.confetti-container {
+  display: none !important;
+}
+
+/* Remove any pseudo-elements that might be causing lines */
+body::before,
+body::after,
+html::before,
+html::after,
+#root::before,
+#root::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Remove any borders from fixed elements */
+[style*="position: fixed"],
+[style*="position:fixed"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Specifically target bottom-left area */
+*[style*="bottom"][style*="left"] {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Remove any progress indicators */
+[role="progressbar"],
+.progress,
+.progress-bar,
+.loading-bar {
+  display: none !important;
+}
+
+/* Remove any notification badges or indicators */
+.badge,
+.notification-badge,
+.indicator {
+  border: none !important;
+  outline: none !important;
+}
+
+/* CHATBOT FIX - Remove all borders and outlines from chatbot */
+.inventory-chatbot-wrapper,
+.inventory-chatbot-toggle,
+.inventory-chatbot-container,
+.chatbot-wrapper {
+  border: none !important;
+  outline: none !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.inventory-chatbot-toggle:focus,
+.inventory-chatbot-toggle:focus-visible {
+  outline: none !important;
+  border: none !important;
+}
+
+/* Remove any blue borders from chatbot elements */
+.inventory-chatbot-wrapper *,
+.chatbot-wrapper * {
+  border-color: transparent !important;
+}
+
+.inventory-chatbot-wrapper::before,
+.inventory-chatbot-wrapper::after,
+.inventory-chatbot-toggle::before,
+.inventory-chatbot-toggle::after {
+  display: none !important;
+}
+
+/* NUCLEAR OPTION - Remove ALL possible borders everywhere */
+html * {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Only add borders back where explicitly needed */
+.input,
+.select,
+.textarea,
+.card,
+.modal-content,
+.table-container,
+.form-card {
+  border: 1px solid var(--border-primary) !important;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border: 2px solid var(--accent) !important;
+}
+
+/* Remove borders from buttons */
+button,
+.btn,
+.btn-primary,
+.btn-outline {
+  border: none !important;
+}
+
+.btn-outline {
+  border: 2px solid var(--border-primary) !important;
+}
+
+.btn-outline:hover {
+  border: 2px solid #3b82f6 !important;
 }
