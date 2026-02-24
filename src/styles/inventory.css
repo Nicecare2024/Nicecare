@@ -6109,3 +6109,34 @@ button,
 .data-table tbody tr:last-child td {
   border-bottom: none !important;
 }
+
+/* ===== SUPER AGGRESSIVE GRID LINES ===== */
+.enhanced-table th,
+.enhanced-table td,
+.inventory-list-table th,
+.inventory-list-table td {
+  border-right: 1px solid #e5e7eb !important;
+  border-left: 1px solid #e5e7eb !important;
+}
+
+[data-theme="dark"] .enhanced-table th,
+[data-theme="dark"] .enhanced-table td,
+[data-theme="dark"] .inventory-list-table th,
+[data-theme="dark"] .inventory-list-table td {
+  border-right: 1px solid #374151 !important;
+  border-left: 1px solid #374151 !important;
+}
+
+.enhanced-table th:first-child,
+.enhanced-table td:first-child,
+.inventory-list-table th:first-child,
+.inventory-list-table td:first-child {
+  border-left: none !important;
+}
+
+.enhanced-table th:last-child,
+.enhanced-table td:last-child,
+.inventory-list-table th:last-child,
+.inventory-list-table td:last-child {
+  border-right: none !important;
+}
