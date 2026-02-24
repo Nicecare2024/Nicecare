@@ -1,4 +1,4 @@
-/* ===== Inventory Management Styles ===== */
+﻿/* ===== Inventory Management Styles ===== */
 
 /* ===== Authentication Pages ===== */
 .auth-page.inventory-auth {
@@ -2104,7 +2104,7 @@
 }
 
 .modern-item:hover {
-  transform: translateX(4px);
+  transform: translateY(-2px);
   box-shadow: -4px 0 0 var(--color-primary);
 }
 
@@ -5064,7 +5064,10 @@
 }
 
 .btn-icon:hover {
-  transform: translateY(-1px);
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  color: #3b82f6;
+  transform: translateY(-2px);
 }
 
 .btn-icon-edit {
@@ -5425,4 +5428,327 @@
   .table-container {
     border-radius: 12px;
   }
+}
+
+
+/* ===== ENHANCED SEXY FORM CARD STYLING ===== */
+
+/* Animated gradient border effect */
+.form-card::before {
+  background: linear-gradient(90deg, 
+    #3b82f6 0%, 
+    #8b5cf6 25%, 
+    #ec4899 50%, 
+    #f59e0b 75%, 
+    #3b82f6 100%);
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Enhanced form card with glassmorphism effect */
+.form-card {
+  backdrop-filter: blur(10px);
+}
+
+[data-theme="light"] .form-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(255, 255, 255, 0.9) 100%);
+}
+
+[data-theme="dark"] .form-card {
+  background: linear-gradient(135deg, 
+    rgba(31, 41, 55, 0.95) 0%, 
+    rgba(17, 24, 39, 0.9) 100%);
+}
+
+/* Animated form card title */
+.form-card h2 {
+  position: relative;
+  padding-left: 3rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.form-card h2::before {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-50%) translateX(4px); }
+}
+
+/* Enhanced input fields with focus glow */
+.form-group .input:focus,
+.form-group .select:focus,
+.form-group .textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 
+    0 0 0 4px rgba(59, 130, 246, 0.1),
+    0 4px 12px rgba(59, 130, 246, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Animated label on focus */
+.form-group .label::before {
+  content: '';
+  width: 4px;
+  height: 0;
+  background: linear-gradient(180deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 2px;
+  transition: height 0.3s ease;
+}
+
+.form-group:focus-within .label::before {
+  height: 16px;
+}
+
+.form-group:focus-within .label {
+  color: #3b82f6;
+  transform: translateX(4px);
+}
+
+/* Enhanced buttons with ripple effect */
+.form-actions .btn-primary {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.form-actions .btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.form-actions .btn-primary:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.form-actions .btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5);
+}
+
+/* Enhanced outline button */
+.form-actions .btn-outline {
+  position: relative;
+  overflow: hidden;
+}
+
+.form-actions .btn-outline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.form-actions .btn-outline:hover::before {
+  left: 100%;
+}
+
+.form-actions .btn-outline:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+/* Form grid with stagger animation */
+.form-grid .form-group {
+  animation: slideInUp 0.5s ease-out backwards;
+}
+
+.form-grid .form-group:nth-child(1) { animation-delay: 0.05s; }
+.form-grid .form-group:nth-child(2) { animation-delay: 0.1s; }
+.form-grid .form-group:nth-child(3) { animation-delay: 0.15s; }
+.form-grid .form-group:nth-child(4) { animation-delay: 0.2s; }
+.form-grid .form-group:nth-child(5) { animation-delay: 0.25s; }
+.form-grid .form-group:nth-child(6) { animation-delay: 0.3s; }
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced modal */
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.modal-content {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Enhanced modal header */
+.modal-header {
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.05) 0%, 
+    rgba(139, 92, 246, 0.05) 100%);
+  position: relative;
+}
+
+.modal-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease infinite;
+}
+
+/* Enhanced modal close button */
+.modal-close:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+  transform: rotate(90deg) scale(1.1);
+}
+
+/* Stock input group enhancement */
+.stock-input-group {
+  background: var(--bg-secondary);
+  padding: 0.5rem;
+  border-radius: 12px;
+  border: 2px solid var(--border-primary);
+  transition: all 0.3s ease;
+}
+
+.stock-input-group:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.stock-input-group .btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.stock-input-group .btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.stock-input-group .btn:active {
+  transform: scale(0.95);
+}
+
+/* Page header enhancement */
+.page-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 2px;
+  animation: expandWidth 1s ease-out;
+}
+
+@keyframes expandWidth {
+  from { width: 0; }
+  to { width: 100px; }
+}
+
+.page-header h1 {
+  animation: fadeInScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Enhanced card hover */
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Input hint animation */
+.form-group:focus-within .input-hint {
+  color: #3b82f6;
+  transform: translateX(4px);
+}
+
+/* Add subtle pulse to primary buttons */
+.btn-primary {
+  animation: subtlePulse 3s ease-in-out infinite;
+}
+
+@keyframes subtlePulse {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.6);
+  }
+}
+
+/* Form actions animation */
+.form-actions {
+  animation: slideInUp 0.5s ease-out 0.3s backwards;
 }

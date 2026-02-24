@@ -268,18 +268,19 @@ export default function ProductManagement() {
                   placeholder="e.g., Restock, Damaged, etc."
                 />
               </div>
-            </div>
-            <div className="modal-actions">
-              <button className="btn btn-outline" onClick={() => setShowStockModal(null)}>
-                Cancel
-              </button>
-              <button
-                className="btn btn-primary"
-                onClick={handleStockUpdate}
-                disabled={stockChange.quantity === 0}
-              >
-                Update Stock
-              </button>
+
+              <div className="modal-actions">
+                <button className="btn btn-outline" onClick={() => setShowStockModal(null)}>
+                  Cancel
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleStockUpdate}
+                  disabled={stockChange.quantity === 0}
+                >
+                  Update Stock
+                </button>
+              </div>
             </div>
           </div>
         </div>
