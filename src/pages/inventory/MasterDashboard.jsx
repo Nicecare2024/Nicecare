@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useStores } from '../../hooks/useStores';
 import { useEmployees } from '../../hooks/useEmployees';
 import { useProducts } from '../../hooks/useProducts';
@@ -7,18 +7,12 @@ import { useInventoryAuth } from '../../context/InventoryAuthContext';
 import LowStockAlert from '../../components/inventory/LowStockAlert';
 
 export default function MasterDashboard() {
-  const [showActions, setShowActions] = useState(false);
+  // quick actions are now rendered inline below the secondary stats
   const { userProfile } = useInventoryAuth();
   const { stores, loading: storesLoading } = useStores();
   const { employees, loading: employeesLoading } = useEmployees();
   const { products, lowStockProducts, loading: productsLoading } = useProducts();
   const { stats, loading: salesLoading } = useSales();
-
-  // Prevent background scroll when modal is active
-  useEffect(() => {
-    document.body.style.overflow = showActions ? 'hidden' : 'unset';
-    return () => { document.body.style.overflow = 'unset'; };
-  }, [showActions]);
 
   const loading = storesLoading || employeesLoading || productsLoading || salesLoading;
 
@@ -30,31 +24,6 @@ export default function MasterDashboard() {
 
   return (
     <main className="dashboard-container">
-      {/* --- PREMIUM MODAL --- */}
-      {showActions && (
-        <div className="modal-overlay" onClick={() => setShowActions(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Quick Actions</h2>
-              <p>Streamline your workflow by choosing an action below</p>
-            </div>
-            
-            <div className="modal-actions-grid">
-              <ModalAction href="/inventory/stores" label="Add Store" icon={<AddIcon />} />
-              <ModalAction href="/inventory/employees" label="Add Employee" icon={<UserAddIcon />} />
-              <ModalAction href="/inventory/products" label="Add Product" icon={<BoxAddIcon />} />
-              <ModalAction href="/inventory/sales" label="View Reports" icon={<ReportIcon />} />
-            </div>
-            
-            <button 
-              className="btn-close-modal"
-              onClick={() => setShowActions(false)}
-            >
-              Close Menu
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* --- HERO SECTION --- */}
       <section className="dashboard-hero">
@@ -63,10 +32,6 @@ export default function MasterDashboard() {
             <h1>Welcome back, {userProfile?.displayName || 'Business Owner'}</h1>
             <p>Monitor your performance and manage operations in real-time.</p>
           </div>
-          <button className="btn-quick-action" onClick={() => setShowActions(true)}>
-            <AddIcon />
-            <span>Quick Actions</span>
-          </button>
         </div>
       </section>
 
@@ -92,6 +57,17 @@ export default function MasterDashboard() {
             <MiniCard label="Today's Revenue" value={loading ? '...' : formatCurrency(stats?.todayRevenue)} />
             <MiniCard label="Avg. Order" value={loading ? '...' : formatCurrency(stats?.averageOrderValue)} />
             <MiniCard label="Low Stock" value={loading ? '...' : lowStockProducts.length} warning />
+        </div>
+
+        {/* --- QUICK ACTIONS SECTION (after stats) --- */}
+        <div className="dashboard-section">
+          <h2>Quick Actions</h2>
+          <div className="quick-actions-grid">
+            <QuickActionCard href="/inventory/stores" label="Add Store" icon={<AddIcon />} />
+            <QuickActionCard href="/inventory/employees" label="Add Employee" icon={<UserAddIcon />} />
+            <QuickActionCard href="/inventory/products" label="Add Product" icon={<BoxAddIcon />} />
+            <QuickActionCard href="/inventory/sales" label="View Reports" icon={<ReportIcon />} />
+          </div>
         </div>
 
         {/* --- TABLE OVERVIEWS --- */}
@@ -177,10 +153,10 @@ function MiniCard({ label, value, warning }) {
     );
 }
 
-function ModalAction({ href, label, icon }) {
+function QuickActionCard({ href, label, icon }) {
   return (
-    <a href={href} className="modal-action-card">
-      <div className="icon-wrap">{icon}</div>
+    <a href={href} className="quick-action-card">
+      <div className="icon">{icon}</div>
       <span>{label}</span>
     </a>
   );
