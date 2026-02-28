@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import EditCustomerModal from './EditCustomerModal';
 
 const STATUS_OPTIONS = [
@@ -77,7 +77,7 @@ export default function CustomerTable({ customers, onUpdateStatus, onUpdateCusto
   }
 
   // Check if customer has detailed data
-  function hasDetailedData(customer) {
+  function _hasDetailedData(customer) {
     return (
       customer.deviceType ||
       customer.brand ||

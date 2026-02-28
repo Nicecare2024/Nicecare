@@ -18,6 +18,7 @@ export function useSales(storeId = null, dateRange = null) {
 
   useEffect(() => {
     if (!currentUser) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- guard clause reset
       setSales([]);
       setLoading(false);
       return;

@@ -21,6 +21,7 @@ function Confetti() {
         shape: Math.random() > 0.5 ? 'circle' : 'square',
       });
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time init
     setParticles(newParticles);
   }, []);
 
@@ -46,6 +47,7 @@ function Confetti() {
 
 export default function DigitalReceipt({ sale, storeName, onClose }) {
   const receiptRef = useRef(null);
+  // eslint-disable-next-line no-unused-vars -- setShowConfetti reserved for future animation control
   const [showConfetti, setShowConfetti] = useState(true);
 
   const formatCurrency = (amount) => {

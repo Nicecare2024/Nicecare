@@ -19,7 +19,7 @@ export default function VerifyEmailPage() {
     try {
       await resendVerificationEmail();
       setMessage('Verification email sent! Check your inbox.');
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to send verification email. Please try again.');
     } finally {
       setLoading(false);

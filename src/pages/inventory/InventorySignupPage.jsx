@@ -94,7 +94,7 @@ export default function InventorySignupPage() {
         setError(result.error);
         setInvitationDetails(null);
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to verify invitation code');
       setInvitationDetails(null);
     } finally {

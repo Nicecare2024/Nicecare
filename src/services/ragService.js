@@ -4,7 +4,7 @@ import { fetchSSE } from './sseClient';
  * Ask questions about customer data (server-side RAG with SSE streaming).
  * Now supports streaming via onStream callback.
  */
-export async function askAboutCustomers(question, currentUserUid, useSemanticSearch = true, onStream = null) {
+export async function askAboutCustomers(question, currentUserUid, _useSemanticSearch = true, onStream = null) {
   return fetchSSE('askAboutCustomers', { question }, onStream);
 }
 

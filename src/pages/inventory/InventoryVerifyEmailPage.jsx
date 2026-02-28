@@ -40,7 +40,7 @@ export default function InventoryVerifyEmailPage() {
       await resendVerificationEmail();
       setMessage('Verification email sent! Check your inbox.');
       setCountdown(60);
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to resend verification email. Please try again.');
     } finally {
       setLoading(false);

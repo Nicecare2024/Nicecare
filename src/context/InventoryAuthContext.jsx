@@ -8,7 +8,7 @@ import {
   onAuthStateChanged,
   updateProfile,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs, deleteDoc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 
 const InventoryAuthContext = createContext();
@@ -75,7 +75,8 @@ export function InventoryAuthProvider({ children }) {
       inviteCode: inviteCode,
       status: 'pending', // pending, accepted, expired
       createdAt: serverTimestamp(),
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+      // eslint-disable-next-line react-hooks/purity -- called from event handler, not render
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     };
 
     // Store invitation by invite code for easy lookup
@@ -136,7 +137,7 @@ export function InventoryAuthProvider({ children }) {
           const userCredential = await signInWithEmailAndPassword(auth, email, password);
           user = userCredential.user;
           isExistingUser = true;
-        } catch (signInError) {
+        } catch (_signInError) {
           throw new Error('This email is already registered. Please use your existing password or reset it.');
         }
       } else {
