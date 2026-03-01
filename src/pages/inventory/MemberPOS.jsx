@@ -83,7 +83,7 @@ export default function MemberPOS() {
   }, []);
 
   async function handleCheckout() {
-    if (cart.length === 0) return;
+    if (cart.length === 0 || processing) return; // Guard against duplicate calls
 
     setError('');
 

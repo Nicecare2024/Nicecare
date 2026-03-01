@@ -48,6 +48,15 @@ export default function DigitalReceipt({ sale, storeName, onClose }) {
   const receiptRef = useRef(null);
   const [showConfetti, setShowConfetti] = useState(true);
 
+  // Stop confetti after animation completes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowConfetti(false);
+    }, 4000); // Stop after 4 seconds
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   // Handle Escape key to close
   useEffect(() => {
     function handleEscape(e) {
