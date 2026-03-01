@@ -6316,7 +6316,7 @@ html::after,
 .dashboard-hero {
   height: 240px;
   background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4)),
-              url('../assets/masterdash.jpg') center / cover no-repeat;
+              url('../assets/masterdash.png') center / cover no-repeat;
 
   position: relative;
   display: flex;
