@@ -170,7 +170,9 @@ export default function Sidebar({ isExpanded, toggleSidebar }) {
         <div className="sidebar-header">
           <div className="sidebar-brand-block">
             <div className="sidebar-brand-info">
-              <span className="sidebar-brand-name">NiceCare</span>
+              <span className="sidebar-brand-name">
+                {userProfile?.displayName || currentUser?.email?.split('@')[0] || 'User'}
+                </span>
             </div>
           </div>
           <button

@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStores } from '../../hooks/useStores';
 
 export default function StoreManagement() {
+  // apply small side gutter by toggling body class
+  useEffect(() => {
+    document.body.classList.add('edge-to-edge-page');
+    return () => document.body.classList.remove('edge-to-edge-page');
+  }, []);
+
   const { stores, loading, error, addStore, updateStore, deleteStore } = useStores();
   const [showForm, setShowForm] = useState(false);
   const [editingStore, setEditingStore] = useState(null);
