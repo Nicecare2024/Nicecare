@@ -6261,7 +6261,6 @@ html::after,
   white-space: nowrap;
   line-height: 1.25;
   letter-spacing: 0.8px;
-  text-transform: uppercase; /* optional */
 }
 
 .sidebar-brand-sub {
