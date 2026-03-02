@@ -121,7 +121,9 @@ export default function Sidebar({ isExpanded, toggleSidebar }) {
       ),
       label: 'Products'
     },
-    {
+
+    // Member-only route
+    ...(!isMaster ? [{
       path: '/inventory/my-sales',
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -132,7 +134,7 @@ export default function Sidebar({ isExpanded, toggleSidebar }) {
         </svg>
       ),
       label: 'My Sales'
-    },
+    }] : []),
 
     // Master-only reports
     ...(isMaster ? [
