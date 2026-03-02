@@ -67,7 +67,14 @@ export default function Sidebar({ isExpanded, toggleSidebar }) {
   };
 
   const isMaster = userProfile?.role === 'master';
-  const userInitial = (userProfile?.displayName || currentUser?.email || 'NC').substring(0, 2).toUpperCase();
+  const userInitial = (() => {
+    const name = userProfile?.displayName || currentUser?.email || 'NC';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  })();
 
   // Navigation items based on user role
   const navItems = [
