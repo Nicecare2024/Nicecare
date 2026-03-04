@@ -3706,10 +3706,10 @@ body.edge-to-edge-page .main-content {
   color: var(--text-primary);
   line-height: 1.3;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-bottom: 0.125rem;
+  -webkit-box-orient: vertical; /* required for line-clamp */
+  -webkit-line-clamp: 2;        /* WebKit browsers */
+  line-clamp: 2;                /* Standard property */
+  overflow: hidden;             /* ensures text is clipped */
 }
 
 .pos-card-sku {
@@ -8003,6 +8003,7 @@ html::after,
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
+}
 /* ===== Additional Utility Styles for CRMPage ===== */
 
 /* small helper used by CRMPage for the add button */
