@@ -472,78 +472,70 @@ export default function MemberPOS() {
             <div className="pos-modal-content">
               {error && (
                 <div className="pos-modal-error">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="8" x2="12" y2="12" />
-                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                  </svg>
-                  {error}
+                  <span>{error}</span>
                 </div>
               )}
 
+              {/* Total Banner */}
               <div className="pos-modal-total-banner">
                 <span>Total Amount</span>
                 <strong>{formatCurrency(totals.total)}</strong>
               </div>
 
-              <div className="form-section">
-                <label>Payment Method <span style={{ color: '#ef4444' }}>*</span></label>
-                <div className="payment-method-grid">
+              {/* Payment Method */}
               <div className="pos-modal-section">
-                <label>Payment Method</label>
+                <label>Payment Method *</label>
                 <div className="pos-payment-options">
-                  {[
-                    { id: 'Cash', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>, label: 'Cash' },
-                    { id: 'Card', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>, label: 'Card' },
-                    { id: 'UPI', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>, label: 'UPI / Mobile' },
-                  ].map((method) => (
+                  {['Cash', 'Card', 'UPI'].map((method) => (
                     <button
-                      key={method.id}
+                      key={method}
                       type="button"
-                      className={`pos-payment-option ${checkoutForm.paymentMethod === method.id ? 'selected' : ''}`}
-                      onClick={() => setCheckoutForm({ ...checkoutForm, paymentMethod: method.id })}
+                      className={`pos-payment-option ${
+                        checkoutForm.paymentMethod === method ? 'selected' : ''
+                      }`}
+                      onClick={() =>
+                        setCheckoutForm({ ...checkoutForm, paymentMethod: method })
+                      }
                     >
-                      {method.icon}
-                      <span>{method.label}</span>
+                      {method}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="form-section">
-                <label>Customer Details <span style={{ color: '#ef4444' }}>*</span></label>
-                <div className="form-row">
-                  <input
-                    type="text"
-                    placeholder="Customer Name *"
+              {/* Customer Details */}
               <div className="pos-modal-section">
-                <label>Customer Details <span className="optional-tag">Optional</span></label>
+                <label>Customer Details *</label>
                 <div className="pos-modal-row">
                   <input
                     type="text"
-                    placeholder="Customer name"
+                    placeholder="Customer Name"
                     value={checkoutForm.customerName}
-                    onChange={(e) => setCheckoutForm({ ...checkoutForm, customerName: e.target.value })}
-                    required
+                    onChange={(e) =>
+                      setCheckoutForm({ ...checkoutForm, customerName: e.target.value })
+                    }
                   />
                   <input
                     type="tel"
-                    placeholder="Phone Number *"
-                    placeholder="Phone number"
+                    placeholder="Phone Number"
                     value={checkoutForm.customerPhone}
-                    onChange={(e) => setCheckoutForm({ ...checkoutForm, customerPhone: e.target.value })}
-                    required
+                    onChange={(e) =>
+                      setCheckoutForm({ ...checkoutForm, customerPhone: e.target.value })
+                    }
                   />
                 </div>
               </div>
 
+              {/* Notes */}
               <div className="pos-modal-section">
-                <label>Notes <span className="optional-tag">Optional</span></label>
+                <label>Notes (Optional)</label>
                 <textarea
                   placeholder="Add any notes for this sale..."
                   value={checkoutForm.notes}
-                  onChange={(e) => setCheckoutForm({ ...checkoutForm, notes: e.target.value })}
-                  rows={2}
+                  onChange={(e) =>
+                    setCheckoutForm({ ...checkoutForm, notes: e.target.value })
+                  }
+                  rows={3}
                 />
               </div>
             </div>
