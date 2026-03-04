@@ -63,7 +63,7 @@ export function usePOS(storeId) {
           : item
       )
     );
-  }, []);
+  }, [removeFromCart]);
 
   // Remove item from cart
   const removeFromCart = useCallback((productId) => {

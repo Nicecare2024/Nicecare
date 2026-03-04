@@ -47,7 +47,6 @@ function Confetti() {
 
 export default function DigitalReceipt({ sale, storeName, onClose }) {
   const receiptRef = useRef(null);
-  // eslint-disable-next-line no-unused-vars -- setShowConfetti reserved for future animation control
   const [showConfetti, setShowConfetti] = useState(true);
 
   // Stop confetti after animation completes

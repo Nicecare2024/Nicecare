@@ -103,7 +103,7 @@ export default function MemberPOS() {
 
     // Validate phone number format (basic validation)
     const phoneRegex = /^[0-9]{10,15}$/;
-    if (!phoneRegex.test(checkoutForm.customerPhone.replace(/[\s\-\(\)]/g, ''))) {
+    if (!phoneRegex.test(checkoutForm.customerPhone.replace(/[-\s()]/g, ''))) {
       setError('Please enter a valid phone number (10-15 digits)');
       return;
     }

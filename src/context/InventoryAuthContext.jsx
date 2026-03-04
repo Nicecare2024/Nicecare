@@ -8,6 +8,7 @@ import {
   onAuthStateChanged,
   updateProfile,
 } from 'firebase/auth';
+/* eslint-disable react-refresh/only-export-components */
 import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 

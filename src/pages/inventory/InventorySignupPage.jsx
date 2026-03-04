@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { useInventoryAuth } from '../../context/InventoryAuthContext';
@@ -77,9 +77,9 @@ export default function InventorySignupPage() {
     if (initialInviteCode && activeTab === 'employee') {
       handleCheckInvitation(initialInviteCode);
     }
-  }, []);
+  }, [initialInviteCode, activeTab, handleCheckInvitation]);
 
-  async function handleCheckInvitation(code) {
+  const handleCheckInvitation = useCallback(async (code) => {
     if (!code || code.length < 8) return;
     
     setCheckingInvite(true);
@@ -100,7 +100,7 @@ export default function InventorySignupPage() {
     } finally {
       setCheckingInvite(false);
     }
-  }
+  }, [checkInvitation]);
 
   async function handleMasterSubmit(e) {
     e.preventDefault();

@@ -63,7 +63,7 @@ export default function InventoryChatbot() {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]);
+  }, [messages, isCrmPage]);
 
   // Focus input when chat opens
   useEffect(() => {
@@ -117,7 +117,7 @@ export default function InventoryChatbot() {
         return updated;
       });
     }
-  }, [messages]);
+  }, [messages, isCrmPage]);
 
   // Feedback comment submit
   const handleFeedbackComment = useCallback(async (msgIndex) => {
@@ -137,7 +137,7 @@ export default function InventoryChatbot() {
     } catch (err) {
       console.error('Feedback comment error:', err);
     }
-  }, [messages, feedbackComment]);
+  }, [messages, feedbackComment, isCrmPage]);
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
