@@ -1,8 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useStores } from '../../hooks/useStores';
+import ConfirmDialog from '../../components/ConfirmDialog';
+import { useEmployees } from '../../hooks/useEmployees';
 
 export default function StoreManagement() {
+  // apply small side gutter by toggling body class
+  useEffect(() => {
+    document.body.classList.add('edge-to-edge-page');
+    return () => document.body.classList.remove('edge-to-edge-page');
+  }, []);
+
   const { stores, loading, error, addStore, updateStore, deleteStore } = useStores();
+  const { employees } = useEmployees();
+
+  const employeeCountByStore = useMemo(() => {
+    const counts = {};
+    for (const emp of employees) {
+      if (emp.assignedStoreId) {
+        counts[emp.assignedStoreId] = (counts[emp.assignedStoreId] || 0) + 1;
+      }
+    }
+    return counts;
+  }, [employees]);
   const [showForm, setShowForm] = useState(false);
   const [editingStore, setEditingStore] = useState(null);
   const [formData, setFormData] = useState({
@@ -14,6 +33,7 @@ export default function StoreManagement() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   function resetForm() {
     setFormData({
@@ -66,29 +86,52 @@ export default function StoreManagement() {
   }
 
   async function handleDelete(storeId, storeName) {
-    if (!window.confirm(`Are you sure you want to delete "${storeName}"? This action cannot be undone.`)) {
-      return;
-    }
+    setDeleteConfirm({ id: storeId, name: storeName });
+  }
+
+  async function confirmDelete() {
+    if (!deleteConfirm) return;
 
     try {
-      await deleteStore(storeId);
+      await deleteStore(deleteConfirm.id);
+      setDeleteConfirm(null);
     } catch (err) {
       alert('Failed to delete store: ' + err.message);
+      setDeleteConfirm(null);
     }
   }
 
   return (
     <main className="dashboard-content">
+      <ConfirmDialog
+        isOpen={!!deleteConfirm}
+        title="Delete Store"
+        message={`Are you sure you want to delete "${deleteConfirm?.name}"? This action cannot be undone.`}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteConfirm(null)}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
+
       <div className="page-header">
         <div>
           <h1>Store Management</h1>
           <p>Manage your store locations</p>
         </div>
         <button
-          className="btn btn-primary"
+          className="btn btn-outline"
           onClick={() => setShowForm(!showForm)}
+          title={showForm ? "Close form" : "Add new store"}
         >
-          {showForm ? 'Cancel' : '+ Add Store'}
+          {showForm ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          ) : (
+            '+ Add Store'
+          )}
         </button>
       </div>
 
@@ -234,7 +277,7 @@ export default function StoreManagement() {
                       <span className="manager-text">{store.manager || '-'}</span>
                     </td>
                     <td className="align-center">
-                      <span className="count-badge employees-badge">{store.employeeCount || 0}</span>
+                      <span className="count-badge employees-badge">{employeeCountByStore[store.id] || 0}</span>
                     </td>
                     <td className="align-center">
                       <span className="count-badge products-badge">{store.productCount || 0}</span>
