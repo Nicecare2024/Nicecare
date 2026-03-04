@@ -147,7 +147,8 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
     }
 
     if (formData.imei && !validateIMEI(formData.imei)) {
-      setWarning('IMEI should be 15 digits. Proceeding anyway...');
+      setError('IMEI must be exactly 15 digits');
+      return;
     }
 
     onSave(formData);
@@ -382,6 +383,8 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
                         placeholder="15-digit IMEI"
                         value={formData.imei}
                         onChange={handleChange}
+                        maxLength={15}
+                        inputMode="numeric"
                       />
                     </div>
                     <div>

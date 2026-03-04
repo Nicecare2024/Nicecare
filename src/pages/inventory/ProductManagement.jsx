@@ -1,8 +1,17 @@
 import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { useProducts } from '../../hooks/useProducts';
 import { useStores } from '../../hooks/useStores';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 export default function ProductManagement() {
+  // remove side gaps by adding class to body when this page is active
+  useEffect(() => {
+    document.body.classList.add('edge-to-edge-page');
+    return () => {
+      document.body.classList.remove('edge-to-edge-page');
+    };
+  }, []);
+
   const formCardRef = useRef(null);
   const [filterStore, setFilterStore] = useState('');
   const { products, loading, error, lowStockProducts, addProduct, updateProduct, updateStock, deleteProduct } = useProducts(filterStore || null);
@@ -27,6 +36,7 @@ export default function ProductManagement() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -164,14 +174,18 @@ export default function ProductManagement() {
   }
 
   async function handleDelete(productId, productName) {
-    if (!window.confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`)) {
-      return;
-    }
+    setDeleteConfirm({ id: productId, name: productName });
+  }
+
+  async function confirmDelete() {
+    if (!deleteConfirm) return;
 
     try {
-      await deleteProduct(productId);
+      await deleteProduct(deleteConfirm.id);
+      setDeleteConfirm(null);
     } catch (err) {
       alert('Failed to delete product: ' + err.message);
+      setDeleteConfirm(null);
     }
   }
 
@@ -195,13 +209,37 @@ export default function ProductManagement() {
 
   return (
     <main className="dashboard-content">
+      <ConfirmDialog
+        isOpen={!!deleteConfirm}
+        title="Delete Product"
+        message={`Are you sure you want to delete "${deleteConfirm?.name}"? This action cannot be undone.`}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteConfirm(null)}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
+
       <div className="page-header">
         <div>
           <h1>Product Management</h1>
           <p>Manage your product catalog and inventory</p>
         </div>
 
-        {stores.length === 0 && (
+        {showForm && (
+          <button
+            className="btn btn-outline"
+            onClick={resetForm}
+            title="Close form"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        )}
+
+        {stores?.length === 0 && (
           <div className="alert alert-warning">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
@@ -436,11 +474,11 @@ export default function ProductManagement() {
             </div>
 
             <div className="form-actions">
-              <button type="button" className="btn btn-outline" onClick={resetForm}>
-                Cancel
-              </button>
               <button type="submit" className="btn btn-primary" disabled={submitting}>
                 {submitting ? 'Saving...' : editingProduct ? 'Update Product' : 'Add Product'}
+              </button>
+              <button type="button" className="btn btn-outline" onClick={resetForm}>
+                Cancel
               </button>
             </div>
           </form>
@@ -474,7 +512,7 @@ export default function ProductManagement() {
           ))}
         </select>
 
-        {stores.length > 0 && (
+        {stores?.length > 0 && (
           <button className="btn btn-primary" onClick={() => setShowForm(true)}>
             + Add Product
           </button>
@@ -501,7 +539,7 @@ export default function ProductManagement() {
             </svg>
             <h3>No products found</h3>
             <p>{searchTerm ? 'Try a different search term' : 'Add your first product to get started'}</p>
-            {!searchTerm && stores.length > 0 && (
+            {!searchTerm && stores?.length > 0 && (
               <button className="btn btn-primary" onClick={() => setShowForm(true)}>
                 + Add Product
               </button>
