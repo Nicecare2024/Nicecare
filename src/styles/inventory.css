@@ -7791,3 +7791,40 @@ html::after,
 [data-theme="dark"] .popup-doc-button {
   background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
 }
+
+/* ===== Additional Utility Styles for CRMPage ===== */
+
+/* small helper used by CRMPage for the add button */
+.crm-controls {
+  margin: 1rem 0;
+  display: flex;
+  justify-content: flex-end;
+}
+.crm-controls .btn {
+  font-weight: 600;
+  padding: 8px 18px;
+  box-shadow: var(--shadow-sm);
+}
+.crm-controls .btn:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* pagination controls at bottom of customer table */
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 12px 18px;
+}
+.pagination .btn {
+  padding: 6px 12px;
+}
+.pagination .btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.pagination .page-number {
+  font-size: 13px;
+  color: var(--text-primary);
+}
