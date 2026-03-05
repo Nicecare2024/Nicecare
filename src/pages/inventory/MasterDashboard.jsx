@@ -15,6 +15,16 @@ export default function MasterDashboard() {
     return <Navigate to="/inventory/pos" replace />;
   }
 
+  return (
+    <MasterDashboardContent
+      userProfile={userProfile}
+      isMaster={isMaster}
+      isManager={isManager}
+    />
+  );
+}
+
+function MasterDashboardContent({ userProfile, isMaster, isManager }) {
   const { stores, loading: storesLoading } = useStores();
   const { employees, loading: employeesLoading } = useEmployees();
   const { products, lowStockProducts, loading: productsLoading } = useProducts();

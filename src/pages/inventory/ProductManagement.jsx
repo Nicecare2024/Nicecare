@@ -13,7 +13,6 @@ export default function ProductManagement() {
     };
   }, []);
 
-  const formCardRef = useRef(null);
   const { userProfile } = useInventoryAuth();
   const isMaster = userProfile?.role === 'master';
   const isManager = userProfile?.role === 'manager';
@@ -21,6 +20,18 @@ export default function ProductManagement() {
   if (!isMaster && !isManager) {
     return <Navigate to="/inventory/pos" replace />;
   }
+
+  return (
+    <ProductManagementContent
+      userProfile={userProfile}
+      isMaster={isMaster}
+      isManager={isManager}
+    />
+  );
+}
+
+function ProductManagementContent({ userProfile, isMaster, isManager }) {
+  const formCardRef = useRef(null);
 
   const [filterStore, setFilterStore] = useState('');
   const managerStoreId = isManager ? userProfile?.assignedStoreId || null : null;

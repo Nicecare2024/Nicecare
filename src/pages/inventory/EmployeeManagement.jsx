@@ -21,6 +21,17 @@ export default function EmployeeManagement() {
     return <Navigate to="/inventory/pos" replace />;
   }
 
+  return (
+    <EmployeeManagementContent
+      userProfile={userProfile}
+      isMaster={isMaster}
+      isManager={isManager}
+    />
+  );
+}
+
+function EmployeeManagementContent({ userProfile, isMaster, isManager }) {
+  const { userProfile } = useInventoryAuth();
   const { employees, loading, error, creating, createEmployee, updateEmployee, toggleEmployeeActive, deleteEmployee } = useEmployees();
   const { stores } = useStores();
   const [showForm, setShowForm] = useState(false);

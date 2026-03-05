@@ -40,6 +40,18 @@ export default function SalesReports() {
     return <Navigate to="/inventory/pos" replace />;
   }
 
+  return (
+    <SalesReportsContent
+      userProfile={userProfile}
+      isMaster={isMaster}
+      isManager={isManager}
+    />
+  );
+}
+
+function SalesReportsContent({ userProfile, isMaster, isManager }) {
+  const { userProfile } = useInventoryAuth();
+
   const { stores } = useStores();
   const [filterStore, setFilterStore] = useState('');
   const [dateRange, setDateRange] = useState({
