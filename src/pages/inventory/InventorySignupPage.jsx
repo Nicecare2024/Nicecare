@@ -71,12 +71,6 @@ export default function InventorySignupPage() {
   const masterPasswordStrength = calculatePasswordStrength(password);
   const employeePasswordStrength = calculatePasswordStrength(employeePassword);
 
-  useEffect(() => {
-    if (initialInviteCode && activeTab === 'employee') {
-      handleCheckInvitation(initialInviteCode);
-    }
-  }, [initialInviteCode, activeTab, handleCheckInvitation]);
-
   const handleCheckInvitation = useCallback(async (code) => {
     if (!code || code.length < 8) return;
     
@@ -99,6 +93,12 @@ export default function InventorySignupPage() {
       setCheckingInvite(false);
     }
   }, [checkInvitation]);
+
+  useEffect(() => {
+    if (initialInviteCode && activeTab === 'employee') {
+      handleCheckInvitation(initialInviteCode);
+    }
+  }, [initialInviteCode, activeTab, handleCheckInvitation]);
 
   async function handleMasterSubmit(e) {
     e.preventDefault();

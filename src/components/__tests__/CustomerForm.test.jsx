@@ -78,7 +78,7 @@ describe('CustomerForm', () => {
       render(<CustomerForm onSubmit={vi.fn()} loading={false} />);
 
       const minimalButton = screen.getByRole('button', { name: /minimal/i });
-      expect(minimalButton).toHaveClass('active');
+      expect(minimalButton).toHaveClass('bg-blue-600');
     });
 
     it('switches to detailed mode when clicked', async () => {
@@ -88,7 +88,7 @@ describe('CustomerForm', () => {
       const detailedButton = screen.getByRole('button', { name: /detailed/i });
       await user.click(detailedButton);
 
-      expect(detailedButton).toHaveClass('active');
+      expect(detailedButton).toHaveClass('bg-blue-600');
     });
 
     it('shows additional fields in detailed mode', async () => {
