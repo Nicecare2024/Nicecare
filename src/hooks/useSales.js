@@ -16,8 +16,12 @@ export function useSales(storeId = null, dateRange = null) {
 
   const { currentUser, userProfile } = useInventoryAuth();
 
+  const startTime = dateRange && dateRange.start ? dateRange.start.getTime() : null;
+  const endTime = dateRange && dateRange.end ? dateRange.end.getTime() : null;
+
   useEffect(() => {
     if (!currentUser) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- guard clause reset
       setSales([]);
       setLoading(false);
       return;
@@ -69,7 +73,7 @@ export function useSales(storeId = null, dateRange = null) {
     });
 
     return () => unsubscribe();
-  }, [currentUser, userProfile, storeId, dateRange?.start?.getTime(), dateRange?.end?.getTime()]);
+  }, [currentUser, userProfile, storeId, startTime, endTime]);
 
   async function createSale(saleData) {
     if (!currentUser) throw new Error('Not authenticated');

@@ -21,6 +21,7 @@ function Confetti() {
         shape: Math.random() > 0.5 ? 'circle' : 'square',
       });
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time init
     setParticles(newParticles);
   }, []);
 

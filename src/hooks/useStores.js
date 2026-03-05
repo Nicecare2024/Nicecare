@@ -11,6 +11,7 @@ export function useStores() {
 
   useEffect(() => {
     if (!currentUser || userProfile?.role !== 'master') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- guard clause reset
       setStores([]);
       setLoading(false);
       return;

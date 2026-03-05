@@ -77,7 +77,7 @@ export default function CRMPage() {
   async function handleUpdateStatus(customerId, newStatus) {
     try {
       await updateCustomerStatus(customerId, newStatus);
-    } catch (err) {
+    } catch (_err) {
       alert('Failed to update status. Please try again.');
     }
   }
@@ -85,7 +85,7 @@ export default function CRMPage() {
   async function handleDeleteCustomer(customerId) {
     try {
       await deleteCustomer(customerId);
-    } catch (err) {
+    } catch (_err) {
       alert('Failed to delete customer. Please try again.');
     }
   }

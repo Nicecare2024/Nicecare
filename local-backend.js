@@ -80,7 +80,7 @@ function initSSE(res) {
             res.write(`data: ${JSON.stringify({ ...data, done: true })}\n\n`);
             res.end();
         },
-        sendError(message, statusCode = 500) {
+        sendError(message, _statusCode = 500) {
             // Headers already sent (SSE stream open) – send error as an event
             res.write(`data: ${JSON.stringify({ error: message, done: true })}\n\n`);
             res.end();

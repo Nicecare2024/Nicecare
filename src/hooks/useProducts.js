@@ -12,6 +12,7 @@ export function useProducts(storeId = null) {
 
   useEffect(() => {
     if (!currentUser) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- guard clause reset
       setProducts([]);
       setLoading(false);
       return;

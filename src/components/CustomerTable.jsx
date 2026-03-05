@@ -73,8 +73,11 @@ export default function CustomerTable({ customers, onUpdateStatus, onUpdateCusto
   useEffect(() => {
     const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage) || 1;
     if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
+      // Defer state update to avoid synchronous setState inside effect which can cause cascading renders
+      const t = setTimeout(() => setCurrentPage(totalPages), 0);
+      return () => clearTimeout(t);
     }
+    return undefined;
   }, [filteredCustomers, currentPage]);
 
   const paginatedCustomers = useMemo(() => {
@@ -95,7 +98,7 @@ export default function CustomerTable({ customers, onUpdateStatus, onUpdateCusto
   }
 
   // Check if customer has detailed data
-  function hasDetailedData(customer) {
+  function _hasDetailedData(customer) {
     return (
       customer.deviceType ||
       customer.brand ||

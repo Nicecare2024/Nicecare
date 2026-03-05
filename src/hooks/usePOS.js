@@ -49,6 +49,11 @@ export function usePOS(storeId) {
     });
   }, []);
 
+  // Remove item from cart
+  const removeFromCart = useCallback((productId) => {
+    setCart((prevCart) => prevCart.filter((item) => item.productId !== productId));
+  }, []);
+
   // Update item quantity in cart
   const updateCartItemQuantity = useCallback((productId, quantity) => {
     if (quantity <= 0) {
@@ -63,12 +68,7 @@ export function usePOS(storeId) {
           : item
       )
     );
-  }, []);
-
-  // Remove item from cart
-  const removeFromCart = useCallback((productId) => {
-    setCart((prevCart) => prevCart.filter((item) => item.productId !== productId));
-  }, []);
+  }, [removeFromCart]);
 
   // Clear cart
   const clearCart = useCallback(() => {

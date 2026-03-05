@@ -69,9 +69,10 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
     costParts: true,
   });
 
-  // Initialize form data from customer
+  // Initialize form data from customer prop
   useEffect(() => {
     if (customer) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing state from prop
       setFormData({
         name: customer.name || '',
         email: customer.email || '',
