@@ -50,8 +50,6 @@ export default function SalesReports() {
 }
 
 function SalesReportsContent({ userProfile, isMaster, isManager }) {
-  const { userProfile } = useInventoryAuth();
-
   const { stores } = useStores();
   const [filterStore, setFilterStore] = useState('');
   const [dateRange, setDateRange] = useState({

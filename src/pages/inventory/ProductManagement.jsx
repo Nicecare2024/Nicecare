@@ -24,13 +24,12 @@ export default function ProductManagement() {
   return (
     <ProductManagementContent
       userProfile={userProfile}
-      isMaster={isMaster}
       isManager={isManager}
     />
   );
 }
 
-function ProductManagementContent({ userProfile, isMaster, isManager }) {
+function ProductManagementContent({ userProfile, isManager }) {
   const formCardRef = useRef(null);
 
   const [filterStore, setFilterStore] = useState('');

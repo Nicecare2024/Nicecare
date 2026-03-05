@@ -31,7 +31,6 @@ export default function EmployeeManagement() {
 }
 
 function EmployeeManagementContent({ userProfile, isMaster, isManager }) {
-  const { userProfile } = useInventoryAuth();
   const { employees, loading, error, creating, createEmployee, updateEmployee, toggleEmployeeActive, deleteEmployee } = useEmployees();
   const { stores } = useStores();
   const [showForm, setShowForm] = useState(false);
@@ -49,17 +48,6 @@ function EmployeeManagementContent({ userProfile, isMaster, isManager }) {
   const [filterStore, setFilterStore] = useState('');
   const [filterRole, setFilterRole] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
-
-  useEffect(() => {
-    if (isManager && !editingEmployee) {
-      setFormData((prev) => ({
-        ...prev,
-        role: 'member',
-        storeId: userProfile?.assignedStoreId || '',
-        storeName: userProfile?.assignedStoreName || '',
-      }));
-    }
-  }, [isManager, userProfile, editingEmployee]);
 
   function resetForm() {
     setFormData({
