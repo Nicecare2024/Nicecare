@@ -1,10 +1,8 @@
-// components/inventory/InventoryLayout.jsx
 import { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import InventoryChatbot from './InventoryChatbot';
 
 export default function InventoryLayout({ children }) {
-    // keep sidebar expansion state here so we can toggle the main-content margin
     const [isSidebarExpanded, setIsSidebarExpanded] = useState(
         window.innerWidth >= 768
     );
@@ -23,14 +21,16 @@ export default function InventoryLayout({ children }) {
     };
 
     return (
-        <div className="inventory-dashboard">
+        <div className="flex min-h-screen bg-slate-50 dark:bg-[#0a0f1a]">
             <Sidebar
                 isExpanded={isSidebarExpanded}
                 toggleSidebar={toggleSidebar}
             />
             <main
-                className={`main-content ${
-                    !isSidebarExpanded ? 'collapsed' : ''
+                className={`flex-1 flex flex-col min-h-screen overflow-x-hidden p-6 bg-[#f8f7fc] dark:bg-[#0f0b1f] transition-all duration-300 ease-in-out ${
+                    !isSidebarExpanded
+                        ? 'ml-0 w-full md:ml-[72px] md:w-[calc(100%-72px)]'
+                        : 'ml-[72px] w-[calc(100%-72px)] md:ml-[250px] md:w-[calc(100%-250px)]'
                 }`}
             >
                 {children}

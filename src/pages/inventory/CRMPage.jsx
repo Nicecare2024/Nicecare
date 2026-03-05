@@ -31,7 +31,6 @@ export default function CRMPage() {
   const [updatingCustomer, setUpdatingCustomer] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // disable body scroll while the add modal is visible
   useEffect(() => {
     if (showAddModal) {
       document.body.style.overflow = 'hidden';
@@ -55,7 +54,6 @@ export default function CRMPage() {
         payload.storeId = storeId;
       }
       await addCustomer(payload);
-      // only close modal after successful addition
       setShowAddModal(false);
     } catch (err) {
       alert(err.message || 'Failed to add customer. Please try again.');
@@ -91,17 +89,21 @@ export default function CRMPage() {
   }
 
   return (
-    <main className="dashboard-content">
-      {error && <div className="error-banner">{error}</div>}
+    <main className="min-h-screen p-4 md:p-6 bg-slate-50 dark:bg-[#0a0f1a]">
+      {error && (
+        <div className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg p-3 mb-4">
+          {error}
+        </div>
+      )}
 
       {isMaster && stores?.length > 0 && (
-        <div className="card store-filter-card" style={{ marginBottom: '1rem' }}>
-          <label htmlFor="crm-store-filter" style={{ marginRight: '0.5rem' }}>Store:</label>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 p-4 shadow-sm mb-4 flex items-center">
+          <label htmlFor="crm-store-filter" className="mr-2 text-sm font-medium text-slate-700 dark:text-gray-300">Store:</label>
           <select
             id="crm-store-filter"
             value={selectedStoreId || ''}
             onChange={(e) => setSelectedStoreId(e.target.value || null)}
-            style={{ padding: '0.35rem 0.75rem', borderRadius: 6 }}
+            className="px-3 py-1.5 rounded-md border border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All stores</option>
             {stores.map((s) => (
@@ -111,29 +113,30 @@ export default function CRMPage() {
         </div>
       )}
 
-      {/* control bar with add button */}
-      <div className="crm-controls">
-        <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
+      <div className="flex items-center mb-4">
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 font-medium transition-colors"
+          onClick={() => setShowAddModal(true)}
+        >
           ➕ Create New Customer Details
         </button>
       </div>
 
-      {/* modal for adding new customer */}
       {showAddModal && (
         <div
-          className="modal-overlay"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
           onClick={() => setShowAddModal(false)}
         >
           <div
-            className="modal-content"
+            className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-xl animate-fade-in"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
           >
-            <div className="modal-header">
-              <h3>➕ Add a New Customer Detail</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-gray-50">➕ Add a New Customer Detail</h3>
               <button
-                className="modal-close"
+                className="text-2xl leading-none text-slate-400 dark:text-gray-500 hover:text-slate-700 dark:hover:text-gray-300 bg-transparent border-none cursor-pointer"
                 onClick={() => setShowAddModal(false)}
                 aria-label="Close"
               >
@@ -146,9 +149,9 @@ export default function CRMPage() {
       )}
 
       {loading ? (
-        <div className="loading-container card">
-          <h3>Submitted Customer Details</h3>
-          <div className="loading">Loading...</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 p-6 shadow-sm text-center">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-gray-50 mb-4">Submitted Customer Details</h3>
+          <div className="text-slate-500 dark:text-gray-400">Loading...</div>
         </div>
       ) : (
         <CustomerTable

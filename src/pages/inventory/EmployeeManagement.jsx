@@ -4,7 +4,6 @@ import { useStores } from '../../hooks/useStores';
 import ConfirmDialog from '../../components/ConfirmDialog';
 
 export default function EmployeeManagement() {
-  // add body class to eliminate padding/gaps for this page
   useEffect(() => {
     document.body.classList.add('edge-to-edge-page');
     return () => {
@@ -135,7 +134,7 @@ export default function EmployeeManagement() {
     : employees;
 
   return (
-    <main className="dashboard-content">
+    <main className="p-4 md:p-6 lg:p-8 space-y-6 animate-fade-in">
       <ConfirmDialog
         isOpen={!!deleteConfirm}
         title="Remove Employee"
@@ -147,13 +146,13 @@ export default function EmployeeManagement() {
         variant="danger"
       />
 
-      <div className="page-header">
+      <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
         <div>
-          <h1>Employee Management</h1>
-          <p>Manage your store employees</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-gray-50">Employee Management</h1>
+          <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">Manage your store employees</p>
         </div>
         <button
-          className="btn btn-outline"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-700 disabled:opacity-50"
           onClick={() => setShowForm(!showForm)}
           disabled={stores.length === 0}
           title={showForm ? "Close form" : "Add new employee"}
@@ -170,20 +169,20 @@ export default function EmployeeManagement() {
       </div>
 
       {stores.length === 0 && (
-        <div className="alert alert-warning">
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-sm">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
             <line x1="12" y1="9" x2="12" y2="13" />
             <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
           You need to create at least one store before adding employees.
-          <a href="/inventory/stores" className="alert-link">Create a store</a>
+          <a href="/inventory/stores" className="font-semibold underline underline-offset-2 hover:text-amber-700 dark:hover:text-amber-300 ml-1">Create a store</a>
         </div>
       )}
 
       {/* New Employee Invitation Modal */}
       {newEmployeeCredentials && (
-        <div className="modal-overlay">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[1000] p-5 animate-fade-in">
           <ModalSuccessContent 
             credentials={newEmployeeCredentials} 
             onClose={() => setNewEmployeeCredentials(null)} 
@@ -193,20 +192,20 @@ export default function EmployeeManagement() {
 
       {/* Add/Edit Form */}
       {showForm && (
-        <div className="card form-card">
-          <h2>{editingEmployee ? 'Edit Employee' : 'Add New Employee'}</h2>
+        <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl p-5 shadow-card animate-fade-in-up">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-gray-50 mb-4">{editingEmployee ? 'Edit Employee' : 'Add New Employee'}</h2>
 
           {formError && (
-            <div className="alert alert-error">{formError}</div>
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm mb-4">{formError}</div>
           )}
 
           <form onSubmit={handleSubmit}>
-            <div className="form-grid">
-              <div className="form-group">
-                <label className="label">Full Name *</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-slate-700 dark:text-gray-300">Full Name *</label>
                 <input
                   type="text"
-                  className="input"
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-sm text-slate-900 dark:text-gray-50 placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g., John Smith"
@@ -214,11 +213,11 @@ export default function EmployeeManagement() {
                 />
               </div>
 
-              <div className="form-group">
-                <label className="label">Email {!editingEmployee && '*'}</label>
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-slate-700 dark:text-gray-300">Email {!editingEmployee && '*'}</label>
                 <input
                   type="email"
-                  className="input"
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-sm text-slate-900 dark:text-gray-50 placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="e.g., john@company.com"
@@ -226,25 +225,25 @@ export default function EmployeeManagement() {
                   required={!editingEmployee}
                 />
                 {editingEmployee && (
-                  <span className="input-hint">Email cannot be changed</span>
+                  <span className="text-xs text-slate-400 dark:text-gray-500">Email cannot be changed</span>
                 )}
               </div>
 
-              <div className="form-group">
-                <label className="label">Phone</label>
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-slate-700 dark:text-gray-300">Phone</label>
                 <input
                   type="tel"
-                  className="input"
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-sm text-slate-900 dark:text-gray-50 placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="e.g., (555) 123-4567"
                 />
               </div>
 
-              <div className="form-group">
-                <label className="label">Assigned Store *</label>
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-slate-700 dark:text-gray-300">Assigned Store *</label>
                 <select
-                  className="select"
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-sm text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                   value={formData.storeId}
                   onChange={(e) => handleStoreChange(e.target.value)}
                   required
@@ -259,11 +258,11 @@ export default function EmployeeManagement() {
               </div>
             </div>
 
-            <div className="form-actions">
-              <button type="submit" className="btn btn-primary" disabled={creating}>
+            <div className="flex items-center gap-3 pt-4">
+              <button type="submit" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50" disabled={creating}>
                 {creating ? 'Creating...' : editingEmployee ? 'Update Employee' : 'Create Employee'}
               </button>
-              <button type="button" className="btn btn-outline" onClick={resetForm}>
+              <button type="button" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-700" onClick={resetForm}>
                 Cancel
               </button>
             </div>
@@ -273,11 +272,11 @@ export default function EmployeeManagement() {
 
       {/* Filter */}
       {stores.length > 0 && (
-        <div className="filters-bar">
-          <div className="filter-group">
-            <label>Filter by Store:</label>
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-slate-600 dark:text-gray-400">Filter by Store:</label>
             <select
-              className="select"
+              className="px-3 py-2.5 border border-slate-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-sm text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
               value={filterStore}
               onChange={(e) => setFilterStore(e.target.value)}
             >
@@ -293,72 +292,76 @@ export default function EmployeeManagement() {
       )}
 
       {/* Employees List */}
-      <div className="card">
-        <div className="card-header">
-          <h2>Your Employees</h2>
-          <span className="badge">{filteredEmployees.length} employees</span>
+      <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl shadow-card overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-gray-700">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-gray-50">Your Employees</h2>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">{filteredEmployees.length} employees</span>
         </div>
 
         {loading ? (
-          <div className="loading-state">Loading employees...</div>
+          <div className="flex items-center justify-center p-12 text-slate-400 dark:text-gray-500">Loading employees...</div>
         ) : error ? (
-          <div className="error-state">{error}</div>
+          <div className="flex items-center justify-center p-12 text-red-600 dark:text-red-400">{error}</div>
         ) : filteredEmployees.length === 0 ? (
-          <div className="empty-state">
+          <div className="flex flex-col items-center justify-center p-12 text-center text-slate-400 dark:text-gray-500 space-y-3">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
               <circle cx="9" cy="7" r="4" />
               <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
               <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
-            <h3>No employees yet</h3>
-            <p>{filterStore ? 'No employees in this store' : 'Add employees to your stores'}</p>
+            <h3 className="text-lg font-semibold text-slate-700 dark:text-gray-300">No employees yet</h3>
+            <p className="text-sm">{filterStore ? 'No employees in this store' : 'Add employees to your stores'}</p>
             {!filterStore && stores.length > 0 && (
-              <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+              <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all bg-blue-600 hover:bg-blue-700 text-white mt-2" onClick={() => setShowForm(true)}>
                 + Add Employee
               </button>
             )}
           </div>
         ) : (
-          <div className="table-container">
-            <table className="data-table inventory-list-table">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
               <thead>
-                <tr>
-                  <th>Employee</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Assigned Store</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+                <tr className="border-b border-slate-100 dark:border-gray-700 bg-slate-50/50 dark:bg-gray-800/50">
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Employee</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Email</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Phone</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Assigned Store</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="text-center px-5 py-3 text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100 dark:divide-gray-700">
                 {filteredEmployees.map((employee) => (
-                  <tr key={employee.id} className={!employee.isActive ? 'inactive-row' : ''}>
-                    <td>
-                      <div className="employee-cell">
-                        <div className="avatar">
+                  <tr key={employee.id} className={`hover:bg-slate-50 dark:hover:bg-gray-700/50 transition-colors ${!employee.isActive ? 'opacity-60' : ''}`}>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold shrink-0">
                           {employee.displayName?.charAt(0).toUpperCase() || 'E'}
                         </div>
-                        <strong>{employee.displayName}</strong>
+                        <strong className="text-slate-900 dark:text-gray-50">{employee.displayName}</strong>
                       </div>
                     </td>
-                    <td>{employee.email}</td>
-                    <td>{employee.phone || '-'}</td>
-                    <td>
-                      <span className="store-badge">
+                    <td className="px-5 py-3 text-slate-600 dark:text-gray-300">{employee.email}</td>
+                    <td className="px-5 py-3 text-slate-500 dark:text-gray-400">{employee.phone || '-'}</td>
+                    <td className="px-5 py-3">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
                         {employee.assignedStoreName || 'Unassigned'}
                       </span>
                     </td>
-                    <td>
-                      <span className={`status-badge ${employee.isActive ? 'active' : 'inactive'}`}>
+                    <td className="px-5 py-3">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                        employee.isActive
+                          ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'
+                          : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                      }`}>
                         {employee.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </td>
-                    <td>
-                      <div className="action-buttons">
+                    <td className="text-center px-5 py-3">
+                      <div className="flex items-center gap-1 justify-center">
                         <button
-                          className="btn-icon"
+                          className="p-2 rounded-lg text-slate-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                           onClick={() => handleEdit(employee)}
                           title="Edit"
                         >
@@ -368,7 +371,11 @@ export default function EmployeeManagement() {
                           </svg>
                         </button>
                         <button
-                          className={`btn-icon ${employee.isActive ? 'warning' : 'success'}`}
+                          className={`p-2 rounded-lg transition-colors ${
+                            employee.isActive
+                              ? 'text-slate-400 dark:text-gray-500 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
+                              : 'text-slate-400 dark:text-gray-500 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20'
+                          }`}
                           onClick={() => handleToggleActive(employee)}
                           title={employee.isActive ? 'Deactivate' : 'Activate'}
                         >
@@ -385,7 +392,7 @@ export default function EmployeeManagement() {
                           )}
                         </button>
                         <button
-                          className="btn-icon danger"
+                          className="p-2 rounded-lg text-slate-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                           onClick={() => handleDelete(employee.id, employee.displayName)}
                           title="Delete"
                         >
@@ -407,7 +414,6 @@ export default function EmployeeManagement() {
   );
 }
 
-// Sub-component for the Success Modal to handle copy feedback
 function ModalSuccessContent({ credentials, onClose }) {
   const [copiedType, setCopiedType] = useState(null);
 
@@ -420,51 +426,59 @@ function ModalSuccessContent({ credentials, onClose }) {
   const signupLink = `${window.location.origin}/inventory/signup?type=employee&code=${credentials.inviteCode}`;
 
   return (
-    <div className="modal success-modal-container">
-      <div className="success-icon-wrapper">
-        <div className="success-circle-bg">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="success-svg">
+    <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl max-w-lg w-full shadow-xl animate-fade-in-scale overflow-hidden">
+      <div className="flex flex-col items-center pt-8 pb-4 px-6">
+        <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-4">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600 dark:text-emerald-400">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
         </div>
       </div>
 
-      <div className="modal-content-center">
-        <h2>Invitation Ready!</h2>
-        <p className="subtitle">Account created for <strong>{credentials.name}</strong>. Share the details below.</p>
+      <div className="text-center px-6 pb-4 space-y-2">
+        <h2 className="text-xl font-bold text-slate-900 dark:text-gray-50">Invitation Ready!</h2>
+        <p className="text-sm text-slate-500 dark:text-gray-400">Account created for <strong className="text-slate-900 dark:text-gray-50">{credentials.name}</strong>. Share the details below.</p>
         
-        <div className="credentials-card">
-          <div className="credential-row">
-            <div className="cred-info">
-              <label>Email Address</label>
-              <span>{credentials.email}</span>
+        <div className="bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-700 rounded-xl p-4 mt-4 space-y-3 text-left">
+          <div className="flex items-center justify-between">
+            <div>
+              <label className="text-xs font-medium text-slate-400 dark:text-gray-500 uppercase tracking-wider">Email Address</label>
+              <span className="block text-sm text-slate-900 dark:text-gray-50 mt-0.5">{credentials.email}</span>
             </div>
           </div>
 
-          <div className="credential-row">
-            <div className="cred-info">
-              <label>Invitation Code</label>
-              <span className="code-text">{credentials.inviteCode}</span>
+          <div className="border-t border-slate-200 dark:border-gray-700 pt-3 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <label className="text-xs font-medium text-slate-400 dark:text-gray-500 uppercase tracking-wider">Invitation Code</label>
+              <span className="block text-sm font-mono font-bold text-blue-600 dark:text-blue-400 mt-0.5">{credentials.inviteCode}</span>
             </div>
             <button 
-              className={`copy-pill-btn ${copiedType === 'code' ? 'copied' : ''}`}
+              className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                copiedType === 'code'
+                  ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'
+                  : 'bg-slate-200 dark:bg-gray-700 text-slate-600 dark:text-gray-300 hover:bg-slate-300 dark:hover:bg-gray-600'
+              }`}
               onClick={() => handleCopy(credentials.inviteCode, 'code')}
             >
               {copiedType === 'code' ? '✓ Copied!' : 'Copy'}
             </button>
           </div>
 
-          <div className="credential-row">
-            <div className="cred-info link-info">
-              <label>Direct Signup Link</label>
+          <div className="border-t border-slate-200 dark:border-gray-700 pt-3 flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <label className="text-xs font-medium text-slate-400 dark:text-gray-500 uppercase tracking-wider">Direct Signup Link</label>
               <input 
                 readOnly 
-                className="minimal-link-input"
+                className="block w-full text-xs text-slate-500 dark:text-gray-400 bg-transparent border-none p-0 mt-0.5 truncate focus:outline-none"
                 value={signupLink}
               />
             </div>
             <button 
-              className={`copy-pill-btn primary ${copiedType === 'link' ? 'copied' : ''}`}
+              className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                copiedType === 'link'
+                  ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
               onClick={() => handleCopy(signupLink, 'link')}
             >
               {copiedType === 'link' ? '✓ Copied!' : 'Copy Link'}
@@ -472,8 +486,8 @@ function ModalSuccessContent({ credentials, onClose }) {
           </div>
         </div>
 
-        <div className="invitation-notice">
-          <div className="notice-item">
+        <div className="pt-3 space-y-1.5 text-xs text-slate-400 dark:text-gray-500">
+          <div className="flex items-center justify-center gap-1.5">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
             </svg>
@@ -483,8 +497,8 @@ function ModalSuccessContent({ credentials, onClose }) {
         </div>
       </div>
 
-      <div className="modal-footer-simple">
-        <button className="btn-done-full" onClick={onClose}>
+      <div className="p-4 border-t border-slate-200 dark:border-gray-700">
+        <button className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all bg-blue-600 hover:bg-blue-700 text-white" onClick={onClose}>
           Return to Dashboard
         </button>
       </div>

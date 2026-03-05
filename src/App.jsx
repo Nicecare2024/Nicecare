@@ -23,9 +23,6 @@ import MemberPOS from './pages/inventory/MemberPOS';
 import MemberSales from './pages/inventory/MemberSales';
 import CRMPage from './pages/inventory/CRMPage';
 
-import './styles/theme.css';
-import './styles/landing.css';
-import './styles/inventory.css';
 
 function App() {
   return (

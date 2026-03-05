@@ -37,7 +37,6 @@ export default function InventorySignupPage() {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
-  // Password strength calculation
   const calculatePasswordStrength = (pwd) => {
     if (!pwd) return { strength: 'weak', score: 0 };
     
@@ -72,7 +71,6 @@ export default function InventorySignupPage() {
   const masterPasswordStrength = calculatePasswordStrength(password);
   const employeePasswordStrength = calculatePasswordStrength(employeePassword);
 
-  // Auto-check invitation code if provided in URL
   useEffect(() => {
     if (initialInviteCode && activeTab === 'employee') {
       handleCheckInvitation(initialInviteCode);
@@ -180,12 +178,43 @@ export default function InventorySignupPage() {
     }
   }
 
+  const strengthColor = (strength) => {
+    if (strength === 'weak') return '#ef4444';
+    if (strength === 'medium') return '#f59e0b';
+    return '#22c55e';
+  };
+
+  const barColor = (score, threshold, strength) => {
+    if (score >= threshold) {
+      if (threshold === 1) return strengthColor(strength);
+      if (threshold === 2) return strength === 'medium' ? '#f59e0b' : '#22c55e';
+      return '#22c55e';
+    }
+    return '#e5e7eb';
+  };
+
+  const inputClasses = "w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3.5 text-[0.9375rem] text-slate-900 transition-colors placeholder:text-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-50 dark:placeholder:text-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/20";
+
+  const eyeButtonStyles = {
+    position: 'absolute',
+    right: '12px',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '4px',
+    display: 'flex',
+    alignItems: 'center',
+    color: '#9ca3af'
+  };
+
   return (
-    <div className="auth-page inventory-auth">
+    <div className="grid min-h-screen grid-cols-1 bg-slate-50 md:grid-cols-[55%_45%] dark:bg-[#0a0f1a]">
       {/* Left Panel - Branding */}
-      <div className="auth-brand-panel inventory-brand">
-        <div className="auth-brand-content">
-          <Link to="/" className="back-to-home">
+      <div className="relative hidden overflow-hidden bg-gradient-to-br from-[#1e40af] via-[#3b82f6] to-[#0ea5e9] px-12 py-8 text-white md:flex md:flex-col">
+        <div className="relative z-10 flex h-full flex-col">
+          <Link to="/" className="inline-flex items-center gap-2 text-white/80 no-underline transition-colors hover:text-white">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="19" y1="12" x2="5" y2="12"/>
               <polyline points="12 19 5 12 12 5"/>
@@ -193,49 +222,49 @@ export default function InventorySignupPage() {
             Back to Home
           </Link>
           
-          <div className="brand-logo inventory-logo">
+          <div className="mt-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
               <line x1="3" y1="6" x2="21" y2="6"/>
               <path d="M16 10a4 4 0 0 1-8 0"/>
             </svg>
           </div>
-          <h1 className="brand-title">Inventory Management</h1>
-          <p className="brand-tagline">
+          <h1 className="mb-2 text-3xl font-bold">Inventory Management</h1>
+          <p className="mb-12 text-lg text-white/80">
             {activeTab === 'master' ? 'Create Your Master Account' : 'Join as an Employee'}
           </p>
 
-          <div className="signup-benefits">
+          <div className="mt-auto rounded-2xl bg-white/10 p-6 backdrop-blur-sm">
             {activeTab === 'master' ? (
               <>
-                <h3>What you'll get:</h3>
-                <ul>
-                  <li>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <h3 className="mb-4 text-sm uppercase tracking-wide opacity-90">What you'll get:</h3>
+                <ul className="m-0 flex list-none flex-col gap-3 p-0">
+                  <li className="flex items-center gap-3 text-[0.9375rem] opacity-90">
+                    <svg className="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     Unlimited store locations
                   </li>
-                  <li>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <li className="flex items-center gap-3 text-[0.9375rem] opacity-90">
+                    <svg className="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     Employee management with role-based access
                   </li>
-                  <li>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <li className="flex items-center gap-3 text-[0.9375rem] opacity-90">
+                    <svg className="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     Complete product catalog
                   </li>
-                  <li>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <li className="flex items-center gap-3 text-[0.9375rem] opacity-90">
+                    <svg className="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     Point of Sale system
                   </li>
-                  <li>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <li className="flex items-center gap-3 text-[0.9375rem] opacity-90">
+                    <svg className="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     Sales reports & analytics
@@ -244,28 +273,28 @@ export default function InventorySignupPage() {
               </>
             ) : (
               <>
-                <h3>How it works:</h3>
-                <ul>
-                  <li>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <h3 className="mb-4 text-sm uppercase tracking-wide opacity-90">How it works:</h3>
+                <ul className="m-0 flex list-none flex-col gap-3 p-0">
+                  <li className="flex items-center gap-3 text-[0.9375rem] opacity-90">
+                    <svg className="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     Get an invitation code from your employer
                   </li>
-                  <li>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <li className="flex items-center gap-3 text-[0.9375rem] opacity-90">
+                    <svg className="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     Enter the code to verify your invitation
                   </li>
-                  <li>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <li className="flex items-center gap-3 text-[0.9375rem] opacity-90">
+                    <svg className="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     Create or link your account
                   </li>
-                  <li>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <li className="flex items-center gap-3 text-[0.9375rem] opacity-90">
+                    <svg className="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     Start using the POS system
@@ -278,10 +307,10 @@ export default function InventorySignupPage() {
       </div>
 
       {/* Right Panel - Signup Form */}
-      <div className="auth-form-panel">
-        <div className="auth-form-container">
+      <div className="relative flex items-center justify-center bg-white p-6 md:p-8 dark:bg-gray-900">
+        <div className="w-full max-w-[400px]">
           <button 
-            className="theme-toggle"
+            className="absolute top-6 right-6 flex h-10 w-10 cursor-pointer items-center justify-center rounded-[10px] border border-slate-200 bg-slate-50 text-slate-600 transition-colors hover:border-blue-600 hover:bg-gray-100 dark:border-gray-700 dark:bg-[#0a0f1a] dark:text-gray-400 dark:hover:border-blue-400 dark:hover:bg-gray-700"
             onClick={toggleTheme}
             aria-label="Toggle theme"
           >
@@ -305,22 +334,22 @@ export default function InventorySignupPage() {
           </button>
 
           {/* Tab Switcher */}
-          <div className="auth-tabs">
+          <div className="mb-6 flex gap-2 rounded-xl border border-slate-200 bg-white p-1 dark:border-gray-700 dark:bg-gray-900">
             <button 
-              className={`auth-tab ${activeTab === 'master' ? 'active' : ''}`}
+              className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-[10px] border-0 py-3 text-sm font-medium transition-all ${activeTab === 'master' ? 'bg-slate-50 text-blue-600 shadow-sm dark:bg-[#0a0f1a] dark:text-blue-400' : 'bg-transparent text-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:text-gray-500 dark:hover:bg-[#0a0f1a] dark:hover:text-gray-50'}`}
               onClick={() => { setActiveTab('master'); setError(''); setSuccess(''); }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg className={activeTab === 'master' ? 'opacity-100' : 'opacity-70'} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
               </svg>
               Business Owner
             </button>
             <button 
-              className={`auth-tab ${activeTab === 'employee' ? 'active' : ''}`}
+              className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-[10px] border-0 py-3 text-sm font-medium transition-all ${activeTab === 'employee' ? 'bg-slate-50 text-blue-600 shadow-sm dark:bg-[#0a0f1a] dark:text-blue-400' : 'bg-transparent text-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:text-gray-500 dark:hover:bg-[#0a0f1a] dark:hover:text-gray-50'}`}
               onClick={() => { setActiveTab('employee'); setError(''); setSuccess(''); }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg className={activeTab === 'employee' ? 'opacity-100' : 'opacity-70'} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
               </svg>
@@ -329,7 +358,7 @@ export default function InventorySignupPage() {
           </div>
 
           {error && (
-            <div className="alert alert-error">
+            <div className="mb-6 flex items-center gap-2 rounded-lg border border-red-600 bg-red-100 px-4 py-3 text-sm text-red-600 dark:border-red-400 dark:bg-red-900/30 dark:text-red-400">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"/>
                 <line x1="12" y1="8" x2="12" y2="12"/>
@@ -340,7 +369,7 @@ export default function InventorySignupPage() {
           )}
 
           {success && (
-            <div className="alert alert-success">
+            <div className="mb-6 flex items-center gap-2 rounded-lg border border-emerald-600 bg-emerald-100 px-4 py-3 text-sm text-emerald-600 dark:border-emerald-400 dark:bg-emerald-900/30 dark:text-emerald-400">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                 <polyline points="22 4 12 14.01 9 11.01"/>
@@ -352,17 +381,17 @@ export default function InventorySignupPage() {
           {/* Master Signup Form */}
           {activeTab === 'master' && (
             <>
-              <div className="form-header">
-                <h2>Create Master Account</h2>
-                <p>Set up your business on our platform</p>
+              <div className="mb-8 text-center">
+                <h2 className="mb-2 text-[1.75rem] font-bold text-slate-900 dark:text-gray-50">Create Master Account</h2>
+                <p className="m-0 text-[0.9375rem] text-slate-600 dark:text-gray-400">Set up your business on our platform</p>
               </div>
 
-              <form onSubmit={handleMasterSubmit} className="auth-form">
-                <div className="form-group">
-                  <label className="label">Business Name</label>
+              <form onSubmit={handleMasterSubmit} className="space-y-5">
+                <div>
+                  <label className="mb-2 block text-[0.8125rem] font-semibold uppercase tracking-wide text-slate-600 dark:text-gray-400">Business Name</label>
                   <input
                     type="text"
-                    className="input"
+                    className={inputClasses}
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
                     placeholder="Your Business Name"
@@ -370,11 +399,11 @@ export default function InventorySignupPage() {
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="label">Email Address</label>
+                <div>
+                  <label className="mb-2 block text-[0.8125rem] font-semibold uppercase tracking-wide text-slate-600 dark:text-gray-400">Email Address</label>
                   <input
                     type="email"
-                    className="input"
+                    className={inputClasses}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@company.com"
@@ -383,12 +412,12 @@ export default function InventorySignupPage() {
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="label">Password</label>
+                <div>
+                  <label className="mb-2 block text-[0.8125rem] font-semibold uppercase tracking-wide text-slate-600 dark:text-gray-400">Password</label>
                   <div style={{ position: 'relative' }}>
                     <input
                       type={showPassword ? "text" : "password"}
-                      className="input"
+                      className={inputClasses}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Create a strong password"
@@ -399,19 +428,7 @@ export default function InventorySignupPage() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      style={{
-                        position: 'absolute',
-                        right: '12px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: '4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        color: '#9ca3af'
-                      }}
+                      style={eyeButtonStyles}
                       aria-label={showPassword ? "Hide password" : "Show password"}
                     >
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -420,11 +437,11 @@ export default function InventorySignupPage() {
                   {password && (
                     <>
                       <div style={{ display: 'flex', gap: '4px', marginTop: '8px' }}>
-                        <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: masterPasswordStrength.score >= 1 ? (masterPasswordStrength.strength === 'weak' ? '#ef4444' : masterPasswordStrength.strength === 'medium' ? '#f59e0b' : '#22c55e') : '#e5e7eb' }}></div>
-                        <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: masterPasswordStrength.score >= 2 ? (masterPasswordStrength.strength === 'medium' ? '#f59e0b' : '#22c55e') : '#e5e7eb' }}></div>
+                        <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: barColor(masterPasswordStrength.score, 1, masterPasswordStrength.strength) }}></div>
+                        <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: barColor(masterPasswordStrength.score, 2, masterPasswordStrength.strength) }}></div>
                         <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: masterPasswordStrength.score >= 3 ? '#22c55e' : '#e5e7eb' }}></div>
                       </div>
-                      <div style={{ fontSize: '12px', marginTop: '4px', color: masterPasswordStrength.strength === 'weak' ? '#ef4444' : masterPasswordStrength.strength === 'medium' ? '#f59e0b' : '#22c55e', fontWeight: '600' }}>
+                      <div style={{ fontSize: '12px', marginTop: '4px', color: strengthColor(masterPasswordStrength.strength), fontWeight: '600' }}>
                         {masterPasswordStrength.strength.charAt(0).toUpperCase() + masterPasswordStrength.strength.slice(1)}
                       </div>
                       <div style={{ fontSize: '11px', marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -445,12 +462,12 @@ export default function InventorySignupPage() {
                   )}
                 </div>
 
-                <div className="form-group">
-                  <label className="label">Confirm Password</label>
+                <div>
+                  <label className="mb-2 block text-[0.8125rem] font-semibold uppercase tracking-wide text-slate-600 dark:text-gray-400">Confirm Password</label>
                   <div style={{ position: 'relative' }}>
                     <input
                       type={showConfirmPassword ? "text" : "password"}
-                      className="input"
+                      className={inputClasses}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Confirm your password"
@@ -464,19 +481,7 @@ export default function InventorySignupPage() {
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      style={{
-                        position: 'absolute',
-                        right: '12px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: '4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        color: '#9ca3af'
-                      }}
+                      style={eyeButtonStyles}
                       aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                     >
                       {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -496,12 +501,12 @@ export default function InventorySignupPage() {
 
                 <button 
                   type="submit" 
-                  className="btn btn-full btn-inventory"
+                  className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border-0 bg-gradient-to-br from-blue-800 to-blue-500 px-6 py-3.5 text-base font-semibold text-white transition-all hover:not-disabled:-translate-y-px hover:not-disabled:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
                   disabled={loading}
                 >
                   {loading ? (
                     <>
-                      <span className="spinner"></span>
+                      <span className="inline-block h-[18px] w-[18px] animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
                       Creating Account...
                     </>
                   ) : (
@@ -515,19 +520,19 @@ export default function InventorySignupPage() {
           {/* Employee Signup Form */}
           {activeTab === 'employee' && (
             <>
-              <div className="form-header">
-                <h2>Join as Employee</h2>
-                <p>Enter your invitation code to get started</p>
+              <div className="mb-8 text-center">
+                <h2 className="mb-2 text-[1.75rem] font-bold text-slate-900 dark:text-gray-50">Join as Employee</h2>
+                <p className="m-0 text-[0.9375rem] text-slate-600 dark:text-gray-400">Enter your invitation code to get started</p>
               </div>
 
-              <form onSubmit={handleEmployeeSubmit} className="auth-form">
+              <form onSubmit={handleEmployeeSubmit} className="space-y-5">
                 {/* Invitation Code Field */}
-                <div className="form-group">
-                  <label className="label">Invitation Code</label>
-                  <div className="input-with-button">
+                <div>
+                  <label className="mb-2 block text-[0.8125rem] font-semibold uppercase tracking-wide text-slate-600 dark:text-gray-400">Invitation Code</label>
+                  <div className="flex gap-2">
                     <input
                       type="text"
-                      className="input"
+                      className={`flex-1 ${inputClasses}`}
                       value={inviteCode}
                       onChange={(e) => {
                         setInviteCode(e.target.value.toUpperCase());
@@ -539,7 +544,7 @@ export default function InventorySignupPage() {
                     />
                     <button 
                       type="button"
-                      className="btn btn-secondary"
+                      className="cursor-pointer whitespace-nowrap rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
                       onClick={() => handleCheckInvitation(inviteCode)}
                       disabled={checkingInvite || inviteCode.length < 8}
                     >
@@ -550,27 +555,27 @@ export default function InventorySignupPage() {
 
                 {/* Invitation Details */}
                 {invitationDetails && (
-                  <div className="invitation-details">
-                    <div className="invitation-verified">
+                  <div className="mb-4 rounded-xl border border-slate-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+                    <div className="mb-2 flex items-center gap-2 font-semibold text-emerald-600 dark:text-emerald-400">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                         <polyline points="22 4 12 14.01 9 11.01"/>
                       </svg>
                       Invitation Verified!
                     </div>
-                    <div className="invitation-info">
-                      <p><strong>Business:</strong> {invitationDetails.businessName}</p>
-                      <p><strong>Store:</strong> {invitationDetails.storeName}</p>
-                      <p><strong>Your Name:</strong> {invitationDetails.name}</p>
+                    <div className="flex flex-col gap-1.5">
+                      <p className="m-0 text-sm text-slate-600 dark:text-gray-400"><strong className="text-slate-900 dark:text-gray-50">Business:</strong> {invitationDetails.businessName}</p>
+                      <p className="m-0 text-sm text-slate-600 dark:text-gray-400"><strong className="text-slate-900 dark:text-gray-50">Store:</strong> {invitationDetails.storeName}</p>
+                      <p className="m-0 text-sm text-slate-600 dark:text-gray-400"><strong className="text-slate-900 dark:text-gray-50">Your Name:</strong> {invitationDetails.name}</p>
                     </div>
                   </div>
                 )}
 
-                <div className="form-group">
-                  <label className="label">Email Address</label>
+                <div>
+                  <label className="mb-2 block text-[0.8125rem] font-semibold uppercase tracking-wide text-slate-600 dark:text-gray-400">Email Address</label>
                   <input
                     type="email"
-                    className="input"
+                    className={inputClasses}
                     value={employeeEmail}
                     onChange={(e) => setEmployeeEmail(e.target.value)}
                     placeholder="Your email address"
@@ -579,16 +584,16 @@ export default function InventorySignupPage() {
                     autoComplete="email"
                   />
                   {invitationDetails && (
-                    <small className="input-hint">This is the email your employer used for the invitation</small>
+                    <small className="mt-1.5 block text-[0.8125rem] text-slate-400 dark:text-gray-500">This is the email your employer used for the invitation</small>
                   )}
                 </div>
 
-                <div className="form-group">
-                  <label className="label">Password</label>
+                <div>
+                  <label className="mb-2 block text-[0.8125rem] font-semibold uppercase tracking-wide text-slate-600 dark:text-gray-400">Password</label>
                   <div style={{ position: 'relative' }}>
                     <input
                       type={showEmployeePassword ? "text" : "password"}
-                      className="input"
+                      className={inputClasses}
                       value={employeePassword}
                       onChange={(e) => setEmployeePassword(e.target.value)}
                       placeholder="Create a password"
@@ -599,19 +604,7 @@ export default function InventorySignupPage() {
                     <button
                       type="button"
                       onClick={() => setShowEmployeePassword(!showEmployeePassword)}
-                      style={{
-                        position: 'absolute',
-                        right: '12px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: '4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        color: '#9ca3af'
-                      }}
+                      style={eyeButtonStyles}
                       aria-label={showEmployeePassword ? "Hide password" : "Show password"}
                     >
                       {showEmployeePassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -620,11 +613,11 @@ export default function InventorySignupPage() {
                   {employeePassword && (
                     <>
                       <div style={{ display: 'flex', gap: '4px', marginTop: '8px' }}>
-                        <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: employeePasswordStrength.score >= 1 ? (employeePasswordStrength.strength === 'weak' ? '#ef4444' : employeePasswordStrength.strength === 'medium' ? '#f59e0b' : '#22c55e') : '#e5e7eb' }}></div>
-                        <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: employeePasswordStrength.score >= 2 ? (employeePasswordStrength.strength === 'medium' ? '#f59e0b' : '#22c55e') : '#e5e7eb' }}></div>
+                        <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: barColor(employeePasswordStrength.score, 1, employeePasswordStrength.strength) }}></div>
+                        <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: barColor(employeePasswordStrength.score, 2, employeePasswordStrength.strength) }}></div>
                         <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: employeePasswordStrength.score >= 3 ? '#22c55e' : '#e5e7eb' }}></div>
                       </div>
-                      <div style={{ fontSize: '12px', marginTop: '4px', color: employeePasswordStrength.strength === 'weak' ? '#ef4444' : employeePasswordStrength.strength === 'medium' ? '#f59e0b' : '#22c55e', fontWeight: '600' }}>
+                      <div style={{ fontSize: '12px', marginTop: '4px', color: strengthColor(employeePasswordStrength.strength), fontWeight: '600' }}>
                         {employeePasswordStrength.strength.charAt(0).toUpperCase() + employeePasswordStrength.strength.slice(1)}
                       </div>
                       <div style={{ fontSize: '11px', marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -643,17 +636,17 @@ export default function InventorySignupPage() {
                       </div>
                     </>
                   )}
-                  <small className="input-hint">
+                  <small className="mt-1.5 block text-[0.8125rem] text-slate-400 dark:text-gray-500">
                     If you already have an account (e.g., CRM), use your existing password
                   </small>
                 </div>
 
-                <div className="form-group">
-                  <label className="label">Confirm Password</label>
+                <div>
+                  <label className="mb-2 block text-[0.8125rem] font-semibold uppercase tracking-wide text-slate-600 dark:text-gray-400">Confirm Password</label>
                   <div style={{ position: 'relative' }}>
                     <input
                       type={showEmployeeConfirmPassword ? "text" : "password"}
-                      className="input"
+                      className={inputClasses}
                       value={employeeConfirmPassword}
                       onChange={(e) => setEmployeeConfirmPassword(e.target.value)}
                       placeholder="Confirm your password"
@@ -667,19 +660,7 @@ export default function InventorySignupPage() {
                     <button
                       type="button"
                       onClick={() => setShowEmployeeConfirmPassword(!showEmployeeConfirmPassword)}
-                      style={{
-                        position: 'absolute',
-                        right: '12px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: '4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        color: '#9ca3af'
-                      }}
+                      style={eyeButtonStyles}
                       aria-label={showEmployeeConfirmPassword ? "Hide password" : "Show password"}
                     >
                       {showEmployeeConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -699,12 +680,12 @@ export default function InventorySignupPage() {
 
                 <button 
                   type="submit" 
-                  className="btn btn-full btn-inventory"
+                  className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border-0 bg-gradient-to-br from-blue-800 to-blue-500 px-6 py-3.5 text-base font-semibold text-white transition-all hover:not-disabled:-translate-y-px hover:not-disabled:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
                   disabled={loading || !invitationDetails}
                 >
                   {loading ? (
                     <>
-                      <span className="spinner"></span>
+                      <span className="inline-block h-[18px] w-[18px] animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
                       Setting Up Account...
                     </>
                   ) : (
@@ -715,14 +696,14 @@ export default function InventorySignupPage() {
             </>
           )}
 
-          <div className="auth-footer">
-            <p>
+          <div className="mt-8 text-center">
+            <p className="m-0 text-[0.9375rem] text-slate-600 dark:text-gray-400">
               Already have an account?{' '}
-              <Link to="/inventory/login">Sign in</Link>
+              <Link to="/inventory/login" className="font-medium text-blue-600 no-underline hover:underline dark:text-blue-400">Sign in</Link>
             </p>
           </div>
 
-          <p className="terms-text">
+          <p className="mt-4 text-center text-[0.8125rem] text-slate-400 dark:text-gray-500">
             By creating an account, you agree to our Terms of Service and Privacy Policy.
           </p>
         </div>

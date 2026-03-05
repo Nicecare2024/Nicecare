@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 
-// Constants for dropdown options
 const STATUS_OPTIONS = [
   'Select',
   'Device Received',
@@ -24,9 +23,7 @@ const REPAIR_TYPES = ['Repair', 'Diagnostic Only', 'Data Recovery'];
 const PRIORITY_LEVELS = ['Normal', 'Urgent', 'Same-day'];
 const PARTS_TYPES = ['OEM', 'Aftermarket'];
 
-// Initial form state with all fields
 const getInitialFormData = () => ({
-  // Basic customer info (minimal)
   name: '',
   email: '',
   phone: '',
@@ -35,29 +32,23 @@ const getInitialFormData = () => ({
   expectedDate: '',
   status: 'Select',
   notes: '',
-  // Extended customer info
   alternatePhone: '',
   customerType: '',
   preferredContact: '',
-  // Device information
   deviceType: '',
   brand: '',
   model: '',
   imei: '',
   carrier: '',
-  // Repair details
   issueCategory: '',
   issueDescription: '',
   repairType: '',
   priority: '',
-  // Cost & parts
   estimatedCost: '',
   advancePaid: '',
   partsType: '',
-  // Additional dates
   deviceReceivedDate: '',
   repairStartDate: '',
-  // Technical staff
   technicalStaffName: '',
 });
 
@@ -73,7 +64,6 @@ export default function CustomerForm({ onSubmit, loading }) {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Update submission date to today if it's an old autosave
         return { ...getInitialFormData(), ...parsed, submissionDate: new Date().toISOString().slice(0, 10) };
       } catch {
         return getInitialFormData();
@@ -90,16 +80,14 @@ export default function CustomerForm({ onSubmit, loading }) {
     costParts: true,
   });
 
-  // Persist form mode preference
   useEffect(() => {
     localStorage.setItem(FORM_MODE_KEY, formMode);
   }, [formMode]);
 
-  // Autosave form data
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(formData));
-    }, 500); // Debounce autosave by 500ms
+    }, 500);
     return () => clearTimeout(timeoutId);
   }, [formData]);
 
@@ -110,12 +98,11 @@ export default function CustomerForm({ onSubmit, loading }) {
   function handleChange(e) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setWarning(''); // Clear warning on change
+    setWarning('');
   }
 
-  // Validate IMEI format (15 digits)
   function validateIMEI(imei) {
-    if (!imei) return true; // Optional field
+    if (!imei) return true;
     return /^\d{15}$/.test(imei);
   }
 
@@ -124,7 +111,6 @@ export default function CustomerForm({ onSubmit, loading }) {
     setError('');
     setWarning('');
 
-    // Validate that either email or phone is provided
     if (!formData.email && !formData.phone) {
       setError('Please provide either an email or phone number');
       return;
@@ -132,25 +118,21 @@ export default function CustomerForm({ onSubmit, loading }) {
 
     const today = new Date().toISOString().slice(0, 10);
 
-    // Validate submission date is not in the future
     if (formData.submissionDate > today) {
       setError('Submission Date cannot be a future date');
       return;
     }
 
-    // Validate expected date is not before submission date
     if (formData.expectedDate && formData.expectedDate < formData.submissionDate) {
       setError('Expected Date cannot be earlier than Submission Date');
       return;
     }
 
-    // Validate status is selected
     if (formData.status === 'Select') {
       setError('Please select a valid status');
       return;
     }
 
-    // IMEI validation: block submission if present but not 15 digits
     if (formData.imei && !validateIMEI(formData.imei)) {
       setError('IMEI must be exactly 15 digits');
       return;
@@ -158,7 +140,6 @@ export default function CustomerForm({ onSubmit, loading }) {
 
     onSubmit(formData);
 
-    // Reset form and clear autosave
     const initialData = getInitialFormData();
     setFormData(initialData);
     localStorage.removeItem(AUTOSAVE_KEY);
@@ -173,107 +154,104 @@ export default function CustomerForm({ onSubmit, loading }) {
   }
 
   return (
-    <section className="card">
-      {/* Form Mode Toggle */}
-      <div className="form-mode-toggle">
+    <section className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 p-6 shadow-sm">
+      <div className="flex gap-2 mb-4">
         <button
           type="button"
-          className={`toggle-btn ${formMode === 'minimal' ? 'active' : ''}`}
+          className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${formMode === 'minimal' ? 'bg-blue-600 text-white border border-blue-600 dark:bg-blue-500 dark:border-blue-500' : 'border border-slate-300 dark:border-gray-600 text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-700'}`}
           onClick={() => setFormMode('minimal')}
         >
           📱 Minimal
         </button>
         <button
           type="button"
-          className={`toggle-btn ${formMode === 'detailed' ? 'active' : ''}`}
+          className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${formMode === 'detailed' ? 'bg-blue-600 text-white border border-blue-600 dark:bg-blue-500 dark:border-blue-500' : 'border border-slate-300 dark:border-gray-600 text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-700'}`}
           onClick={() => setFormMode('detailed')}
         >
           💻 Detailed
         </button>
       </div>
 
-      <h3>Add a New Customer Detail</h3>
+      <h3 className="text-lg font-semibold text-slate-900 dark:text-gray-50 mb-4">Add a New Customer Detail</h3>
 
       <form onSubmit={handleSubmit}>
-        {/* Basic Info - Always visible */}
-        <div className="row two">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="label" htmlFor="name">Name *</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="name">Name *</label>
             <input
               id="name"
               name="name"
-              className="input"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               value={formData.name}
               onChange={handleChange}
               required
             />
           </div>
           <div>
-            <label className="label" htmlFor="email">Email</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="email">Email</label>
             <input
               id="email"
               name="email"
               type="email"
-              className="input"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               value={formData.email}
               onChange={handleChange}
             />
           </div>
         </div>
 
-        <div className="row two">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="label" htmlFor="phone">Phone</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="phone">Phone</label>
             <input
               id="phone"
               name="phone"
-              className="input"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               value={formData.phone}
               onChange={handleChange}
             />
           </div>
           <div>
-            <label className="label" htmlFor="address">Address</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="address">Address</label>
             <input
               id="address"
               name="address"
-              className="input"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               value={formData.address}
               onChange={handleChange}
             />
           </div>
         </div>
 
-        {/* Extended Customer Info - Detailed mode only */}
         {formMode === 'detailed' && (
-          <div className="collapsible-section">
+          <div className="border border-slate-200 dark:border-gray-700 rounded-lg mb-4 overflow-hidden">
             <button
               type="button"
-              className="section-header"
+              className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-gray-800 hover:bg-slate-100 dark:hover:bg-gray-700 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors"
               onClick={() => toggleSection('customerInfo')}
             >
               <span>👤 Extended Customer Info</span>
-              <span className="toggle-icon">{expandedSections.customerInfo ? '▼' : '▶'}</span>
+              <span className="text-slate-400 dark:text-gray-500">{expandedSections.customerInfo ? '▼' : '▶'}</span>
             </button>
             {expandedSections.customerInfo && (
-              <div className="section-content">
-                <div className="row three">
+              <div className="p-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
-                    <label className="label" htmlFor="alternatePhone">Alternate Phone</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="alternatePhone">Alternate Phone</label>
                     <input
                       id="alternatePhone"
                       name="alternatePhone"
-                      className="input"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       value={formData.alternatePhone}
                       onChange={handleChange}
                     />
                   </div>
                   <div>
-                    <label className="label" htmlFor="customerType">Customer Type</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="customerType">Customer Type</label>
                     <select
                       id="customerType"
                       name="customerType"
-                      className="select"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       value={formData.customerType}
                       onChange={handleChange}
                     >
@@ -284,11 +262,11 @@ export default function CustomerForm({ onSubmit, loading }) {
                     </select>
                   </div>
                   <div>
-                    <label className="label" htmlFor="preferredContact">Preferred Contact</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="preferredContact">Preferred Contact</label>
                     <select
                       id="preferredContact"
                       name="preferredContact"
-                      className="select"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       value={formData.preferredContact}
                       onChange={handleChange}
                     >
@@ -304,26 +282,25 @@ export default function CustomerForm({ onSubmit, loading }) {
           </div>
         )}
 
-        {/* Device Information - Detailed mode only */}
         {formMode === 'detailed' && (
-          <div className="collapsible-section">
+          <div className="border border-slate-200 dark:border-gray-700 rounded-lg mb-4 overflow-hidden">
             <button
               type="button"
-              className="section-header"
+              className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-gray-800 hover:bg-slate-100 dark:hover:bg-gray-700 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors"
               onClick={() => toggleSection('deviceInfo')}
             >
               <span>📱 Device Information</span>
-              <span className="toggle-icon">{expandedSections.deviceInfo ? '▼' : '▶'}</span>
+              <span className="text-slate-400 dark:text-gray-500">{expandedSections.deviceInfo ? '▼' : '▶'}</span>
             </button>
             {expandedSections.deviceInfo && (
-              <div className="section-content">
-                <div className="row three">
+              <div className="p-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
-                    <label className="label" htmlFor="deviceType">Device Type</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="deviceType">Device Type</label>
                     <select
                       id="deviceType"
                       name="deviceType"
-                      className="select"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       value={formData.deviceType}
                       onChange={handleChange}
                     >
@@ -334,11 +311,11 @@ export default function CustomerForm({ onSubmit, loading }) {
                     </select>
                   </div>
                   <div>
-                    <label className="label" htmlFor="brand">Brand</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="brand">Brand</label>
                     <select
                       id="brand"
                       name="brand"
-                      className="select"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       value={formData.brand}
                       onChange={handleChange}
                     >
@@ -349,24 +326,24 @@ export default function CustomerForm({ onSubmit, loading }) {
                     </select>
                   </div>
                   <div>
-                    <label className="label" htmlFor="model">Model</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="model">Model</label>
                     <input
                       id="model"
                       name="model"
-                      className="input"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       placeholder="e.g., iPhone 13 Pro"
                       value={formData.model}
                       onChange={handleChange}
                     />
                   </div>
                 </div>
-                <div className="row two">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="label" htmlFor="imei">IMEI / Serial Number</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="imei">IMEI / Serial Number</label>
                     <input
                       id="imei"
                       name="imei"
-                      className="input"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       placeholder="15-digit IMEI"
                       value={formData.imei}
                       onChange={handleChange}
@@ -375,11 +352,11 @@ export default function CustomerForm({ onSubmit, loading }) {
                     />
                   </div>
                   <div>
-                    <label className="label" htmlFor="carrier">Carrier</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="carrier">Carrier</label>
                     <select
                       id="carrier"
                       name="carrier"
-                      className="select"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       value={formData.carrier}
                       onChange={handleChange}
                     >
@@ -395,26 +372,25 @@ export default function CustomerForm({ onSubmit, loading }) {
           </div>
         )}
 
-        {/* Repair Details - Detailed mode only */}
         {formMode === 'detailed' && (
-          <div className="collapsible-section">
+          <div className="border border-slate-200 dark:border-gray-700 rounded-lg mb-4 overflow-hidden">
             <button
               type="button"
-              className="section-header"
+              className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-gray-800 hover:bg-slate-100 dark:hover:bg-gray-700 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors"
               onClick={() => toggleSection('repairDetails')}
             >
               <span>🔧 Repair Details</span>
-              <span className="toggle-icon">{expandedSections.repairDetails ? '▼' : '▶'}</span>
+              <span className="text-slate-400 dark:text-gray-500">{expandedSections.repairDetails ? '▼' : '▶'}</span>
             </button>
             {expandedSections.repairDetails && (
-              <div className="section-content">
-                <div className="row three">
+              <div className="p-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
-                    <label className="label" htmlFor="issueCategory">Issue Category</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="issueCategory">Issue Category</label>
                     <select
                       id="issueCategory"
                       name="issueCategory"
-                      className="select"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       value={formData.issueCategory}
                       onChange={handleChange}
                     >
@@ -425,11 +401,11 @@ export default function CustomerForm({ onSubmit, loading }) {
                     </select>
                   </div>
                   <div>
-                    <label className="label" htmlFor="repairType">Repair Type</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="repairType">Repair Type</label>
                     <select
                       id="repairType"
                       name="repairType"
-                      className="select"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       value={formData.repairType}
                       onChange={handleChange}
                     >
@@ -440,11 +416,11 @@ export default function CustomerForm({ onSubmit, loading }) {
                     </select>
                   </div>
                   <div>
-                    <label className="label" htmlFor="priority">Priority</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="priority">Priority</label>
                     <select
                       id="priority"
                       name="priority"
-                      className="select"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       value={formData.priority}
                       onChange={handleChange}
                     >
@@ -455,23 +431,23 @@ export default function CustomerForm({ onSubmit, loading }) {
                     </select>
                   </div>
                 </div>
-                <div>
-                  <label className="label" htmlFor="issueDescription">Issue Description</label>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="issueDescription">Issue Description</label>
                   <textarea
                     id="issueDescription"
                     name="issueDescription"
-                    className="textarea"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors min-h-[80px] resize-y"
                     value={formData.issueDescription}
                     onChange={handleChange}
                     placeholder="Describe the issue in detail..."
                   />
                 </div>
                 <div>
-                  <label className="label" htmlFor="technicalStaffName">Technical Staff Name</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="technicalStaffName">Technical Staff Name</label>
                   <input
                     id="technicalStaffName"
                     name="technicalStaffName"
-                    className="input"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                     value={formData.technicalStaffName}
                     onChange={handleChange}
                     placeholder="Name of assigned technician"
@@ -482,50 +458,49 @@ export default function CustomerForm({ onSubmit, loading }) {
           </div>
         )}
 
-        {/* Cost & Parts - Detailed mode only */}
         {formMode === 'detailed' && (
-          <div className="collapsible-section">
+          <div className="border border-slate-200 dark:border-gray-700 rounded-lg mb-4 overflow-hidden">
             <button
               type="button"
-              className="section-header"
+              className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-gray-800 hover:bg-slate-100 dark:hover:bg-gray-700 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors"
               onClick={() => toggleSection('costParts')}
             >
               <span>💰 Cost & Parts</span>
-              <span className="toggle-icon">{expandedSections.costParts ? '▼' : '▶'}</span>
+              <span className="text-slate-400 dark:text-gray-500">{expandedSections.costParts ? '▼' : '▶'}</span>
             </button>
             {expandedSections.costParts && (
-              <div className="section-content">
-                <div className="row three">
+              <div className="p-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
-                    <label className="label" htmlFor="estimatedCost">Estimated Cost ($)</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="estimatedCost">Estimated Cost ($)</label>
                     <input
                       id="estimatedCost"
                       name="estimatedCost"
                       type="number"
-                      className="input"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       placeholder="0.00"
                       value={formData.estimatedCost}
                       onChange={handleChange}
                     />
                   </div>
                   <div>
-                    <label className="label" htmlFor="advancePaid">Advance Paid ($)</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="advancePaid">Advance Paid ($)</label>
                     <input
                       id="advancePaid"
                       name="advancePaid"
                       type="number"
-                      className="input"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       placeholder="0.00"
                       value={formData.advancePaid}
                       onChange={handleChange}
                     />
                   </div>
                   <div>
-                    <label className="label" htmlFor="partsType">Parts Type</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="partsType">Parts Type</label>
                     <select
                       id="partsType"
                       name="partsType"
-                      className="select"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       value={formData.partsType}
                       onChange={handleChange}
                     >
@@ -541,26 +516,25 @@ export default function CustomerForm({ onSubmit, loading }) {
           </div>
         )}
 
-        {/* Dates & Status - Always visible */}
-        <div className="row three">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
-            <label className="label" htmlFor="submissionDate">Submission Date *</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="submissionDate">Submission Date *</label>
             <input
               id="submissionDate"
               name="submissionDate"
               type="date"
-              className="input"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               value={formData.submissionDate}
               onChange={handleChange}
               required
             />
           </div>
           <div>
-            <label className="label" htmlFor="status">Status *</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="status">Status *</label>
             <select
               id="status"
               name="status"
-              className="select"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               value={formData.status}
               onChange={handleChange}
             >
@@ -570,39 +544,38 @@ export default function CustomerForm({ onSubmit, loading }) {
             </select>
           </div>
           <div>
-            <label className="label" htmlFor="expectedDate">Expected Date</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="expectedDate">Expected Date</label>
             <input
               id="expectedDate"
               name="expectedDate"
               type="date"
-              className="input"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               value={formData.expectedDate}
               onChange={handleChange}
             />
           </div>
         </div>
 
-        {/* Additional Dates - Detailed mode only */}
         {formMode === 'detailed' && (
-          <div className="row two">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="label" htmlFor="deviceReceivedDate">Device Received Date by Technical Staff</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="deviceReceivedDate">Device Received Date by Technical Staff</label>
               <input
                 id="deviceReceivedDate"
                 name="deviceReceivedDate"
                 type="date"
-                className="input"
+                className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                 value={formData.deviceReceivedDate}
                 onChange={handleChange}
               />
             </div>
             <div>
-              <label className="label" htmlFor="repairStartDate">Repair Start Date</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="repairStartDate">Repair Start Date</label>
               <input
                 id="repairStartDate"
                 name="repairStartDate"
                 type="date"
-                className="input"
+                className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                 value={formData.repairStartDate}
                 onChange={handleChange}
               />
@@ -610,26 +583,34 @@ export default function CustomerForm({ onSubmit, loading }) {
           </div>
         )}
 
-        <div>
-          <label className="label" htmlFor="notes">Notes</label>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1" htmlFor="notes">Notes</label>
           <textarea
             id="notes"
             name="notes"
-            className="textarea"
+            className="w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors min-h-[80px] resize-y"
             value={formData.notes}
             onChange={handleChange}
             placeholder="Add any additional notes here..."
           />
         </div>
 
-        {warning && <div className="warning-message">⚠️ {warning}</div>}
-        {error && <div className="error-message">{error}</div>}
+        {warning && <div className="text-amber-600 dark:text-amber-400 text-sm mt-2">⚠️ {warning}</div>}
+        {error && <div className="text-red-600 dark:text-red-400 text-sm mt-2">{error}</div>}
 
-        <div style={{ marginTop: '20px', display: 'flex', gap: '12px' }}>
-          <button type="submit" className="btn" disabled={loading}>
+        <div className="mt-5 flex gap-3">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loading}
+          >
             {loading ? '⏳ Adding...' : '➕ Add Customer'}
           </button>
-          <button type="button" className="btn-outline" onClick={handleReset}>
+          <button
+            type="button"
+            className="px-4 py-2 border border-slate-300 dark:border-gray-600 text-slate-700 dark:text-gray-300 rounded-lg hover:bg-slate-100 dark:hover:bg-gray-700 font-medium transition-colors"
+            onClick={handleReset}
+          >
             🗑️ Clear
           </button>
         </div>

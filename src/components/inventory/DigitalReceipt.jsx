@@ -1,13 +1,12 @@
 import { useRef, useEffect, useState } from 'react';
 
-// Confetti particle component
 function Confetti() {
   const [particles, setParticles] = useState([]);
-  
+
   useEffect(() => {
     const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
     const newParticles = [];
-    
+
     for (let i = 0; i < 50; i++) {
       newParticles.push({
         id: i,
@@ -26,11 +25,11 @@ function Confetti() {
   }, []);
 
   return (
-    <div className="confetti-container">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-[10001]">
       {particles.map((p) => (
         <div
           key={p.id}
-          className={`confetti-particle ${p.shape}`}
+          className={`absolute -top-5 opacity-0 animate-confetti-fall ${p.shape === 'circle' ? 'rounded-full' : 'rounded-[2px]'}`}
           style={{
             '--x': `${p.x}%`,
             '--size': `${p.size}px`,
@@ -38,6 +37,11 @@ function Confetti() {
             '--rotation': `${p.rotation}deg`,
             '--delay': `${p.delay}s`,
             '--duration': `${p.duration}s`,
+            left: `${p.x}%`,
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            background: p.color,
+            transform: `rotate(${p.rotation}deg)`,
           }}
         />
       ))}
@@ -49,16 +53,14 @@ export default function DigitalReceipt({ sale, storeName, onClose }) {
   const receiptRef = useRef(null);
   const [showConfetti, setShowConfetti] = useState(true);
 
-  // Stop confetti after animation completes
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowConfetti(false);
-    }, 4000); // Stop after 4 seconds
-    
+    }, 4000);
+
     return () => clearTimeout(timer);
   }, []);
 
-  // Handle Escape key to close
   useEffect(() => {
     function handleEscape(e) {
       if (e.key === 'Escape') {
@@ -175,7 +177,7 @@ Receipt #: ${sale.id?.slice(-8).toUpperCase()}
 =====================================
 
 ITEMS:
-${sale.items.map(item => 
+${sale.items.map(item =>
   `${item.productName}
   ${item.quantity} x ${formatCurrency(item.price)} = ${formatCurrency(item.subtotal)}`
 ).join('\n')}
@@ -206,13 +208,12 @@ Thank you for your purchase!
   }
 
   return (
-    <div className="modal-overlay sale-complete-overlay" onClick={onClose}>
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-overlay-fade-in" onClick={onClose}>
       {showConfetti && <Confetti />}
-      
-      <div className="modal receipt-modal sale-complete-modal" onClick={(e) => e.stopPropagation()}>
-        {/* Close Button */}
-        <button 
-          className="receipt-close-btn" 
+
+      <div className="relative max-w-[480px] w-[95%] max-h-[90vh] overflow-y-auto rounded-3xl bg-gradient-to-b from-slate-50 to-white dark:from-[#0a0f1a] dark:to-gray-900 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.1)] animate-modal-pop-in" onClick={(e) => e.stopPropagation()}>
+        <button
+          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/10 dark:bg-white/10 border border-slate-200 dark:border-gray-700 flex items-center justify-center cursor-pointer transition-all duration-200 z-10 text-slate-600 dark:text-gray-400 hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 hover:rotate-90"
           onClick={onClose}
           aria-label="Close receipt"
         >
@@ -222,42 +223,39 @@ Thank you for your purchase!
           </svg>
         </button>
 
-        {/* Success Animation Header */}
-        <div className="sale-complete-header">
-          <div className="success-icon-wrapper">
-            <div className="success-icon-ring"></div>
-            <div className="success-icon-ring ring-2"></div>
-            <div className="success-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" className="checkmark-path"/>
+        <div className="text-center pt-10 px-8 pb-6 bg-gradient-to-b from-emerald-500/10 to-transparent">
+          <div className="relative w-[100px] h-[100px] mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full border-[3px] border-emerald-500 opacity-0 animate-ring-pulse"></div>
+            <div className="absolute inset-0 rounded-full border-[3px] border-emerald-500 opacity-0 animate-ring-pulse [animation-delay:0.5s]"></div>
+            <div className="absolute inset-2.5 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center animate-icon-bounce shadow-[0_10px_30px_rgba(16,185,129,0.4),0_0_0_8px_rgba(16,185,129,0.1)]">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-10 h-10 text-white">
+                <polyline points="20 6 9 17 4 12" className="animate-draw-checkmark" style={{ strokeDasharray: 30, strokeDashoffset: 30 }} />
               </svg>
             </div>
           </div>
-          <h2 className="sale-complete-title">Sale Complete!</h2>
-          <p className="sale-complete-subtitle">Transaction processed successfully</p>
+          <h2 className="text-[1.75rem] font-bold text-slate-900 dark:text-gray-50 mb-2 animate-text-slide-up [animation-delay:0.3s] [animation-fill-mode:both]">Sale Complete!</h2>
+          <p className="text-base text-slate-600 dark:text-gray-400 animate-text-slide-up [animation-delay:0.4s] [animation-fill-mode:both]">Transaction processed successfully</p>
         </div>
 
-        <div className="receipt-container modern-receipt" ref={receiptRef}>
-          {/* Store Info */}
-          <div className="receipt-store-info">
-            <div className="store-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <div className="mx-6 bg-slate-50 dark:bg-[#0a0f1a] rounded-2xl border border-slate-200 dark:border-gray-700 overflow-hidden animate-receipt-slide-up [animation-delay:0.4s] [animation-fill-mode:both]" ref={receiptRef}>
+          <div className="text-center p-6 bg-gradient-to-b from-white to-slate-50 dark:from-gray-900 dark:to-[#0a0f1a] border-b border-dashed border-slate-200 dark:border-gray-700">
+            <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-blue-600 to-violet-500 rounded-xl flex items-center justify-center text-white">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                 <polyline points="9 22 9 12 15 12 15 22"/>
               </svg>
             </div>
-            <h3 className="store-name">{storeName || 'Store'}</h3>
-            <p className="receipt-date">{formatDate(sale.createdAt)}</p>
-            <div className="receipt-number">
-              <span className="label">Receipt</span>
-              <span className="value">#{sale.id?.slice(-8).toUpperCase()}</span>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-gray-50 mb-1">{storeName || 'Store'}</h3>
+            <p className="text-sm text-slate-600 dark:text-gray-400 mb-3">{formatDate(sale.createdAt)}</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900 rounded-[20px] text-sm">
+              <span className="text-slate-600 dark:text-gray-400">Receipt</span>
+              <span className="font-semibold text-blue-600 dark:text-blue-400 font-mono">#{sale.id?.slice(-8).toUpperCase()}</span>
             </div>
           </div>
 
-          {/* Items Section */}
-          <div className="receipt-items modern-items">
-            <div className="section-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <div className="px-6 py-4">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-gray-400 mb-3">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
                 <line x1="3" y1="6" x2="21" y2="6"/>
                 <path d="M16 10a4 4 0 0 1-8 0"/>
@@ -265,63 +263,61 @@ Thank you for your purchase!
               Items Purchased
             </div>
             {sale.items.map((item, index) => (
-              <div key={index} className="receipt-item modern-item">
-                <div className="item-info">
-                  <span className="item-name">{item.productName}</span>
-                  <span className="item-meta">{item.quantity} × {formatCurrency(item.price)}</span>
+              <div key={index} className="flex justify-between items-center p-3 mb-2 bg-white dark:bg-gray-900 rounded-[10px] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[-4px_0_0_theme(colors.blue.600)]">
+                <div className="flex flex-col gap-1">
+                  <span className="font-semibold text-slate-900 dark:text-gray-50 text-[0.95rem]">{item.productName}</span>
+                  <span className="text-[0.8rem] text-slate-600 dark:text-gray-400">{item.quantity} × {formatCurrency(item.price)}</span>
                 </div>
-                <span className="item-total">{formatCurrency(item.subtotal)}</span>
+                <span className="font-bold text-slate-900 dark:text-gray-50 text-base">{formatCurrency(item.subtotal)}</span>
               </div>
             ))}
           </div>
 
-          {/* Totals Section */}
-          <div className="receipt-totals modern-totals">
-            <div className="total-row">
-              <span className="label">Subtotal</span>
-              <span className="value">{formatCurrency(sale.subtotal)}</span>
+          <div className="px-6 py-4 bg-white dark:bg-gray-900 border-t border-dashed border-slate-200 dark:border-gray-700">
+            <div className="flex justify-between py-2">
+              <span className="text-slate-600 dark:text-gray-400">Subtotal</span>
+              <span className="font-medium text-slate-900 dark:text-gray-50">{formatCurrency(sale.subtotal)}</span>
             </div>
-            <div className="total-row">
-              <span className="label">Tax</span>
-              <span className="value">{formatCurrency(sale.tax)}</span>
+            <div className="flex justify-between py-2">
+              <span className="text-slate-600 dark:text-gray-400">Tax</span>
+              <span className="font-medium text-slate-900 dark:text-gray-50">{formatCurrency(sale.tax)}</span>
             </div>
-            <div className="total-row grand-total">
-              <span className="label">Total</span>
-              <span className="value">{formatCurrency(sale.total)}</span>
+            <div className="flex justify-between pt-3 mt-2 border-t-2 border-slate-200 dark:border-gray-700">
+              <span className="text-lg font-bold text-slate-900 dark:text-gray-50">Total</span>
+              <span className="text-xl font-extrabold text-emerald-500">{formatCurrency(sale.total)}</span>
             </div>
           </div>
 
-          {/* Payment Info */}
-          <div className="receipt-payment modern-payment">
-            <div className="payment-method-badge">
-              <div className="payment-icon">
+          <div className="px-6 py-4 flex flex-wrap gap-3">
+            <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-br from-indigo-500/10 to-violet-500/10 border border-indigo-500/20 rounded-xl flex-1 min-w-[140px]">
+              <div className="w-9 h-9 bg-blue-600 dark:bg-blue-400 rounded-lg flex items-center justify-center text-white">
                 {sale.paymentMethod === 'Cash' && (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[18px] h-[18px]">
                     <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
                     <line x1="1" y1="10" x2="23" y2="10"/>
                   </svg>
                 )}
                 {sale.paymentMethod === 'Card' && (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[18px] h-[18px]">
                     <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
                     <line x1="1" y1="10" x2="23" y2="10"/>
                   </svg>
                 )}
                 {sale.paymentMethod === 'UPI' && (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[18px] h-[18px]">
                     <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
                     <line x1="12" y1="18" x2="12.01" y2="18"/>
                   </svg>
                 )}
               </div>
-              <div className="payment-details">
-                <span className="payment-label">Paid via</span>
-                <span className="payment-value">{sale.paymentMethod}</span>
+              <div className="flex flex-col">
+                <span className="text-xs text-slate-600 dark:text-gray-400">Paid via</span>
+                <span className="font-semibold text-slate-900 dark:text-gray-50">{sale.paymentMethod}</span>
               </div>
             </div>
             {sale.customerName && sale.customerName !== 'Walk-in Customer' && (
-              <div className="customer-info">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <div className="flex items-center gap-2 px-4 py-3 bg-white dark:bg-gray-900 rounded-xl text-[0.9rem] text-slate-900 dark:text-gray-50">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[18px] h-[18px] text-slate-600 dark:text-gray-400">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                   <circle cx="12" cy="7" r="4"/>
                 </svg>
@@ -330,35 +326,33 @@ Thank you for your purchase!
             )}
           </div>
 
-          {/* Footer */}
-          <div className="receipt-footer modern-footer">
-            <div className="thank-you-message">
-              <span className="emoji">🎉</span>
-              <p>Thank you for your purchase!</p>
+          <div className="px-6 pt-4 pb-6 border-t border-dashed border-slate-200 dark:border-gray-700">
+            <div className="flex items-center justify-center gap-2 p-4 bg-gradient-to-br from-emerald-500/10 to-emerald-600/10 rounded-xl animate-thank-you-pulse">
+              <span className="text-2xl animate-emoji-bounce">🎉</span>
+              <p className="font-semibold text-emerald-500 m-0">Thank you for your purchase!</p>
             </div>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="receipt-actions modern-actions">
-          <button className="action-btn print-btn" onClick={handlePrint}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <div className="flex gap-3 p-6 bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-gray-700 animate-actions-slide-up [animation-delay:0.5s] [animation-fill-mode:both]">
+          <button className="flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-[#0a0f1a] text-slate-900 dark:text-gray-50 font-semibold text-[0.85rem] cursor-pointer transition-all duration-200 hover:bg-white hover:dark:bg-gray-800 hover:border-blue-600 hover:text-blue-600" onClick={handlePrint}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[22px] h-[22px]">
               <polyline points="6 9 6 2 18 2 18 9"/>
               <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
               <rect x="6" y="14" width="12" height="8"/>
             </svg>
             <span>Print</span>
           </button>
-          <button className="action-btn download-btn" onClick={handleDownload}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <button className="flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-[#0a0f1a] text-slate-900 dark:text-gray-50 font-semibold text-[0.85rem] cursor-pointer transition-all duration-200 hover:bg-white hover:dark:bg-gray-800 hover:border-violet-500 hover:text-violet-500" onClick={handleDownload}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[22px] h-[22px]">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
               <polyline points="7 10 12 15 17 10"/>
               <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
             <span>Download</span>
           </button>
-          <button className="action-btn new-sale-btn" onClick={onClose}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <button className="flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-none bg-gradient-to-br from-emerald-500 to-emerald-600 text-white font-semibold text-[0.85rem] cursor-pointer transition-all duration-200 shadow-[0_4px_12px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(16,185,129,0.4)]" onClick={onClose}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[22px] h-[22px]">
               <line x1="12" y1="5" x2="12" y2="19"/>
               <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>

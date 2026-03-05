@@ -14,30 +14,37 @@ const STATUS_OPTIONS = [
   'Unrepairable',
 ];
 
-// Helper to display value or N/A
 const displayValue = (value) => {
   if (value === undefined || value === null || value === '') {
-    return <span className="detail-value na">N/A</span>;
+    return <span className="text-sm text-slate-400 dark:text-gray-600 italic">N/A</span>;
   }
-  return <span className="detail-value">{value}</span>;
+  return <span className="text-sm text-slate-700 dark:text-gray-300">{value}</span>;
 };
 
-// Helper to format currency
 const formatCurrency = (value) => {
-  if (!value) return <span className="detail-value na">N/A</span>;
-  return <span className="detail-value">${parseFloat(value).toFixed(2)}</span>;
+  if (!value) return <span className="text-sm text-slate-400 dark:text-gray-600 italic">N/A</span>;
+  return <span className="text-sm text-slate-700 dark:text-gray-300">${parseFloat(value).toFixed(2)}</span>;
 };
 
-// Helper to get status badge class
-const getStatusClass = (status) => {
-  return status?.toLowerCase().replace(/\s+/g, '-') || '';
+const getStatusBadgeClasses = (status) => {
+  const base = 'inline-block px-2.5 py-1 rounded-full text-xs font-medium';
+  const map = {
+    'Device Received': 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    'Under Diagnosis': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+    'Waiting for Parts': 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+    'Repair in Progress': 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400',
+    'Quality Check': 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+    'Ready for Pickup': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+    'Delivered': 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+    'Cancelled': 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+    'Unrepairable': 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+  };
+  return `${base} ${map[status] || 'bg-slate-100 text-slate-700 dark:bg-gray-700 dark:text-gray-300'}`;
 };
 
-// Status badge component
 const StatusBadge = ({ status }) => {
-  const statusClass = getStatusClass(status);
   return (
-    <span className={`status-badge ${statusClass}`}>
+    <span className={getStatusBadgeClasses(status)}>
       {status}
     </span>
   );
@@ -50,7 +57,6 @@ export default function CustomerTable({ customers, onUpdateStatus, onUpdateCusto
   const [showEditModal, setShowEditModal] = useState(false);
   const [modalCustomer, setModalCustomer] = useState(null);
 
-  // pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -69,11 +75,9 @@ export default function CustomerTable({ customers, onUpdateStatus, onUpdateCusto
     });
   }, [customers, searchTerm]);
 
-  // adjust current page if filtered length changes
   useEffect(() => {
     const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage) || 1;
     if (currentPage > totalPages) {
-      // Defer state update to avoid synchronous setState inside effect which can cause cascading renders
       const t = setTimeout(() => setCurrentPage(totalPages), 0);
       return () => clearTimeout(t);
     }
@@ -97,7 +101,6 @@ export default function CustomerTable({ customers, onUpdateStatus, onUpdateCusto
     });
   }
 
-  // Check if customer has detailed data
   function _hasDetailedData(customer) {
     return (
       customer.deviceType ||
@@ -186,83 +189,86 @@ export default function CustomerTable({ customers, onUpdateStatus, onUpdateCusto
 
   if (customers.length === 0) {
     return (
-      <section className="card">
-        <h3>Submitted Customer Details</h3>
-        <div className="empty">No records yet. Add your first customer!</div>
+      <section className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-gray-50 mb-4">Submitted Customer Details</h3>
+        <div className="text-center text-slate-400 dark:text-gray-500 py-8">No records yet. Add your first customer!</div>
       </section>
     );
   }
 
   return (
     <>
-    <section className="card">
-      <h3>Submitted Customer Details</h3>
+    <section className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 p-6 shadow-sm">
+      <h3 className="text-lg font-semibold text-slate-900 dark:text-gray-50 mb-4">Submitted Customer Details</h3>
 
-      <div className="search-bar">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <input
-          className="input"
+          className="flex-1 px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
           placeholder="🔍 Search by Name, Phone or Email..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <button className="btn" onClick={handleExport}>
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 font-medium transition-colors whitespace-nowrap"
+          onClick={handleExport}
+        >
           📊 Export to CSV
         </button>
       </div>
 
       {filteredCustomers.length === 0 ? (
-        <div className="empty">No matching records found</div>
+        <div className="text-center text-slate-400 dark:text-gray-500 py-8">No matching records found</div>
       ) : (
         <>
-        <div className="table-wrapper">
-          <table className="table">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
             <thead>
               <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Contact</th>
-                <th>Dates</th>
-                <th>Status</th>
-                <th>Notes</th>
-                <th>Action</th>
+                <th className="text-left px-4 py-3 bg-slate-50 dark:bg-gray-800 text-slate-600 dark:text-gray-400 border-b border-slate-200 dark:border-gray-700 font-medium"></th>
+                <th className="text-left px-4 py-3 bg-slate-50 dark:bg-gray-800 text-slate-600 dark:text-gray-400 border-b border-slate-200 dark:border-gray-700 font-medium">Name</th>
+                <th className="text-left px-4 py-3 bg-slate-50 dark:bg-gray-800 text-slate-600 dark:text-gray-400 border-b border-slate-200 dark:border-gray-700 font-medium">Contact</th>
+                <th className="text-left px-4 py-3 bg-slate-50 dark:bg-gray-800 text-slate-600 dark:text-gray-400 border-b border-slate-200 dark:border-gray-700 font-medium">Dates</th>
+                <th className="text-left px-4 py-3 bg-slate-50 dark:bg-gray-800 text-slate-600 dark:text-gray-400 border-b border-slate-200 dark:border-gray-700 font-medium">Status</th>
+                <th className="text-left px-4 py-3 bg-slate-50 dark:bg-gray-800 text-slate-600 dark:text-gray-400 border-b border-slate-200 dark:border-gray-700 font-medium">Notes</th>
+                <th className="text-left px-4 py-3 bg-slate-50 dark:bg-gray-800 text-slate-600 dark:text-gray-400 border-b border-slate-200 dark:border-gray-700 font-medium">Action</th>
               </tr>
             </thead>
             <tbody>
               {paginatedCustomers.map((customer) => (
                 <React.Fragment key={customer.id}>
-                  <tr>
-                    <td>
+                  <tr className="hover:bg-slate-50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3 border-b border-slate-100 dark:border-gray-700/50">
                       <button
-                        className="expand-btn"
+                        className="bg-transparent border-none cursor-pointer text-slate-400 dark:text-gray-500 hover:text-slate-700 dark:hover:text-gray-300 transition-colors"
                         onClick={() => toggleExpand(customer.id)}
                         title={expandedRows.has(customer.id) ? 'Collapse details' : 'Expand details'}
                       >
                         {expandedRows.has(customer.id) ? '▼' : '▶'}
                       </button>
                     </td>
-                    <td>
-                      <span className="customer-name">{customer.name}</span>
+                    <td className="px-4 py-3 border-b border-slate-100 dark:border-gray-700/50">
+                      <span className="font-semibold text-slate-900 dark:text-gray-50">{customer.name}</span>
                       {customer.customerType && (
-                        <span className="customer-type-tag">{customer.customerType}</span>
+                        <span className="ml-2 text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full">{customer.customerType}</span>
                       )}
                     </td>
-                    <td>
-                      <div className="contact-info">
-                        <span className="contact-phone">{customer.phone || '—'}</span>
-                        <span className="contact-email">{customer.email || '—'}</span>
+                    <td className="px-4 py-3 border-b border-slate-100 dark:border-gray-700/50">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-slate-700 dark:text-gray-300">{customer.phone || '—'}</span>
+                        <span className="text-slate-500 dark:text-gray-400 text-xs">{customer.email || '—'}</span>
                       </div>
                     </td>
-                    <td>
-                      <div className="date-info">
-                        <span className="date-label">In:</span> {customer.submissionDate}
+                    <td className="px-4 py-3 border-b border-slate-100 dark:border-gray-700/50">
+                      <div className="text-sm">
+                        <span className="text-slate-400 dark:text-gray-500 text-xs font-medium">In:</span> {customer.submissionDate}
                         <br />
-                        <span className="date-label">Due:</span> {customer.expectedDate || '—'}
+                        <span className="text-slate-400 dark:text-gray-500 text-xs font-medium">Due:</span> {customer.expectedDate || '—'}
                       </div>
                     </td>
-                    <td>
+                    <td className="px-4 py-3 border-b border-slate-100 dark:border-gray-700/50">
                       {editingStatusId === customer.id ? (
                         <select
-                          className="inline-select"
+                          className="px-2 py-1 border border-slate-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                           value={customer.status}
                           onChange={(e) => {
                             onUpdateStatus(customer.id, e.target.value);
@@ -278,8 +284,8 @@ export default function CustomerTable({ customers, onUpdateStatus, onUpdateCusto
                           ))}
                         </select>
                       ) : (
-                        <button 
-                          className="status-badge-btn"
+                        <button
+                          className="bg-transparent border-none cursor-pointer"
                           onClick={() => setEditingStatusId(customer.id)}
                           title="Click to change status"
                         >
@@ -287,19 +293,19 @@ export default function CustomerTable({ customers, onUpdateStatus, onUpdateCusto
                         </button>
                       )}
                     </td>
-                    <td>
-                      <span className="notes-preview">{customer.notes || '—'}</span>
+                    <td className="px-4 py-3 border-b border-slate-100 dark:border-gray-700/50">
+                      <span className="text-slate-500 dark:text-gray-400 text-sm max-w-[150px] truncate block">{customer.notes || '—'}</span>
                     </td>
-                    <td>
-                      <div className="action-buttons">
+                    <td className="px-4 py-3 border-b border-slate-100 dark:border-gray-700/50">
+                      <div className="flex gap-2">
                         <button
-                          className="btn-outline"
+                          className="px-3 py-1.5 text-sm border border-slate-300 dark:border-gray-600 text-slate-700 dark:text-gray-300 rounded-lg hover:bg-slate-100 dark:hover:bg-gray-700 font-medium transition-colors"
                           onClick={() => handleEdit(customer)}
                         >
                           ✏️ Edit
                         </button>
                         <button
-                          className="btn-outline btn-danger"
+                          className="px-3 py-1.5 text-sm border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 font-medium transition-colors"
                           onClick={() => handleDelete(customer.id)}
                         >
                           Delete
@@ -308,120 +314,115 @@ export default function CustomerTable({ customers, onUpdateStatus, onUpdateCusto
                     </td>
                   </tr>
                   {expandedRows.has(customer.id) && (
-                    <tr className="expanded-details">
+                    <tr className="bg-slate-50 dark:bg-gray-800/50">
                       <td colSpan="7">
-                        <div className="details-grid">
-                          {/* Customer Info */}
-                          <div className="detail-group">
-                            <h4>👤 Customer Info</h4>
-                            <div className="detail-item">
-                              <span className="detail-label">Customer Type</span>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+                          <div>
+                            <h4 className="text-sm font-semibold text-slate-700 dark:text-gray-300 mb-3 pb-2 border-b border-slate-200 dark:border-gray-700">👤 Customer Info</h4>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Customer Type</span>
                               {displayValue(customer.customerType)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Preferred Contact</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Preferred Contact</span>
                               {displayValue(customer.preferredContact)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Alternate Phone</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Alternate Phone</span>
                               {displayValue(customer.alternatePhone)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Address</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Address</span>
                               {displayValue(customer.address)}
                             </div>
                           </div>
 
-                          {/* Device Info */}
-                          <div className="detail-group">
-                            <h4>📱 Device Info</h4>
-                            <div className="detail-item">
-                              <span className="detail-label">Device Type</span>
+                          <div>
+                            <h4 className="text-sm font-semibold text-slate-700 dark:text-gray-300 mb-3 pb-2 border-b border-slate-200 dark:border-gray-700">📱 Device Info</h4>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Device Type</span>
                               {displayValue(customer.deviceType)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Brand / Model</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Brand / Model</span>
                               {displayValue(customer.brand && customer.model ? `${customer.brand} ${customer.model}` : customer.brand || customer.model)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">IMEI / Serial</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">IMEI / Serial</span>
                               {displayValue(customer.imei)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Carrier</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Carrier</span>
                               {displayValue(customer.carrier)}
                             </div>
                           </div>
 
-                          {/* Repair Details */}
-                          <div className="detail-group">
-                            <h4>🔧 Repair Details</h4>
-                            <div className="detail-item">
-                              <span className="detail-label">Issue Category</span>
+                          <div>
+                            <h4 className="text-sm font-semibold text-slate-700 dark:text-gray-300 mb-3 pb-2 border-b border-slate-200 dark:border-gray-700">🔧 Repair Details</h4>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Issue Category</span>
                               {displayValue(customer.issueCategory)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Repair Type</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Repair Type</span>
                               {displayValue(customer.repairType)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Priority</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Priority</span>
                               {displayValue(customer.priority)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Issue Description</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Issue Description</span>
                               {displayValue(customer.issueDescription)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Technical Staff</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Technical Staff</span>
                               {displayValue(customer.technicalStaffName)}
                             </div>
                           </div>
 
-                          {/* Cost & Parts */}
-                          <div className="detail-group">
-                            <h4>💰 Cost & Parts</h4>
-                            <div className="detail-item">
-                              <span className="detail-label">Estimated Cost</span>
+                          <div>
+                            <h4 className="text-sm font-semibold text-slate-700 dark:text-gray-300 mb-3 pb-2 border-b border-slate-200 dark:border-gray-700">💰 Cost & Parts</h4>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Estimated Cost</span>
                               {formatCurrency(customer.estimatedCost)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Advance Paid</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Advance Paid</span>
                               {formatCurrency(customer.advancePaid)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Balance Due</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Balance Due</span>
                               {customer.estimatedCost ? (
-                                <span className="detail-value">
+                                <span className="text-sm text-slate-700 dark:text-gray-300">
                                   ${(parseFloat(customer.estimatedCost || 0) - parseFloat(customer.advancePaid || 0)).toFixed(2)}
                                 </span>
                               ) : (
-                                <span className="detail-value na">N/A</span>
+                                <span className="text-sm text-slate-400 dark:text-gray-600 italic">N/A</span>
                               )}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Parts Type</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Parts Type</span>
                               {displayValue(customer.partsType)}
                             </div>
                           </div>
 
-                          {/* Additional Dates */}
-                          <div className="detail-group">
-                            <h4>📅 Timeline</h4>
-                            <div className="detail-item">
-                              <span className="detail-label">Submitted</span>
+                          <div>
+                            <h4 className="text-sm font-semibold text-slate-700 dark:text-gray-300 mb-3 pb-2 border-b border-slate-200 dark:border-gray-700">📅 Timeline</h4>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Submitted</span>
                               {displayValue(customer.submissionDate)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Device Received</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Device Received</span>
                               {displayValue(customer.deviceReceivedDate)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Repair Started</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Repair Started</span>
                               {displayValue(customer.repairStartDate)}
                             </div>
-                            <div className="detail-item">
-                              <span className="detail-label">Expected Completion</span>
+                            <div className="flex flex-col gap-0.5 mb-2">
+                              <span className="text-xs text-slate-400 dark:text-gray-500 font-medium">Expected Completion</span>
                               {displayValue(customer.expectedDate)}
                             </div>
                           </div>
@@ -434,21 +435,20 @@ export default function CustomerTable({ customers, onUpdateStatus, onUpdateCusto
             </tbody>
           </table>
         </div>
-        {/* pagination controls */}
         {filteredCustomers.length > itemsPerPage && (
-          <div className="pagination">
+          <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-slate-200 dark:border-gray-700">
             <button
-              className="btn"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={currentPage === 1}
               onClick={() => setCurrentPage((p) => p - 1)}
             >
               ◀ Prev
             </button>
-            <span className="page-number">
+            <span className="text-sm text-slate-600 dark:text-gray-400">
               Page {currentPage} of {Math.ceil(filteredCustomers.length / itemsPerPage)}
             </span>
             <button
-              className="btn"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={currentPage >= Math.ceil(filteredCustomers.length / itemsPerPage)}
               onClick={() => setCurrentPage((p) => p + 1)}
             >
@@ -460,8 +460,6 @@ export default function CustomerTable({ customers, onUpdateStatus, onUpdateCusto
       )}
     </section>
 
-      {/* render the edit modal directly; the component already handles its own overlay
-          avoiding a brief "popup inside a popup" which was caused by the outer wrapper */}
       {showEditModal && modalCustomer && (
         <EditCustomerModal
           customer={modalCustomer}

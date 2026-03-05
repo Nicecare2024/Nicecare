@@ -28,50 +28,54 @@ export default function Header() {
   };
 
   return (
-    <header 
-      className="landing-header"
-      style={{ 
-        backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff'
-      }}
-    >
-      <div className="landing-brand">
-        <div className="brand-icon-square">
+    <header className="sticky top-0 z-100 grid grid-cols-[auto_1fr_auto] items-center gap-3 md:gap-4 lg:gap-8 py-3.5 px-[3%] md:py-4 md:px-[4%] lg:py-5 lg:px-[5%] bg-white dark:bg-slate-900 backdrop-blur-[20px] border-b border-black/10 dark:border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 md:w-9 md:h-9 lg:w-11 lg:h-11 flex items-center justify-center transition-transform duration-300 hover:scale-105">
           <svg width="40" height="40" viewBox="0 0 100 100" fill="none">
             <rect x="10" y="10" width="80" height="80" rx="12" stroke="#3b82f6" strokeWidth="8" fill="none"/>
           </svg>
         </div>
-        <span className="brand-text-teal">CounterOne</span>
+        <span className="text-lg md:text-xl lg:text-2xl font-extrabold text-teal-500 dark:text-teal-400 tracking-tight">CounterOne</span>
       </div>
       <nav
         id="landing-nav"
-        className={`landing-nav ${navOpen ? 'open' : ''}`}
+        className={`${navOpen ? 'flex' : 'hidden'} lg:flex absolute lg:static top-[calc(100%+12px)] right-[5%] left-[5%] lg:inset-auto flex-col lg:flex-row gap-0 lg:gap-10 p-6 lg:p-0 bg-white dark:bg-gray-900 lg:bg-transparent lg:dark:bg-transparent border border-slate-200 dark:border-gray-700 lg:border-none rounded-2xl lg:rounded-none shadow-[0_20px_60px_rgba(0,0,0,0.2)] lg:shadow-none z-[999] lg:z-auto justify-center items-center`}
         aria-label="Primary"
       >
-        <button className="nav-link" onClick={() => scrollToSection('features-section')}>
+        <button
+          className="text-slate-600 dark:text-gray-400 font-semibold text-base transition-all duration-300 relative py-4 lg:py-2 bg-transparent border-none cursor-pointer font-[inherit] hover:text-slate-900 dark:hover:text-gray-50 w-full lg:w-auto text-left lg:text-center px-2 lg:px-0 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-blue-500 after:to-sky-500 after:transition-all after:duration-300 hover:after:w-full"
+          onClick={() => scrollToSection('features-section')}
+        >
           Features
         </button>
-        <button className="nav-link" onClick={() => scrollToSection('how-it-works-section')}>
+        <button
+          className="text-slate-600 dark:text-gray-400 font-semibold text-base transition-all duration-300 relative py-4 lg:py-2 bg-transparent border-none cursor-pointer font-[inherit] hover:text-slate-900 dark:hover:text-gray-50 w-full lg:w-auto text-left lg:text-center px-2 lg:px-0 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-blue-500 after:to-sky-500 after:transition-all after:duration-300 hover:after:w-full"
+          onClick={() => scrollToSection('how-it-works-section')}
+        >
           How It Works
         </button>
-        <button className="nav-link" onClick={() => navigate('/inventory/login')}>
+        <button
+          className="text-slate-600 dark:text-gray-400 font-semibold text-base transition-all duration-300 relative py-4 lg:py-2 bg-transparent border-none cursor-pointer font-[inherit] hover:text-slate-900 dark:hover:text-gray-50 w-full lg:w-auto text-left lg:text-center px-2 lg:px-0 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-blue-500 after:to-sky-500 after:transition-all after:duration-300 hover:after:w-full"
+          onClick={() => navigate('/inventory/login')}
+        >
           Sign In
         </button>
       </nav>
-      <div className="header-actions">
+      <div className="flex items-center gap-4 md:gap-6 lg:gap-8 justify-self-end ml-auto">
         <button
-          className="nav-toggle"
+          className="inline-flex lg:hidden w-9 h-9 md:w-10 md:h-10 rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 items-center justify-center flex-col gap-[5px] cursor-pointer transition-all duration-300 shrink-0 mr-4 hover:border-blue-500 dark:hover:border-blue-400"
           type="button"
           aria-expanded={navOpen}
           aria-controls="landing-nav"
           onClick={() => setNavOpen(!navOpen)}
           aria-label="Toggle navigation"
         >
-          <span className="nav-toggle-bar" aria-hidden="true"></span>
-          <span className="nav-toggle-bar" aria-hidden="true"></span>
-          <span className="nav-toggle-bar" aria-hidden="true"></span>
+          <span className="w-4 md:w-[18px] h-0.5 rounded-full bg-current transition-all duration-300" aria-hidden="true"></span>
+          <span className="w-4 md:w-[18px] h-0.5 rounded-full bg-current transition-all duration-300" aria-hidden="true"></span>
+          <span className="w-4 md:w-[18px] h-0.5 rounded-full bg-current transition-all duration-300" aria-hidden="true"></span>
         </button>
         <button 
-          className="theme-toggle-btn"
+          className="w-9 h-9 md:w-10 md:h-10 lg:w-11 lg:h-11 rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 flex items-center justify-center cursor-pointer transition-all duration-300 shrink-0 hover:bg-gradient-to-br hover:from-blue-500 hover:to-sky-500 hover:text-white hover:border-transparent hover:rotate-[15deg]"
           onClick={toggleTheme}
           aria-label="Toggle theme"
         >

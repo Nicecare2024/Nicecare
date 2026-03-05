@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-// Constants for dropdown options (same as CustomerForm)
 const STATUS_OPTIONS = [
   'Select',
   'Device Received',
@@ -69,7 +68,6 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
     costParts: true,
   });
 
-  // Initialize form data from customer prop
   useEffect(() => {
     if (customer) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing state from prop
@@ -104,7 +102,6 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
     }
   }, [customer]);
 
-  // Persist form mode preference
   useEffect(() => {
     localStorage.setItem(FORM_MODE_KEY, formMode);
   }, [formMode]);
@@ -154,7 +151,6 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
     onSave(formData);
   }
 
-  // Close modal on Escape key (only for modal mode)
   useEffect(() => {
     if (inline) return;
     function handleKeyDown(e) {
@@ -166,7 +162,6 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose, inline]);
 
-  // Prevent body scroll when modal is open (only for modal mode or fullscreen inline)
   useEffect(() => {
     if (inline && !isFullscreen) return;
     document.body.style.overflow = 'hidden';
@@ -175,7 +170,6 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
     };
   }, [inline, isFullscreen]);
 
-  // Handle Escape key for fullscreen mode
   useEffect(() => {
     if (!inline || !isFullscreen) return;
     function handleKeyDown(e) {
@@ -187,106 +181,106 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [inline, isFullscreen]);
 
+  const inputClasses = "w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors";
+  const labelClasses = "block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1";
+
   const formContent = (
     <>
-      {/* Form Mode Toggle */}
-      <div className="form-mode-toggle">
+      <div className="flex gap-2 mb-4">
         <button
           type="button"
-          className={`toggle-btn ${formMode === 'minimal' ? 'active' : ''}`}
+          className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${formMode === 'minimal' ? 'bg-blue-600 text-white border border-blue-600 dark:bg-blue-500 dark:border-blue-500' : 'border border-slate-300 dark:border-gray-600 text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-700'}`}
           onClick={() => setFormMode('minimal')}
         >
           📱 Minimal
         </button>
         <button
           type="button"
-          className={`toggle-btn ${formMode === 'detailed' ? 'active' : ''}`}
+          className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${formMode === 'detailed' ? 'bg-blue-600 text-white border border-blue-600 dark:bg-blue-500 dark:border-blue-500' : 'border border-slate-300 dark:border-gray-600 text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-700'}`}
           onClick={() => setFormMode('detailed')}
         >
           💻 Detailed
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="modal-form" id="edit-customer-form">
-          {/* Basic Info - Always visible */}
-          <div className="row two">
+      <form onSubmit={handleSubmit} id="edit-customer-form">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="label" htmlFor="edit-name">Name *</label>
+              <label className={labelClasses} htmlFor="edit-name">Name *</label>
               <input
                 id="edit-name"
                 name="name"
-                className="input"
+                className={inputClasses}
                 value={formData.name}
                 onChange={handleChange}
                 required
               />
             </div>
             <div>
-              <label className="label" htmlFor="edit-email">Email</label>
+              <label className={labelClasses} htmlFor="edit-email">Email</label>
               <input
                 id="edit-email"
                 name="email"
                 type="email"
-                className="input"
+                className={inputClasses}
                 value={formData.email}
                 onChange={handleChange}
               />
             </div>
           </div>
 
-          <div className="row two">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="label" htmlFor="edit-phone">Phone</label>
+              <label className={labelClasses} htmlFor="edit-phone">Phone</label>
               <input
                 id="edit-phone"
                 name="phone"
-                className="input"
+                className={inputClasses}
                 value={formData.phone}
                 onChange={handleChange}
               />
             </div>
             <div>
-              <label className="label" htmlFor="edit-address">Address</label>
+              <label className={labelClasses} htmlFor="edit-address">Address</label>
               <input
                 id="edit-address"
                 name="address"
-                className="input"
+                className={inputClasses}
                 value={formData.address}
                 onChange={handleChange}
               />
             </div>
           </div>
 
-          {/* Extended Customer Info - Detailed mode only */}
           {formMode === 'detailed' && (
-            <div className="collapsible-section">
+            <div className="border border-slate-200 dark:border-gray-700 rounded-lg mb-4 overflow-hidden">
               <button
                 type="button"
-                className="section-header"
+                className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-gray-800 hover:bg-slate-100 dark:hover:bg-gray-700 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors"
                 onClick={() => toggleSection('customerInfo')}
               >
                 <span>👤 Extended Customer Info</span>
-                <span className="toggle-icon">{expandedSections.customerInfo ? '▼' : '▶'}</span>
+                <span className="text-slate-400 dark:text-gray-500">{expandedSections.customerInfo ? '▼' : '▶'}</span>
               </button>
               {expandedSections.customerInfo && (
-                <div className="section-content">
-                  <div className="row three">
+                <div className="p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
-                      <label className="label" htmlFor="edit-alternatePhone">Alternate Phone</label>
+                      <label className={labelClasses} htmlFor="edit-alternatePhone">Alternate Phone</label>
                       <input
                         id="edit-alternatePhone"
                         name="alternatePhone"
-                        className="input"
+                        className={inputClasses}
                         value={formData.alternatePhone}
                         onChange={handleChange}
                       />
                     </div>
                     <div>
-                      <label className="label" htmlFor="edit-customerType">Customer Type</label>
+                      <label className={labelClasses} htmlFor="edit-customerType">Customer Type</label>
                       <select
                         id="edit-customerType"
                         name="customerType"
-                        className="select"
+                        className={inputClasses}
                         value={formData.customerType}
                         onChange={handleChange}
                       >
@@ -297,11 +291,11 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
                       </select>
                     </div>
                     <div>
-                      <label className="label" htmlFor="edit-preferredContact">Preferred Contact</label>
+                      <label className={labelClasses} htmlFor="edit-preferredContact">Preferred Contact</label>
                       <select
                         id="edit-preferredContact"
                         name="preferredContact"
-                        className="select"
+                        className={inputClasses}
                         value={formData.preferredContact}
                         onChange={handleChange}
                       >
@@ -317,26 +311,25 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
             </div>
           )}
 
-          {/* Device Information - Detailed mode only */}
           {formMode === 'detailed' && (
-            <div className="collapsible-section">
+            <div className="border border-slate-200 dark:border-gray-700 rounded-lg mb-4 overflow-hidden">
               <button
                 type="button"
-                className="section-header"
+                className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-gray-800 hover:bg-slate-100 dark:hover:bg-gray-700 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors"
                 onClick={() => toggleSection('deviceInfo')}
               >
                 <span>📱 Device Information</span>
-                <span className="toggle-icon">{expandedSections.deviceInfo ? '▼' : '▶'}</span>
+                <span className="text-slate-400 dark:text-gray-500">{expandedSections.deviceInfo ? '▼' : '▶'}</span>
               </button>
               {expandedSections.deviceInfo && (
-                <div className="section-content">
-                  <div className="row three">
+                <div className="p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
-                      <label className="label" htmlFor="edit-deviceType">Device Type</label>
+                      <label className={labelClasses} htmlFor="edit-deviceType">Device Type</label>
                       <select
                         id="edit-deviceType"
                         name="deviceType"
-                        className="select"
+                        className={inputClasses}
                         value={formData.deviceType}
                         onChange={handleChange}
                       >
@@ -347,11 +340,11 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
                       </select>
                     </div>
                     <div>
-                      <label className="label" htmlFor="edit-brand">Brand</label>
+                      <label className={labelClasses} htmlFor="edit-brand">Brand</label>
                       <select
                         id="edit-brand"
                         name="brand"
-                        className="select"
+                        className={inputClasses}
                         value={formData.brand}
                         onChange={handleChange}
                       >
@@ -362,24 +355,24 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
                       </select>
                     </div>
                     <div>
-                      <label className="label" htmlFor="edit-model">Model</label>
+                      <label className={labelClasses} htmlFor="edit-model">Model</label>
                       <input
                         id="edit-model"
                         name="model"
-                        className="input"
+                        className={inputClasses}
                         placeholder="e.g., iPhone 13 Pro"
                         value={formData.model}
                         onChange={handleChange}
                       />
                     </div>
                   </div>
-                  <div className="row two">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className="label" htmlFor="edit-imei">IMEI / Serial Number</label>
+                      <label className={labelClasses} htmlFor="edit-imei">IMEI / Serial Number</label>
                       <input
                         id="edit-imei"
                         name="imei"
-                        className="input"
+                        className={inputClasses}
                         placeholder="15-digit IMEI"
                         value={formData.imei}
                         onChange={handleChange}
@@ -388,11 +381,11 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
                       />
                     </div>
                     <div>
-                      <label className="label" htmlFor="edit-carrier">Carrier</label>
+                      <label className={labelClasses} htmlFor="edit-carrier">Carrier</label>
                       <select
                         id="edit-carrier"
                         name="carrier"
-                        className="select"
+                        className={inputClasses}
                         value={formData.carrier}
                         onChange={handleChange}
                       >
@@ -408,26 +401,25 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
             </div>
           )}
 
-          {/* Repair Details - Detailed mode only */}
           {formMode === 'detailed' && (
-            <div className="collapsible-section">
+            <div className="border border-slate-200 dark:border-gray-700 rounded-lg mb-4 overflow-hidden">
               <button
                 type="button"
-                className="section-header"
+                className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-gray-800 hover:bg-slate-100 dark:hover:bg-gray-700 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors"
                 onClick={() => toggleSection('repairDetails')}
               >
                 <span>🔧 Repair Details</span>
-                <span className="toggle-icon">{expandedSections.repairDetails ? '▼' : '▶'}</span>
+                <span className="text-slate-400 dark:text-gray-500">{expandedSections.repairDetails ? '▼' : '▶'}</span>
               </button>
               {expandedSections.repairDetails && (
-                <div className="section-content">
-                  <div className="row three">
+                <div className="p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
-                      <label className="label" htmlFor="edit-issueCategory">Issue Category</label>
+                      <label className={labelClasses} htmlFor="edit-issueCategory">Issue Category</label>
                       <select
                         id="edit-issueCategory"
                         name="issueCategory"
-                        className="select"
+                        className={inputClasses}
                         value={formData.issueCategory}
                         onChange={handleChange}
                       >
@@ -438,11 +430,11 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
                       </select>
                     </div>
                     <div>
-                      <label className="label" htmlFor="edit-repairType">Repair Type</label>
+                      <label className={labelClasses} htmlFor="edit-repairType">Repair Type</label>
                       <select
                         id="edit-repairType"
                         name="repairType"
-                        className="select"
+                        className={inputClasses}
                         value={formData.repairType}
                         onChange={handleChange}
                       >
@@ -453,11 +445,11 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
                       </select>
                     </div>
                     <div>
-                      <label className="label" htmlFor="edit-priority">Priority</label>
+                      <label className={labelClasses} htmlFor="edit-priority">Priority</label>
                       <select
                         id="edit-priority"
                         name="priority"
-                        className="select"
+                        className={inputClasses}
                         value={formData.priority}
                         onChange={handleChange}
                       >
@@ -468,23 +460,23 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
                       </select>
                     </div>
                   </div>
-                  <div>
-                    <label className="label" htmlFor="edit-issueDescription">Issue Description</label>
+                  <div className="mb-4">
+                    <label className={labelClasses} htmlFor="edit-issueDescription">Issue Description</label>
                     <textarea
                       id="edit-issueDescription"
                       name="issueDescription"
-                      className="textarea"
+                      className={`${inputClasses} min-h-[80px] resize-y`}
                       value={formData.issueDescription}
                       onChange={handleChange}
                       placeholder="Describe the issue in detail..."
                     />
                   </div>
                   <div>
-                    <label className="label" htmlFor="edit-technicalStaffName">Technical Staff Name</label>
+                    <label className={labelClasses} htmlFor="edit-technicalStaffName">Technical Staff Name</label>
                     <input
                       id="edit-technicalStaffName"
                       name="technicalStaffName"
-                      className="input"
+                      className={inputClasses}
                       value={formData.technicalStaffName}
                       onChange={handleChange}
                       placeholder="Name of assigned technician"
@@ -495,50 +487,49 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
             </div>
           )}
 
-          {/* Cost & Parts - Detailed mode only */}
           {formMode === 'detailed' && (
-            <div className="collapsible-section">
+            <div className="border border-slate-200 dark:border-gray-700 rounded-lg mb-4 overflow-hidden">
               <button
                 type="button"
-                className="section-header"
+                className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-gray-800 hover:bg-slate-100 dark:hover:bg-gray-700 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors"
                 onClick={() => toggleSection('costParts')}
               >
                 <span>💰 Cost & Parts</span>
-                <span className="toggle-icon">{expandedSections.costParts ? '▼' : '▶'}</span>
+                <span className="text-slate-400 dark:text-gray-500">{expandedSections.costParts ? '▼' : '▶'}</span>
               </button>
               {expandedSections.costParts && (
-                <div className="section-content">
-                  <div className="row three">
+                <div className="p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
-                      <label className="label" htmlFor="edit-estimatedCost">Estimated Cost ($)</label>
+                      <label className={labelClasses} htmlFor="edit-estimatedCost">Estimated Cost ($)</label>
                       <input
                         id="edit-estimatedCost"
                         name="estimatedCost"
                         type="number"
-                        className="input"
+                        className={inputClasses}
                         placeholder="0.00"
                         value={formData.estimatedCost}
                         onChange={handleChange}
                       />
                     </div>
                     <div>
-                      <label className="label" htmlFor="edit-advancePaid">Advance Paid ($)</label>
+                      <label className={labelClasses} htmlFor="edit-advancePaid">Advance Paid ($)</label>
                       <input
                         id="edit-advancePaid"
                         name="advancePaid"
                         type="number"
-                        className="input"
+                        className={inputClasses}
                         placeholder="0.00"
                         value={formData.advancePaid}
                         onChange={handleChange}
                       />
                     </div>
                     <div>
-                      <label className="label" htmlFor="edit-partsType">Parts Type</label>
+                      <label className={labelClasses} htmlFor="edit-partsType">Parts Type</label>
                       <select
                         id="edit-partsType"
                         name="partsType"
-                        className="select"
+                        className={inputClasses}
                         value={formData.partsType}
                         onChange={handleChange}
                       >
@@ -554,26 +545,25 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
             </div>
           )}
 
-          {/* Dates & Status - Always visible */}
-          <div className="row three">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="label" htmlFor="edit-submissionDate">Submission Date *</label>
+              <label className={labelClasses} htmlFor="edit-submissionDate">Submission Date *</label>
               <input
                 id="edit-submissionDate"
                 name="submissionDate"
                 type="date"
-                className="input"
+                className={inputClasses}
                 value={formData.submissionDate}
                 onChange={handleChange}
                 required
               />
             </div>
             <div>
-              <label className="label" htmlFor="edit-status">Status *</label>
+              <label className={labelClasses} htmlFor="edit-status">Status *</label>
               <select
                 id="edit-status"
                 name="status"
-                className="select"
+                className={inputClasses}
                 value={formData.status}
                 onChange={handleChange}
               >
@@ -583,39 +573,38 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
               </select>
             </div>
             <div>
-              <label className="label" htmlFor="edit-expectedDate">Expected Date</label>
+              <label className={labelClasses} htmlFor="edit-expectedDate">Expected Date</label>
               <input
                 id="edit-expectedDate"
                 name="expectedDate"
                 type="date"
-                className="input"
+                className={inputClasses}
                 value={formData.expectedDate}
                 onChange={handleChange}
               />
             </div>
           </div>
 
-          {/* Additional Dates - Detailed mode only */}
           {formMode === 'detailed' && (
-            <div className="row two">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="label" htmlFor="edit-deviceReceivedDate">Device Received Date by Technical Staff</label>
+                <label className={labelClasses} htmlFor="edit-deviceReceivedDate">Device Received Date by Technical Staff</label>
                 <input
                   id="edit-deviceReceivedDate"
                   name="deviceReceivedDate"
                   type="date"
-                  className="input"
+                  className={inputClasses}
                   value={formData.deviceReceivedDate}
                   onChange={handleChange}
                 />
               </div>
               <div>
-                <label className="label" htmlFor="edit-repairStartDate">Repair Start Date</label>
+                <label className={labelClasses} htmlFor="edit-repairStartDate">Repair Start Date</label>
                 <input
                   id="edit-repairStartDate"
                   name="repairStartDate"
                   type="date"
-                  className="input"
+                  className={inputClasses}
                   value={formData.repairStartDate}
                   onChange={handleChange}
                 />
@@ -623,38 +612,55 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
             </div>
           )}
 
-          <div>
-            <label className="label" htmlFor="edit-notes">Notes</label>
+          <div className="mb-4">
+            <label className={labelClasses} htmlFor="edit-notes">Notes</label>
             <textarea
               id="edit-notes"
               name="notes"
-              className="textarea"
+              className={`${inputClasses} min-h-[80px] resize-y`}
               value={formData.notes}
               onChange={handleChange}
               placeholder="Add any additional notes here..."
             />
           </div>
 
-          {warning && <div className="warning-message">⚠️ {warning}</div>}
-          {error && <div className="error-message">{error}</div>}
+          {warning && <div className="text-amber-600 dark:text-amber-400 text-sm mt-2">⚠️ {warning}</div>}
+          {error && <div className="text-red-600 dark:text-red-400 text-sm mt-2">{error}</div>}
 
           {!inline && (
-            <div className="modal-actions">
-              <button type="button" className="btn-outline" onClick={onClose}>
+            <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-200 dark:border-gray-700">
+              <button
+                type="button"
+                className="px-4 py-2 border border-slate-300 dark:border-gray-600 text-slate-700 dark:text-gray-300 rounded-lg hover:bg-slate-100 dark:hover:bg-gray-700 font-medium transition-colors"
+                onClick={onClose}
+              >
                 Cancel
               </button>
-              <button type="submit" className="btn" disabled={loading}>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading}
+              >
                 {loading ? '⏳ Saving...' : '💾 Save Changes'}
               </button>
             </div>
           )}
         </form>
         {inline && (
-          <div className="modal-actions">
-            <button type="button" className="btn-outline" onClick={onClose}>
+          <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-200 dark:border-gray-700">
+            <button
+              type="button"
+              className="px-4 py-2 border border-slate-300 dark:border-gray-600 text-slate-700 dark:text-gray-300 rounded-lg hover:bg-slate-100 dark:hover:bg-gray-700 font-medium transition-colors"
+              onClick={onClose}
+            >
               Cancel
             </button>
-            <button type="submit" form="edit-customer-form" className="btn" disabled={loading}>
+            <button
+              type="submit"
+              form="edit-customer-form"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading}
+            >
               {loading ? '⏳ Saving...' : '💾 Save Changes'}
             </button>
           </div>
@@ -662,16 +668,15 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
     </>
   );
 
-  // Inline mode: render form content directly without modal wrapper
   if (inline) {
     const inlineContent = (
-      <div className={`inline-edit-container ${isFullscreen ? 'fullscreen' : ''}`}>
-        <div className="inline-edit-header">
-          <h4>✏️ Edit Customer Record</h4>
-          <div className="inline-edit-actions">
+      <div className={`border border-slate-200 dark:border-gray-700 rounded-xl p-4 bg-white dark:bg-gray-800 ${isFullscreen ? 'fixed inset-0 z-50 overflow-y-auto rounded-none' : ''}`}>
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-base font-semibold text-slate-900 dark:text-gray-50">✏️ Edit Customer Record</h4>
+          <div className="flex gap-2">
             <button
               type="button"
-              className="btn-icon"
+              className="p-2 text-slate-400 dark:text-gray-500 hover:text-slate-700 dark:hover:text-gray-300 bg-transparent border-none cursor-pointer rounded-lg hover:bg-slate-100 dark:hover:bg-gray-700 transition-colors"
               onClick={() => setIsFullscreen(!isFullscreen)}
               title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
             >
@@ -685,7 +690,7 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
 
     if (isFullscreen) {
       return createPortal(
-        <div className="fullscreen-overlay">
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
           {inlineContent}
         </div>,
         document.body
@@ -695,13 +700,21 @@ export default function EditCustomerModal({ customer, onSave, onClose, loading, 
     return inlineContent;
   }
 
-  // Modal mode: render with overlay and modal wrapper
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3>✏️ Edit Customer Record</h3>
-          <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
+      <div
+        className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-xl animate-fade-in"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-gray-50">✏️ Edit Customer Record</h3>
+          <button
+            className="text-2xl leading-none text-slate-400 dark:text-gray-500 hover:text-slate-700 dark:hover:text-gray-300 bg-transparent border-none cursor-pointer"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ×
+          </button>
         </div>
         {formContent}
       </div>

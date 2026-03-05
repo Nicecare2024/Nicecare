@@ -4,7 +4,6 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import { useEmployees } from '../../hooks/useEmployees';
 
 export default function StoreManagement() {
-  // apply small side gutter by toggling body class
   useEffect(() => {
     document.body.classList.add('edge-to-edge-page');
     return () => document.body.classList.remove('edge-to-edge-page');
@@ -102,7 +101,7 @@ export default function StoreManagement() {
   }
 
   return (
-    <main className="dashboard-content">
+    <main className="p-4 md:p-6 lg:p-8 space-y-6 animate-fade-in">
       <ConfirmDialog
         isOpen={!!deleteConfirm}
         title="Delete Store"
@@ -114,13 +113,13 @@ export default function StoreManagement() {
         variant="danger"
       />
 
-      <div className="page-header">
+      <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
         <div>
-          <h1>Store Management</h1>
-          <p>Manage your store locations</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-gray-50">Store Management</h1>
+          <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">Manage your store locations</p>
         </div>
         <button
-          className="btn btn-outline"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-700"
           onClick={() => setShowForm(!showForm)}
           title={showForm ? "Close form" : "Add new store"}
         >
@@ -137,20 +136,20 @@ export default function StoreManagement() {
 
       {/* Add/Edit Form */}
       {showForm && (
-        <div className="card form-card">
-          <h2>{editingStore ? 'Edit Store' : 'Add New Store'}</h2>
+        <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl p-5 shadow-card animate-fade-in-up">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-gray-50 mb-4">{editingStore ? 'Edit Store' : 'Add New Store'}</h2>
 
           {formError && (
-            <div className="alert alert-error">{formError}</div>
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm mb-4">{formError}</div>
           )}
 
           <form onSubmit={handleSubmit}>
-            <div className="form-grid">
-              <div className="form-group">
-                <label className="label">Store Name *</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-slate-700 dark:text-gray-300">Store Name *</label>
                 <input
                   type="text"
-                  className="input"
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-sm text-slate-900 dark:text-gray-50 placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g., Downtown Store"
@@ -158,44 +157,44 @@ export default function StoreManagement() {
                 />
               </div>
 
-              <div className="form-group">
-                <label className="label">Address</label>
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-slate-700 dark:text-gray-300">Address</label>
                 <input
                   type="text"
-                  className="input"
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-sm text-slate-900 dark:text-gray-50 placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   placeholder="e.g., 123 Main St, City, State"
                 />
               </div>
 
-              <div className="form-group">
-                <label className="label">Phone</label>
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-slate-700 dark:text-gray-300">Phone</label>
                 <input
                   type="tel"
-                  className="input"
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-sm text-slate-900 dark:text-gray-50 placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="e.g., (555) 123-4567"
                 />
               </div>
 
-              <div className="form-group">
-                <label className="label">Email</label>
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-slate-700 dark:text-gray-300">Email</label>
                 <input
                   type="email"
-                  className="input"
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-sm text-slate-900 dark:text-gray-50 placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="e.g., store@company.com"
                 />
               </div>
 
-              <div className="form-group">
-                <label className="label">Store Manager</label>
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-slate-700 dark:text-gray-300">Store Manager</label>
                 <input
                   type="text"
-                  className="input"
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-sm text-slate-900 dark:text-gray-50 placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                   value={formData.manager}
                   onChange={(e) => setFormData({ ...formData, manager: e.target.value })}
                   placeholder="e.g., John Smith"
@@ -203,11 +202,11 @@ export default function StoreManagement() {
               </div>
             </div>
 
-            <div className="form-actions">
-              <button type="submit" className="btn btn-primary" disabled={submitting}>
+            <div className="flex items-center gap-3 pt-4">
+              <button type="submit" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all bg-blue-600 hover:bg-blue-700 text-white" disabled={submitting}>
                 {submitting ? 'Saving...' : editingStore ? 'Update Store' : 'Add Store'}
               </button>
-              <button type="button" className="btn btn-outline" onClick={resetForm}>
+              <button type="button" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-700" onClick={resetForm}>
                 Cancel
               </button>
             </div>
@@ -216,76 +215,74 @@ export default function StoreManagement() {
       )}
 
       {/* Stores List */}
-      <div className="card">
-        <div className="card-header">
-          <h2>Your Stores</h2>
-          <span className="badge">{stores.length} {stores.length === 1 ? 'Store' : 'Stores'} Found</span>
+      <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl shadow-card overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-gray-700">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-gray-50">Your Stores</h2>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">{stores.length} {stores.length === 1 ? 'Store' : 'Stores'} Found</span>
         </div>
 
         {loading ? (
-          <div className="loading-state">Loading stores...</div>
+          <div className="flex items-center justify-center p-12 text-slate-400 dark:text-gray-500">Loading stores...</div>
         ) : error ? (
-          <div className="error-state">{error}</div>
+          <div className="flex items-center justify-center p-12 text-red-600 dark:text-red-400">{error}</div>
         ) : stores.length === 0 ? (
-          <div className="empty-state">
+          <div className="flex flex-col items-center justify-center p-12 text-center text-slate-400 dark:text-gray-500 space-y-3">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
-            <h3>No stores yet</h3>
-            <p>Create your first store to get started</p>
-            <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+            <h3 className="text-lg font-semibold text-slate-700 dark:text-gray-300">No stores yet</h3>
+            <p className="text-sm">Create your first store to get started</p>
+            <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all bg-blue-600 hover:bg-blue-700 text-white mt-2" onClick={() => setShowForm(true)}>
               + Add Store
             </button>
           </div>
         ) : (
-          <div className="table-container">
-            <table className="data-table enhanced-table inventory-list-table">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
               <thead>
-                <tr>
-                  <th>Store Name</th>
-                  <th>Address</th>
-                  <th>Contact</th>
-                  <th>Manager</th>
-                  <th className="align-center">Employees</th>
-                  <th className="align-center">Products</th>
-                  <th className="align-center">Actions</th>
+                <tr className="border-b border-slate-100 dark:border-gray-700 bg-slate-50/50 dark:bg-gray-800/50">
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Store Name</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Address</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Contact</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Manager</th>
+                  <th className="text-center px-5 py-3 text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Employees</th>
+                  <th className="text-center px-5 py-3 text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Products</th>
+                  <th className="text-center px-5 py-3 text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100 dark:divide-gray-700">
                 {stores.map((store) => (
                   <tr
                     key={store.id}
-                    className="table-row-hover"
+                    className="hover:bg-slate-50 dark:hover:bg-gray-700/50 transition-colors"
                   >
-                    <td>
-                      <div className="store-name-cell">
-                        <strong>{store.name}</strong>
+                    <td className="px-5 py-3">
+                      <strong className="text-slate-900 dark:text-gray-50">{store.name}</strong>
+                    </td>
+                    <td className="px-5 py-3">
+                      <span className="text-slate-500 dark:text-gray-400">{store.address || '-'}</span>
+                    </td>
+                    <td className="px-5 py-3">
+                      <div className="flex flex-col gap-0.5">
+                        {store.phone && <div className="text-slate-600 dark:text-gray-300 text-xs">{store.phone}</div>}
+                        {store.email && <div className="text-blue-600 dark:text-blue-400 text-xs">{store.email}</div>}
+                        {!store.phone && !store.email && <span className="text-slate-400 dark:text-gray-500">-</span>}
                       </div>
                     </td>
-                    <td>
-                      <span className="address-text">{store.address || '-'}</span>
+                    <td className="px-5 py-3">
+                      <span className="text-slate-600 dark:text-gray-300">{store.manager || '-'}</span>
                     </td>
-                    <td>
-                      <div className="contact-stack">
-                        {store.phone && <div className="contact-phone">{store.phone}</div>}
-                        {store.email && <div className="contact-email">{store.email}</div>}
-                        {!store.phone && !store.email && <span className="text-muted">-</span>}
-                      </div>
+                    <td className="text-center px-5 py-3">
+                      <span className="inline-flex items-center justify-center min-w-[28px] px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">{employeeCountByStore[store.id] || 0}</span>
                     </td>
-                    <td>
-                      <span className="manager-text">{store.manager || '-'}</span>
+                    <td className="text-center px-5 py-3">
+                      <span className="inline-flex items-center justify-center min-w-[28px] px-2 py-0.5 rounded-full text-xs font-semibold bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400">{store.productCount || 0}</span>
                     </td>
-                    <td className="align-center">
-                      <span className="count-badge employees-badge">{employeeCountByStore[store.id] || 0}</span>
-                    </td>
-                    <td className="align-center">
-                      <span className="count-badge products-badge">{store.productCount || 0}</span>
-                    </td>
-                    <td className="align-center">
-                      <div className="action-buttons">
+                    <td className="text-center px-5 py-3">
+                      <div className="flex items-center gap-1 justify-center">
                         <button
-                          className="btn-icon btn-icon-edit"
+                          className="p-2 rounded-lg text-slate-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                           onClick={() => handleEdit(store)}
                           title="Edit"
                         >
@@ -295,7 +292,7 @@ export default function StoreManagement() {
                           </svg>
                         </button>
                         <button
-                          className="btn-icon btn-icon-delete"
+                          className="p-2 rounded-lg text-slate-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                           onClick={() => handleDelete(store.id, store.name)}
                           title="Delete"
                         >

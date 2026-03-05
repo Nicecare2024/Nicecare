@@ -2,6 +2,28 @@ import { useState, useEffect } from 'react';
 import { useSales } from '../../hooks/useSales';
 import { useStores } from '../../hooks/useStores';
 
+const thCls =
+  'px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-gray-400 border-b-2 border-x border-slate-200 dark:border-gray-700 first:border-l-0 last:border-r-0';
+const tdCls =
+  'px-4 py-3.5 text-left border-b border-x border-slate-200 dark:border-gray-700 text-slate-900 dark:text-gray-50 first:border-l-0 last:border-r-0';
+
+function getPaymentBadgeClasses(method) {
+  const base =
+    'inline-flex items-center px-2 py-0.5 rounded-full text-[0.71rem] font-bold uppercase';
+  switch (method?.toLowerCase()) {
+    case 'cash':
+      return `${base} bg-emerald-600/[0.14] text-emerald-600 dark:text-emerald-400`;
+    case 'card':
+      return `${base} bg-blue-600/[0.14] text-blue-600 dark:text-blue-400`;
+    case 'upi':
+    case 'bank':
+    case 'transfer':
+      return `${base} bg-violet-600/[0.14] text-violet-600`;
+    default:
+      return `${base} bg-slate-200 dark:bg-gray-700 text-slate-600 dark:text-gray-400`;
+  }
+}
+
 export default function SalesReports() {
   useEffect(() => {
     document.body.classList.add('edge-to-edge-page');
@@ -59,76 +81,92 @@ export default function SalesReports() {
   };
 
   return (
-    <main className="dashboard-content">
-      <div className="page-header">
+    <main className="flex flex-col gap-5 flex-1 min-h-0">
+      <div className="flex items-start gap-4 mb-2">
         <div>
-          <h1>Sales Reports</h1>
-          <p>View and analyze your sales data</p>
+          <h1 className="text-[1.9rem] font-bold tracking-tight text-slate-900 dark:text-gray-50">
+            Sales Reports
+          </h1>
+          <p className="mt-1.5 text-[0.95rem] text-slate-600 dark:text-gray-400">
+            View and analyze your sales data
+          </p>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon revenue">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-slate-200 dark:border-gray-700 flex items-start gap-4 transition-all duration-200 hover:border-blue-600 dark:hover:border-blue-400 hover:shadow-md">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-emerald-500/10 text-emerald-500">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="1" x2="12" y2="23" />
               <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
             </svg>
           </div>
-          <div className="stat-info">
-            <h3>{loading ? '...' : formatCurrency(stats.totalRevenue)}</h3>
-            <p>Total Revenue</p>
+          <div>
+            <h3 className="text-[1.75rem] font-bold text-slate-900 dark:text-gray-50 mb-1 leading-tight">
+              {loading ? '...' : formatCurrency(stats.totalRevenue)}
+            </h3>
+            <p className="text-slate-600 dark:text-gray-400 text-sm">Total Revenue</p>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon sales">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-slate-200 dark:border-gray-700 flex items-start gap-4 transition-all duration-200 hover:border-blue-600 dark:hover:border-blue-400 hover:shadow-md">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-blue-600/10 text-blue-600 dark:text-blue-400">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
               <line x1="1" y1="10" x2="23" y2="10" />
             </svg>
           </div>
-          <div className="stat-info">
-            <h3>{loading ? '...' : stats.totalSales}</h3>
-            <p>Total Transactions</p>
+          <div>
+            <h3 className="text-[1.75rem] font-bold text-slate-900 dark:text-gray-50 mb-1 leading-tight">
+              {loading ? '...' : stats.totalSales}
+            </h3>
+            <p className="text-slate-600 dark:text-gray-400 text-sm">Total Transactions</p>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon average">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-slate-200 dark:border-gray-700 flex items-start gap-4 transition-all duration-200 hover:border-blue-600 dark:hover:border-blue-400 hover:shadow-md">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-blue-600/10 text-blue-600 dark:text-blue-400">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="20" x2="18" y2="10" />
               <line x1="12" y1="20" x2="12" y2="4" />
               <line x1="6" y1="20" x2="6" y2="14" />
             </svg>
           </div>
-          <div className="stat-info">
-            <h3>{loading ? '...' : formatCurrency(stats.averageOrderValue)}</h3>
-            <p>Average Order Value</p>
+          <div>
+            <h3 className="text-[1.75rem] font-bold text-slate-900 dark:text-gray-50 mb-1 leading-tight">
+              {loading ? '...' : formatCurrency(stats.averageOrderValue)}
+            </h3>
+            <p className="text-slate-600 dark:text-gray-400 text-sm">Average Order Value</p>
           </div>
         </div>
 
-        <div className="stat-card highlight">
-          <div className="stat-icon today">
+        <div className="bg-gradient-to-br from-blue-600/10 to-sky-500/10 rounded-2xl p-6 border border-blue-600 dark:border-blue-400 flex items-start gap-4 transition-all duration-200 hover:shadow-md">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-blue-600/10 text-blue-600 dark:text-blue-400">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
             </svg>
           </div>
-          <div className="stat-info">
-            <h3>{loading ? '...' : formatCurrency(stats.todayRevenue)}</h3>
-            <p>Today's Revenue ({stats.todaySales} sales)</p>
+          <div>
+            <h3 className="text-[1.75rem] font-bold text-slate-900 dark:text-gray-50 mb-1 leading-tight">
+              {loading ? '...' : formatCurrency(stats.todayRevenue)}
+            </h3>
+            <p className="text-slate-600 dark:text-gray-400 text-sm">
+              Today's Revenue ({stats.todaySales} sales)
+            </p>
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="filters-bar">
-        <div className="filter-group">
-          <label>Store:</label>
+      <div className="flex items-end gap-3.5 flex-nowrap p-4 rounded-[14px] border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 max-md:flex-col max-md:items-stretch">
+        <div className="flex flex-col gap-1 min-w-[180px] max-md:min-w-full">
+          <label className="text-[0.73rem] font-bold tracking-wider uppercase text-slate-600 dark:text-gray-400">
+            Store:
+          </label>
           <select
-            className="select"
+            className="px-3 py-2.5 rounded-lg border border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-[#0a0f1a] text-slate-900 dark:text-gray-50 text-sm truncate min-w-[180px] max-w-[250px]"
             value={filterStore}
             onChange={(e) => setFilterStore(e.target.value)}
           >
@@ -141,11 +179,13 @@ export default function SalesReports() {
           </select>
         </div>
 
-        <div className="filter-group">
-          <label>From:</label>
+        <div className="flex flex-col gap-1 min-w-[180px] max-md:min-w-full">
+          <label className="text-[0.73rem] font-bold tracking-wider uppercase text-slate-600 dark:text-gray-400">
+            From:
+          </label>
           <input
             type="date"
-            className="input"
+            className="px-3 py-2.5 rounded-lg border border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-[#0a0f1a] text-slate-900 dark:text-gray-50 text-sm"
             value={dateRange.start.toISOString().split('T')[0]}
             onChange={(e) => setDateRange({
               ...dateRange,
@@ -154,11 +194,13 @@ export default function SalesReports() {
           />
         </div>
 
-        <div className="filter-group">
-          <label>To:</label>
+        <div className="flex flex-col gap-1 min-w-[180px] max-md:min-w-full">
+          <label className="text-[0.73rem] font-bold tracking-wider uppercase text-slate-600 dark:text-gray-400">
+            To:
+          </label>
           <input
             type="date"
-            className="input"
+            className="px-3 py-2.5 rounded-lg border border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-[#0a0f1a] text-slate-900 dark:text-gray-50 text-sm"
             value={dateRange.end.toISOString().split('T')[0]}
             onChange={(e) => setDateRange({
               ...dateRange,
@@ -168,7 +210,7 @@ export default function SalesReports() {
         </div>
 
         <button
-          className="btn btn-primary"
+          className="px-4 py-2.5 rounded-lg bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
           onClick={handleGenerateReport}
           disabled={generatingReport}
         >
@@ -178,34 +220,50 @@ export default function SalesReports() {
 
       {/* Report Summary */}
       {reportData && (
-        <div className="card report-card">
-          <div className="card-header">
-            <h2>Report Summary</h2>
-            <span className="date-range">
+        <div className="rounded-2xl border border-slate-200 dark:border-gray-700 shadow-sm p-5">
+          <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
+            <h2 className="m-0 text-lg font-semibold text-slate-900 dark:text-gray-50">
+              Report Summary
+            </h2>
+            <span className="text-slate-600 dark:text-gray-400 text-sm font-semibold">
               {dateRange.start.toLocaleDateString()} - {dateRange.end.toLocaleDateString()}
             </span>
           </div>
 
-          <div className="report-grid">
-            <div className="report-section">
-              <h3>Payment Methods</h3>
-              <div className="payment-breakdown">
+          <div className="grid grid-cols-1 md:grid-cols-[repeat(2,minmax(240px,1fr))] gap-4">
+            <div className="border border-slate-200 dark:border-gray-700 rounded-xl p-4 bg-slate-50 dark:bg-[#0a0f1a]">
+              <h3 className="text-sm font-semibold mb-3 text-slate-900 dark:text-gray-50">
+                Payment Methods
+              </h3>
+              <div>
                 {Object.entries(reportData.paymentMethodBreakdown || {}).map(([method, amount]) => (
-                  <div key={method} className="payment-item">
-                    <span className="method">{method}</span>
-                    <span className="amount">{formatCurrency(amount)}</span>
+                  <div
+                    key={method}
+                    className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-gray-700 text-sm last:border-b-0"
+                  >
+                    <span className="text-slate-900 dark:text-gray-50">{method}</span>
+                    <span className="font-bold text-slate-900 dark:text-gray-50">
+                      {formatCurrency(amount)}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="report-section">
-              <h3>Daily Revenue</h3>
-              <div className="daily-breakdown">
+            <div className="border border-slate-200 dark:border-gray-700 rounded-xl p-4 bg-slate-50 dark:bg-[#0a0f1a]">
+              <h3 className="text-sm font-semibold mb-3 text-slate-900 dark:text-gray-50">
+                Daily Revenue
+              </h3>
+              <div>
                 {Object.entries(reportData.dailyRevenue || {}).slice(0, 7).map(([date, amount]) => (
-                  <div key={date} className="daily-item">
-                    <span className="date">{date}</span>
-                    <span className="amount">{formatCurrency(amount)}</span>
+                  <div
+                    key={date}
+                    className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-gray-700 text-sm last:border-b-0"
+                  >
+                    <span className="text-slate-900 dark:text-gray-50">{date}</span>
+                    <span className="font-bold text-slate-900 dark:text-gray-50">
+                      {formatCurrency(amount)}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -215,65 +273,92 @@ export default function SalesReports() {
       )}
 
       {/* Sales List */}
-      <div className="card">
-        <div className="card-header">
-          <h2>Recent Transactions</h2>
-          <span className="badge">{sales.length} transactions</span>
+      <div className="rounded-2xl border border-slate-200 dark:border-gray-700 shadow-sm">
+        <div className="flex items-center justify-between gap-3 flex-wrap px-5 pt-5 mb-4">
+          <h2 className="m-0 text-lg font-semibold text-slate-900 dark:text-gray-50">
+            Recent Transactions
+          </h2>
+          <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-600/20">
+            {sales.length} transactions
+          </span>
         </div>
 
         {loading ? (
-          <div className="loading-state">Loading sales...</div>
+          <div className="min-h-[170px] flex items-center justify-center border border-dashed border-slate-200 dark:border-gray-700 rounded-[10px] mt-2 mx-5 mb-5 text-[0.94rem] text-slate-600 dark:text-gray-400">
+            Loading sales...
+          </div>
         ) : error ? (
-          <div className="error-state">{error}</div>
+          <div className="min-h-[170px] flex items-center justify-center border border-dashed rounded-[10px] mt-2 mx-5 mb-5 text-[0.94rem] text-red-600 border-red-600/35 bg-red-600/5">
+            {error}
+          </div>
         ) : sales.length === 0 ? (
-          <div className="empty-state">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="text-center py-16 px-8 text-slate-600 dark:text-gray-400">
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mx-auto mb-4 opacity-50"
+            >
               <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
               <line x1="1" y1="10" x2="23" y2="10" />
             </svg>
-            <h3>No sales yet</h3>
+            <h3 className="text-slate-900 dark:text-gray-50 mb-2">No sales yet</h3>
             <p>Sales will appear here once transactions are made</p>
           </div>
         ) : (
-          <div className="table-container">
-            <table className="data-table sales-table inventory-list-table">
+          <div className="border border-slate-200 dark:border-gray-700 rounded-[14px] bg-white dark:bg-gray-900 overflow-x-auto mx-5 mb-5">
+            <table className="w-full min-w-[860px] border-collapse">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Customer</th>
-                  <th className="align-center">Items</th>
-                  <th>Payment</th>
-                  <th className="align-center">Total</th>
-                  <th className="align-left">Employee</th>
-                  <th>Store</th>
+                  <th className={thCls}>Date</th>
+                  <th className={thCls}>Customer</th>
+                  <th className={thCls}>Items</th>
+                  <th className={thCls}>Payment</th>
+                  <th className={thCls}>Total</th>
+                  <th className={thCls}>Employee</th>
+                  <th className={thCls}>Store</th>
                 </tr>
               </thead>
               <tbody>
                 {sales.map((sale) => (
-                  <tr key={sale.id}>
-                    <td>{formatDate(sale.createdAt)}</td>
-                    <td>
-                      <div className="customer-cell">
-                        <span>{sale.customerName || 'Walk-in'}</span>
+                  <tr
+                    key={sale.id}
+                    className="hover:bg-blue-50/40 dark:hover:bg-blue-900/20 last:[&>td]:border-b"
+                  >
+                    <td className={tdCls}>{formatDate(sale.createdAt)}</td>
+                    <td className={tdCls}>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-semibold">
+                          {sale.customerName || 'Walk-in'}
+                        </span>
                         {sale.customerPhone && (
-                          <small>{sale.customerPhone}</small>
+                          <small className="text-slate-600 dark:text-gray-400 text-xs">
+                            {sale.customerPhone}
+                          </small>
                         )}
                       </div>
                     </td>
-                    <td className="align-center">
-                      <span className="items-count">{sale.itemCount} items</span>
+                    <td className={tdCls}>
+                      <span className="text-slate-600 dark:text-gray-400 text-sm font-semibold">
+                        {sale.itemCount} items
+                      </span>
                     </td>
-                    <td>
-                      <span className={`payment-badge ${sale.paymentMethod?.toLowerCase()}`}>
+                    <td className={tdCls}>
+                      <span className={getPaymentBadgeClasses(sale.paymentMethod)}>
                         {sale.paymentMethod}
                       </span>
                     </td>
-                    <td className="align-center">
+                    <td className={tdCls}>
                       <strong>{formatCurrency(sale.total)}</strong>
                     </td>
-                    <td>{sale.employeeName || '-'}</td>
-                    <td>
-                      <span className="store-badge">
+                    <td className={tdCls}>{sale.employeeName || '-'}</td>
+                    <td className={tdCls}>
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-blue-600/10 text-blue-600 dark:text-blue-400 text-xs font-semibold">
                         {stores.find(s => s.id === sale.storeId)?.name || 'Unknown'}
                       </span>
                     </td>
