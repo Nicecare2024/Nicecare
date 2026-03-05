@@ -29,7 +29,7 @@ export function useSales(storeId = null, dateRange = null) {
 
     let ownerUid = currentUser.uid;
     let effectiveStoreId = storeId;
-    if (userProfile?.role === 'member') {
+    if (userProfile?.role === 'member' || userProfile?.role === 'manager') {
       ownerUid = userProfile.ownerUid || userProfile.masterUid;
       effectiveStoreId = userProfile.assignedStoreId;
       if (!effectiveStoreId || !ownerUid) {
@@ -79,7 +79,7 @@ export function useSales(storeId = null, dateRange = null) {
     if (!currentUser) throw new Error('Not authenticated');
 
     let ownerUid = currentUser.uid;
-    if (userProfile?.role === 'member') {
+    if (userProfile?.role === 'member' || userProfile?.role === 'manager') {
       ownerUid = userProfile.ownerUid || userProfile.masterUid;
     }
     if (!ownerUid) {
@@ -97,7 +97,8 @@ export function useSales(storeId = null, dateRange = null) {
 
     let ownerUid = currentUser.uid;
     let effectiveStoreId = filterStoreId;
-    if (userProfile?.role === 'member') {
+    if (userProfile?.role === 'member' || userProfile?.role === 'manager') {
+      ownerUid = userProfile.ownerUid || userProfile.masterUid || currentUser.uid;
       effectiveStoreId = userProfile.assignedStoreId;
     }
 
