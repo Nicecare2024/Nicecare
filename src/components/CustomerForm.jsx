@@ -122,6 +122,8 @@ export default function CustomerForm({ onSubmit, loading }) {
     costParts: true,
   });
   const [showSuccess, setShowSuccess] = useState(false);
+  // preserve the data that was just submitted so we can show it in the popup
+  const [lastData, setLastData] = useState(null);
 
   useEffect(() => {
     localStorage.setItem(FORM_MODE_KEY, formMode);
@@ -183,8 +185,11 @@ export default function CustomerForm({ onSubmit, loading }) {
 
     onSubmit(formData);
 
+    // set flag to show success modal
     setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
+    setTimeout(() => {
+      setShowSuccess(false);
+    }, 3000);
 
     const initialData = getInitialFormData();
     setFormData(initialData);
@@ -204,8 +209,8 @@ export default function CustomerForm({ onSubmit, loading }) {
       
 {/* --- ENHANCED SUCCESS POPUP --- */}
 {showSuccess && (
-  <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm rounded-xl transition-all duration-300 animate-in fade-in">
-    <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl border border-slate-200 dark:border-gray-700 flex flex-col items-center text-center max-w-sm w-full mx-4 transform transition-all duration-500 animate-in slide-in-from-bottom-4 zoom-in-105">
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm rounded-xl transition-all duration-300 animate-in fade-in">
+    <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl border border-slate-200 dark:border-gray-700 flex flex-col items-center text-center max-w-md w-full mx-4 transform transition-all duration-500 animate-in slide-in-from-bottom-4 zoom-in-105">
       <div className="w-20 h-20 bg-green-50 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-5 ring-4 ring-green-100 dark:ring-green-900/30 shadow-inner animate-in zoom-in-50 duration-500">
         <Icons.Success />
       </div>
