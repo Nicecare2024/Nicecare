@@ -260,9 +260,9 @@ export default function CustomerTable({ customers, onUpdateStatus, onUpdateCusto
                     </td>
                     <td className="px-4 py-3 border-b border-slate-100 dark:border-gray-700/50">
                       <div className="text-sm">
-                        <span className="text-slate-400 dark:text-gray-500 text-xs font-medium">In:</span> {customer.submissionDate}
+                        <span className="text-slate-400 dark:text-gray-500 text-xs font-medium">In:</span> <span className="text-slate-700 dark:text-gray-300">{customer.submissionDate}</span>
                         <br />
-                        <span className="text-slate-400 dark:text-gray-500 text-xs font-medium">Due:</span> {customer.expectedDate || '—'}
+                        <span className="text-slate-400 dark:text-gray-500 text-xs font-medium">Due:</span> <span className="text-slate-700 dark:text-gray-300">{customer.expectedDate || '—'}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3 border-b border-slate-100 dark:border-gray-700/50">
