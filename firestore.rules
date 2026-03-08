@@ -79,6 +79,16 @@ service cloud.firestore {
         getEmployeeOwnerUid() == ownerUid;
     }
 
+    // Fallback for managers who have inventoryUsers profile but no employees doc (e.g. migration)
+    function isAssignedManagerFromInventoryUsers(ownerUid, storeId) {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/inventoryUsers/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/inventoryUsers/$(request.auth.uid)).data.role == 'manager' &&
+        get(/databases/$(database)/documents/inventoryUsers/$(request.auth.uid)).data.assignedStoreId == storeId &&
+        (get(/databases/$(database)/documents/inventoryUsers/$(request.auth.uid)).data.ownerUid == ownerUid ||
+         get(/databases/$(database)/documents/inventoryUsers/$(request.auth.uid)).data.masterUid == ownerUid);
+    }
+
     // Stores collection - only master can CRUD their stores
     match /stores/{storeId} {
       allow create: if isSignedIn() && request.resource.data.ownerUid == request.auth.uid;
@@ -97,9 +107,11 @@ service cloud.firestore {
         (request.resource.data.ownerUid == request.auth.uid || 
          (employeeId == request.auth.uid && request.resource.data.uid == request.auth.uid));
       // Master can read all their employees, employee can read their own record
+      // Manager can read employees in their store (from employees or inventoryUsers profile)
       allow read: if (isSignedIn() && resource.data.ownerUid == request.auth.uid) ||
         request.auth.uid == employeeId ||
-        isAssignedManager(resource.data.ownerUid, resource.data.assignedStoreId);
+        isAssignedManager(resource.data.ownerUid, resource.data.assignedStoreId) ||
+        isAssignedManagerFromInventoryUsers(resource.data.ownerUid, resource.data.assignedStoreId);
       // Only master can update/delete
       allow update, delete: if isSignedIn() && resource.data.ownerUid == request.auth.uid;
     }

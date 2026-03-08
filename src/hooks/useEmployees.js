@@ -24,6 +24,13 @@ export function useEmployees() {
 
     const storeIdForManager = isMaster ? null : userProfile.assignedStoreId || null;
 
+    // Managers need ownerUid and assignedStoreId; skip query if missing to avoid permission errors
+    if (!isMaster && (!ownerUidForTenant || !storeIdForManager)) {
+      setEmployees([]);
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = employeesRepo.subscribeEmployees(
       {
         ownerUid: ownerUidForTenant,
