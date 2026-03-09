@@ -73,7 +73,7 @@ export default function MemberSales() {
     <main className="flex flex-col gap-5 flex-1 min-h-0">
       <div className="flex items-start gap-4 mb-2">
         <div className="flex flex-col gap-1.5">
-          <h1 className="text-[1.9rem] font-bold tracking-tight text-slate-900 dark:text-gray-50">
+          <h1 className="text-xl sm:text-2xl md:text-[1.9rem] font-bold tracking-tight text-slate-900 dark:text-gray-50">
             My Sales
           </h1>
           <div className="flex items-center gap-2 flex-wrap">
