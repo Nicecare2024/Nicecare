@@ -148,12 +148,15 @@ function EmployeeManagementContent({ userProfile, isMaster, isManager }) {
 
   async function confirmDelete() {
     if (!deleteConfirm) return;
-
     try {
       await deleteEmployee(deleteConfirm.id);
-      setDeleteConfirm(null);
     } catch (err) {
-      alert('Failed to delete employee: ' + err.message);
+      // If permission denied, or employee does not exist, do nothing (no popup)
+      if (!(err && (err.code === 'permission-denied' || /insufficient permissions|not found|does not exist/i.test(err.message)))) {
+        // Only show alert for unexpected errors
+        alert('Failed to delete employee: ' + (err.message || err));
+      }
+    } finally {
       setDeleteConfirm(null);
     }
   }
