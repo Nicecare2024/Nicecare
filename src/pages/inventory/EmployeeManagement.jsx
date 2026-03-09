@@ -201,7 +201,7 @@ function EmployeeManagementContent({ userProfile, isMaster, isManager }) {
 
       <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-gray-50">Employee Management</h1>
+          <h1 className="text-xl sm:text-2xl md:text-[1.9rem] font-bold tracking-tight text-slate-900 dark:text-gray-50">Employee Management</h1>
           <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">
             {isMaster ? 'Manage employees across all stores' : 'Manage employees for your assigned store'}
           </p>

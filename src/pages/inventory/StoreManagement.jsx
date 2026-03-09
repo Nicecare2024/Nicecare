@@ -138,7 +138,7 @@ export default function StoreManagement() {
 
       <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-gray-50">Store Management</h1>
+          <h1 className="text-xl sm:text-2xl md:text-[1.9rem] font-bold tracking-tight text-slate-900 dark:text-gray-50">Store Management</h1>
           <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">Manage your store locations</p>
         </div>
         <button
