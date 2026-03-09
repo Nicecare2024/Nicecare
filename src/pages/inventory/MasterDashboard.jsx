@@ -49,7 +49,7 @@ function MasterDashboardContent({ userProfile, isMaster, isManager }) {
   };
 
   return (
-    <main className="p-4 md:p-6 lg:p-8 space-y-6 animate-fade-in">
+    <main className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-fade-in">
 
       {/* --- HERO SECTION --- */}
       <section className="bg-gradient-to-br from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-900 rounded-2xl p-6 md:p-8 text-white shadow-lg">
@@ -75,19 +75,19 @@ function MasterDashboardContent({ userProfile, isMaster, isManager }) {
             </div>
           </div>
           {lowStockProducts.length > 0 && (
-            <div className="flex items-start gap-3 bg-amber-500/20 backdrop-blur-sm border border-amber-300/30 rounded-xl px-4 py-3 max-w-md">
+            <div className="flex items-start gap-2 sm:gap-3 bg-amber-500/20 backdrop-blur-sm border border-amber-300/30 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 max-w-md">
               <div className="text-amber-200 shrink-0 mt-0.5">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="20" height="20" className="sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
                   <line x1="12" y1="9" x2="12" y2="13"/>
                   <line x1="12" y1="17" x2="12.01" y2="17"/>
                 </svg>
               </div>
-              <div className="space-y-1">
-                <strong className="text-sm font-semibold text-amber-100">Low Stock Alert!</strong>
-                <div className="flex flex-wrap items-center gap-1.5 text-xs">
+              <div className="space-y-1 min-w-0">
+                <strong className="text-xs sm:text-sm font-semibold text-amber-100">Low Stock Alert!</strong>
+                <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 text-[0.65rem] sm:text-xs">
                   {lowStockProducts.slice(0, 3).map((product, idx) => (
-                    <span key={idx} className="bg-white/15 px-2 py-0.5 rounded-full">{product.name}</span>
+                    <span key={idx} className="bg-white/15 px-1.5 sm:px-2 py-0.5 rounded-full truncate max-w-[80px] sm:max-w-none">{product.name}</span>
                   ))}
                   {lowStockProducts.length > 3 && <span className="text-amber-200">+{lowStockProducts.length - 3} more</span>}
                   <a href="/inventory/products" className="text-white font-semibold underline underline-offset-2 hover:text-amber-100 ml-1">View All</a>
@@ -98,7 +98,7 @@ function MasterDashboardContent({ userProfile, isMaster, isManager }) {
         </div>
       </section>
 
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         {/* --- MAIN STATS --- */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10 px-2">
           <StatCard label={isMaster ? 'Total Stores' : 'Assigned Store'} value={loading ? '...' : (isMaster ? stores.length : 1)} icon={<StoreIcon />} type="stores" />
@@ -108,7 +108,7 @@ function MasterDashboardContent({ userProfile, isMaster, isManager }) {
         </div>
 
         {/* --- SECONDARY STATS --- */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4" style={{marginBottom: '40px'}}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <MiniCard label="Today's Sales" value={loading ? '...' : stats?.todaySales} />
             <MiniCard label="Today's Revenue" value={loading ? '...' : formatCurrency(stats?.todayRevenue)} />
             <MiniCard label="Avg. Order" value={loading ? '...' : formatCurrency(stats?.averageOrderValue)} />
@@ -127,7 +127,7 @@ function MasterDashboardContent({ userProfile, isMaster, isManager }) {
         </div>
 
         {/* --- TABLE OVERVIEWS --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           
           {/* Stores Table Panel (master only) */}
           {isMaster && (
@@ -208,18 +208,18 @@ function MasterDashboardContent({ userProfile, isMaster, isManager }) {
 /* Sub-Components */
 function MiniCard({ label, value, warning }) {
     return (
-        <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl px-4 py-3.5 shadow-card">
-            <span className="text-xs font-medium text-slate-400 dark:text-gray-500">{label}</span>
-            <h3 className={`text-lg font-bold mt-0.5 ${warning ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-gray-50'}`}>{value}</h3>
+        <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 shadow-card">
+            <span className="text-[0.65rem] sm:text-xs font-medium text-slate-400 dark:text-gray-500 block truncate">{label}</span>
+            <h3 className={`text-base sm:text-lg font-bold mt-0.5 break-words ${warning ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-gray-50'}`}>{value}</h3>
         </div>
     );
 }
 
 function QuickActionCard({ href, label, icon }) {
   return (
-    <a href={href} className="flex flex-col items-center gap-2 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl px-4 py-5 shadow-card hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 hover:-translate-y-0.5 transition-all group">
+    <a href={href} className="flex flex-col items-center gap-1.5 sm:gap-2 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg sm:rounded-xl px-3 sm:px-4 py-3 sm:py-5 shadow-card hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 hover:-translate-y-0.5 transition-all group">
       <div className="text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">{icon}</div>
-      <span className="text-sm font-semibold text-slate-700 dark:text-gray-300">{label}</span>
+      <span className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-gray-300 text-center">{label}</span>
     </a>
   );
 }
@@ -233,13 +233,13 @@ function StatCard({ label, value, icon, type }) {
   };
   
   return (
-    <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl p-5 shadow-card flex items-center gap-4">
-      <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: colors[type].bg, color: colors[type].color }}>
+    <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-5 shadow-card flex items-center gap-2 sm:gap-4">
+      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0" style={{ background: colors[type].bg, color: colors[type].color }}>
         {icon}
       </div>
-      <div>
-        <h3 className="text-xl font-bold text-slate-900 dark:text-gray-50 leading-tight">{value}</h3>
-        <p className="text-xs text-slate-400 dark:text-gray-500 mt-0.5">{label}</p>
+      <div className="flex-1 min-w-0">
+        <h3 className="text-base sm:text-xl font-bold text-slate-900 dark:text-gray-50 leading-tight break-words">{value}</h3>
+        <p className="text-[0.65rem] sm:text-xs text-slate-400 dark:text-gray-500 mt-0.5 truncate">{label}</p>
       </div>
     </div>
   );
