@@ -132,6 +132,7 @@ export default function InventoryLoginPage() {
             to="/" 
             className="flex h-10 items-center gap-2 rounded-full border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-widest text-slate-600 shadow-sm transition-all hover:border-indigo-500 hover:text-indigo-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:border-indigo-400"
           >
+            
             <ArrowLeft size={16} />
             <span className="hidden sm:inline">Home</span>
           </Link>
