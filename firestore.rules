@@ -20,15 +20,18 @@ service cloud.firestore {
     match /customers/{docId} {
       allow create: if isSignedIn() &&
         (request.resource.data.ownerUid == request.auth.uid ||
+         isAssignedManagerForStore(request.resource.data.ownerUid, request.resource.data.storeId) ||
          (exists(/databases/$(database)/documents/employees/$(request.auth.uid)) &&
           request.resource.data.ownerUid == getEmployeeOwnerUid() &&
           request.resource.data.storeId == getEmployeeStoreId()));
       allow read: if isOwner(resource.data) ||
+        isAssignedManagerForStore(resource.data.ownerUid, resource.data.storeId) ||
         (isSignedIn() &&
          exists(/databases/$(database)/documents/employees/$(request.auth.uid)) &&
          resource.data.storeId == getEmployeeStoreId() &&
          resource.data.ownerUid == getEmployeeOwnerUid());
       allow update: if isOwner(resource.data) ||
+        isAssignedManagerForStore(resource.data.ownerUid, resource.data.storeId) ||
         (isSignedIn() &&
          exists(/databases/$(database)/documents/employees/$(request.auth.uid)) &&
          resource.data.storeId == getEmployeeStoreId() &&
@@ -89,12 +92,17 @@ service cloud.firestore {
          get(/databases/$(database)/documents/inventoryUsers/$(request.auth.uid)).data.masterUid == ownerUid);
     }
 
+    function isAssignedManagerForStore(ownerUid, storeId) {
+      return isAssignedManager(ownerUid, storeId) ||
+        isAssignedManagerFromInventoryUsers(ownerUid, storeId);
+    }
+
     // Stores collection - only master can CRUD their stores
     match /stores/{storeId} {
       allow create: if isSignedIn() && request.resource.data.ownerUid == request.auth.uid;
       allow read: if isMasterOwner(resource.data) || isStoreEmployee(storeId);
       allow update: if isMasterOwner(resource.data) ||
-        (isAssignedManager(resource.data.ownerUid, storeId) &&
+        (isAssignedManagerForStore(resource.data.ownerUid, storeId) &&
          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['productCount', 'updatedAt']));
       allow delete: if isMasterOwner(resource.data);
     }
@@ -110,8 +118,7 @@ service cloud.firestore {
       // Manager can read employees in their store (from employees or inventoryUsers profile)
       allow read: if (isSignedIn() && resource.data.ownerUid == request.auth.uid) ||
         request.auth.uid == employeeId ||
-        isAssignedManager(resource.data.ownerUid, resource.data.assignedStoreId) ||
-        isAssignedManagerFromInventoryUsers(resource.data.ownerUid, resource.data.assignedStoreId);
+        isAssignedManagerForStore(resource.data.ownerUid, resource.data.assignedStoreId);
       // Only master can update/delete
       allow update, delete: if isSignedIn() && resource.data.ownerUid == request.auth.uid;
     }
@@ -120,10 +127,11 @@ service cloud.firestore {
     match /products/{productId} {
       allow create: if isSignedIn() &&
         (request.resource.data.ownerUid == request.auth.uid ||
-         isAssignedManager(request.resource.data.ownerUid, request.resource.data.storeId));
+         isAssignedManagerForStore(request.resource.data.ownerUid, request.resource.data.storeId));
       // Master can read all their products
       // Employee can read products from their assigned store
       allow read: if isMasterOwner(resource.data) || 
+        isAssignedManagerForStore(resource.data.ownerUid, resource.data.storeId) ||
         (isSignedIn() && 
          exists(/databases/$(database)/documents/employees/$(request.auth.uid)) && 
          resource.data.storeId == getEmployeeStoreId() &&
@@ -131,7 +139,7 @@ service cloud.firestore {
       // Master can update/delete
       // Employee can update stock quantity only (for sales)
       allow update: if isMasterOwner(resource.data) || 
-        (isAssignedManager(resource.data.ownerUid, resource.data.storeId) &&
+        (isAssignedManagerForStore(resource.data.ownerUid, resource.data.storeId) &&
          request.resource.data.ownerUid == resource.data.ownerUid &&
          request.resource.data.storeId == resource.data.storeId) ||
         (isSignedIn() && 
@@ -140,7 +148,7 @@ service cloud.firestore {
          resource.data.ownerUid == getEmployeeOwnerUid() &&
          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['quantity', 'updatedAt']));
       allow delete: if isMasterOwner(resource.data) ||
-        isAssignedManager(resource.data.ownerUid, resource.data.storeId);
+        isAssignedManagerForStore(resource.data.ownerUid, resource.data.storeId);
     }
 
     // Sales collection - master can read all, employee can create and read their store's sales
@@ -148,12 +156,14 @@ service cloud.firestore {
       // Master or employee can create sales with proper ownership
       allow create: if isSignedIn() && 
         (request.resource.data.ownerUid == request.auth.uid ||
+         isAssignedManagerForStore(request.resource.data.ownerUid, request.resource.data.storeId) ||
          (exists(/databases/$(database)/documents/employees/$(request.auth.uid)) &&
           request.resource.data.ownerUid == getEmployeeOwnerUid() &&
           request.resource.data.storeId == getEmployeeStoreId()));
       // Master can read all their sales
       // Employee can read sales from their store
       allow read: if isMasterOwner(resource.data) ||
+        isAssignedManagerForStore(resource.data.ownerUid, resource.data.storeId) ||
         (isSignedIn() && 
          exists(/databases/$(database)/documents/employees/$(request.auth.uid)) && 
          resource.data.storeId == getEmployeeStoreId() &&
@@ -166,9 +176,11 @@ service cloud.firestore {
     match /stockMovements/{movementId} {
       allow create: if isSignedIn() && 
         (request.resource.data.ownerUid == request.auth.uid ||
+         isAssignedManagerForStore(request.resource.data.ownerUid, request.resource.data.storeId) ||
          (exists(/databases/$(database)/documents/employees/$(request.auth.uid)) &&
           request.resource.data.ownerUid == getEmployeeOwnerUid()));
       allow read: if isMasterOwner(resource.data) ||
+        isAssignedManagerForStore(resource.data.ownerUid, resource.data.storeId) ||
         (isSignedIn() && 
          exists(/databases/$(database)/documents/employees/$(request.auth.uid)) && 
          resource.data.storeId == getEmployeeStoreId() &&
@@ -182,7 +194,7 @@ service cloud.firestore {
       allow create: if isSignedIn() &&
         (request.resource.data.ownerUid == request.auth.uid ||
          (request.resource.data.role == 'member' &&
-          isAssignedManager(request.resource.data.ownerUid, request.resource.data.assignedStoreId)));
+          isAssignedManagerForStore(request.resource.data.ownerUid, request.resource.data.assignedStoreId)));
       // Anyone can read invitations (needed for signup flow to validate invite codes)
       allow read: if true;
       // Master can update/delete their invitations

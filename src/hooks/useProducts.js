@@ -35,6 +35,10 @@ export function useProducts(storeId = null) {
       return;
     }
 
+    // #region agent log
+    fetch('http://127.0.0.1:7555/ingest/14177494-399b-47b1-a251-61383150f196',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b7d8d0'},body:JSON.stringify({sessionId:'b7d8d0',runId:'initial',hypothesisId:'H2',location:'src/hooks/useProducts.js',message:'Products query resolved',data:{role:userProfile?.role||null,hasOwnerUid:!!ownerUid,effectiveStoreId:effectiveStoreId||null,requestedStoreId:storeId||null},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+
     const unsubscribe = productsRepo.subscribeProducts({
       ownerUid,
       storeId: effectiveStoreId || null,
@@ -48,6 +52,9 @@ export function useProducts(storeId = null) {
         setError(null);
       },
       onError: (err) => {
+        // #region agent log
+        fetch('http://127.0.0.1:7555/ingest/14177494-399b-47b1-a251-61383150f196',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b7d8d0'},body:JSON.stringify({sessionId:'b7d8d0',runId:'initial',hypothesisId:'H4',location:'src/hooks/useProducts.js',message:'Products query failed',data:{role:userProfile?.role||null,errorCode:err?.code||null,errorMessage:err?.message||String(err)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
         console.error('Error fetching products:', err);
         setError('Failed to load products');
         setLoading(false);

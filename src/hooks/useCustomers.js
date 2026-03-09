@@ -72,6 +72,10 @@ export function useCustomers(storeId = null) {
       }
     }
 
+    // #region agent log
+    fetch('http://127.0.0.1:7555/ingest/14177494-399b-47b1-a251-61383150f196',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b7d8d0'},body:JSON.stringify({sessionId:'b7d8d0',runId:'initial',hypothesisId:'H2',location:'src/hooks/useCustomers.js',message:'Customers query resolved',data:{role:userProfile?.role||null,isStoreScopedUser,hasOwnerUid:!!ownerUid,assignedStoreId:userProfile?.assignedStoreId||null,requestedStoreId:storeId||null},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
@@ -84,6 +88,9 @@ export function useCustomers(storeId = null) {
         setError(null);
       },
       (err) => {
+        // #region agent log
+        fetch('http://127.0.0.1:7555/ingest/14177494-399b-47b1-a251-61383150f196',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b7d8d0'},body:JSON.stringify({sessionId:'b7d8d0',runId:'initial',hypothesisId:'H4',location:'src/hooks/useCustomers.js',message:'Customers query failed',data:{role:userProfile?.role||null,errorCode:err?.code||null,errorMessage:err?.message||String(err)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
         console.error('Error fetching customers:', err);
         setError('Failed to load customers');
         setLoading(false);
