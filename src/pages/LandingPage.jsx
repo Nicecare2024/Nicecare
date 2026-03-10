@@ -9,13 +9,10 @@ import CTASection from '../components/landing/CTASection';
 import Footer from '../components/landing/Footer';
 
 export default function LandingPage() {
-  // Force scroll to top on mount and enable smooth scroll after load
   useEffect(() => {
-    // Immediately scroll to top without smooth behavior
     window.history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
     
-    // Enable smooth scroll after a short delay
     const timer = setTimeout(() => {
       document.documentElement.classList.add('loaded');
     }, 100);
@@ -27,12 +24,17 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="landing-page">
-      <a className="skip-link" href="#main-content">Skip to main content</a>
+    <div className="min-h-screen w-full bg-slate-50 dark:bg-[#0a0f1a] text-slate-900 dark:text-gray-50 overflow-x-hidden relative before:content-[''] before:fixed before:-top-1/2 before:-left-1/2 before:w-[200%] before:h-[200%] before:bg-[radial-gradient(circle_at_20%_50%,rgba(59,130,246,0.08)_0%,transparent_50%),radial-gradient(circle_at_80%_80%,rgba(99,102,241,0.08)_0%,transparent_50%)] before:animate-float before:pointer-events-none before:z-0">
+      <a
+        className="absolute -left-[999px] top-2 py-3 px-4 bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-50 border-2 border-blue-600 dark:border-blue-400 rounded-lg z-[999] font-semibold focus-visible:left-4"
+        href="#main-content"
+      >
+        Skip to main content
+      </a>
       
       <Header />
       
-      <main className="landing-main" id="main-content">
+      <main className="relative z-[1] px-[3%] sm:px-[4%] md:px-[5%]" id="main-content">
         <HeroSection />
         <FeaturesSection />
         <HowItWorks />

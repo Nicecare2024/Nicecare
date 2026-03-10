@@ -18,6 +18,8 @@ export default function InventoryNavbar() {
   }
 
   const isMaster = userProfile?.role === 'master';
+  const isManager = userProfile?.role === 'manager';
+  const isMember = userProfile?.role === 'member';
   const currentPath = location.pathname;
 
   const handleApiDocsDoubleClick = (e) => {
@@ -42,7 +44,20 @@ export default function InventoryNavbar() {
     { path: '/inventory/crm', label: 'CRM', icon: 'crm' },
   ];
 
-  const navItems = isMaster ? masterNavItems : memberNavItems;
+  const managerNavItems = [
+    { path: '/inventory/dashboard', label: 'Dashboard', icon: 'dashboard' },
+    { path: '/inventory/employees', label: 'Employees', icon: 'people' },
+    { path: '/inventory/products', label: 'Products', icon: 'inventory' },
+    { path: '/inventory/sales', label: 'Sales', icon: 'receipt' },
+    { path: '/inventory/crm', label: 'CRM', icon: 'crm' },
+  ];
+
+  let navItems = memberNavItems;
+  if (isMaster) {
+    navItems = masterNavItems;
+  } else if (isManager) {
+    navItems = managerNavItems;
+  }
 
   const getIcon = (iconName) => {
     switch (iconName) {
@@ -121,13 +136,13 @@ export default function InventoryNavbar() {
   };
 
   return (
-    <nav className="inventory-navbar">
-      <div className="navbar-left">
+    <nav className="flex items-center justify-between py-3 px-4 md:py-4 md:px-6 bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-gray-700">
+      <div className="flex items-center gap-4 md:gap-6">
         <Link
           to="/"
-          className="navbar-brand inventory-brand-nav"
+          className="flex items-center gap-2.5 no-underline font-semibold text-slate-900 dark:text-gray-50"
         >
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="stroke-blue-600 dark:stroke-blue-400" width="28" height="28" viewBox="0 0 24 24" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
             <line x1="3" y1="6" x2="21" y2="6" />
             <path d="M16 10a4 4 0 0 1-8 0" />
@@ -135,23 +150,27 @@ export default function InventoryNavbar() {
           <span>Inventory</span>
         </Link>
 
-        <div className="navbar-nav">
+        <div className="hidden md:flex items-center gap-1">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`nav-item ${currentPath === item.path ? 'active' : ''}`}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium no-underline transition-colors duration-200 ${
+                currentPath === item.path
+                  ? 'text-blue-600 dark:text-blue-400 bg-blue-600/10'
+                  : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-50 hover:bg-slate-100 dark:hover:bg-gray-700'
+              }`}
             >
-              {getIcon(item.icon)}
+              <span className="w-[18px] h-[18px]">{getIcon(item.icon)}</span>
               <span>{item.label}</span>
             </Link>
           ))}
         </div>
       </div>
 
-      <div className="navbar-right">
+      <div className="flex items-center gap-3">
         {userProfile?.assignedStoreName && (
-          <div className="store-badge">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600/10 text-blue-600 dark:text-blue-400 rounded-full text-sm font-medium">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
             </svg>
@@ -160,17 +179,21 @@ export default function InventoryNavbar() {
         )}
 
         <div
-          className="user-info"
+          className="hidden md:flex flex-col text-right"
           onDoubleClick={handleApiDocsDoubleClick}
           title={isMaster ? "Control/Command + Double Click for API Docs" : ""}
           style={{ cursor: isMaster ? 'help' : 'default' }}
         >
-          <span className="user-name">{userProfile?.displayName || currentUser?.email}</span>
-          <span className="user-role">{isMaster ? 'Business Owner' : 'Employee'}</span>
+          <span className="font-semibold text-slate-900 dark:text-gray-50">
+            {userProfile?.displayName || currentUser?.email}
+          </span>
+          <span className="text-xs text-slate-400 dark:text-gray-500">
+            {isMaster ? 'Business Owner' : isManager ? 'Store Manager' : isMember ? 'Employee' : ''}
+          </span>
         </div>
 
         <button
-          className="icon-btn"
+          className="w-9 h-9 rounded-lg flex items-center justify-center border border-slate-200 dark:border-gray-700 bg-transparent text-slate-600 dark:text-gray-400 cursor-pointer transition-all duration-200 hover:bg-slate-100 dark:hover:bg-gray-700 hover:border-blue-600 dark:hover:border-blue-400"
           onClick={toggleTheme}
           aria-label="Toggle theme"
         >
@@ -193,7 +216,10 @@ export default function InventoryNavbar() {
           )}
         </button>
 
-        <button className="btn btn-outline btn-sm" onClick={handleLogout}>
+        <button
+          className="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-[10px] font-medium text-[0.8125rem] cursor-pointer transition-all duration-200 bg-transparent border border-slate-200 dark:border-gray-700 text-slate-600 dark:text-gray-400 hover:border-red-500 hover:text-red-500"
+          onClick={handleLogout}
+        >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
             <polyline points="16 17 21 12 16 7" />

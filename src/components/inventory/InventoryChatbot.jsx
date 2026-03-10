@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useInventoryAuth } from '../../context/InventoryAuthContext';
 import {
   askAboutInventory,
@@ -24,6 +25,13 @@ const MEMBER_SUGGESTED_QUESTIONS = [
   "Show today's sales summary",
   "What's my best selling product?",
   "Which items need restocking?",
+];
+
+const MANAGER_SUGGESTED_QUESTIONS = [
+  "Show low stock items in my store",
+  "Summarize today's store sales",
+  "Which team members made the most sales this week?",
+  "What should I reorder for this store?",
 ];
 
 const CRM_SUGGESTED_QUESTIONS = [
@@ -56,23 +64,24 @@ export default function InventoryChatbot() {
 
   const suggestedQuestions = isCrmPage
     ? CRM_SUGGESTED_QUESTIONS
-    : (userProfile?.role === 'master' ? MASTER_SUGGESTED_QUESTIONS : MEMBER_SUGGESTED_QUESTIONS);
+    : (userProfile?.role === 'master'
+      ? MASTER_SUGGESTED_QUESTIONS
+      : userProfile?.role === 'manager'
+        ? MANAGER_SUGGESTED_QUESTIONS
+        : MEMBER_SUGGESTED_QUESTIONS);
 
-  // Scroll to bottom when new messages arrive
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isCrmPage]);
 
-  // Focus input when chat opens
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isOpen]);
 
-  // Streaming callback handler
   const handleStreamChunk = useCallback((chunk, fullText) => {
     setMessages(prev => {
       const newMessages = [...prev];
@@ -87,12 +96,10 @@ export default function InventoryChatbot() {
     });
   }, []);
 
-  // Feedback handler
   const handleFeedback = useCallback(async (msgIndex, rating) => {
     const msg = messages[msgIndex];
     if (!msg || msg.feedback === rating) return;
 
-    // Optimistically update UI
     setMessages(prev => {
       const updated = [...prev];
       updated[msgIndex] = { ...updated[msgIndex], feedback: rating };
@@ -110,7 +117,6 @@ export default function InventoryChatbot() {
       });
     } catch (err) {
       console.error('Feedback error:', err);
-      // Revert on failure
       setMessages(prev => {
         const updated = [...prev];
         updated[msgIndex] = { ...updated[msgIndex], feedback: null };
@@ -119,7 +125,6 @@ export default function InventoryChatbot() {
     }
   }, [messages, isCrmPage]);
 
-  // Feedback comment submit
   const handleFeedbackComment = useCallback(async (msgIndex) => {
     const msg = messages[msgIndex];
     if (!msg || !feedbackComment.text.trim()) return;
@@ -150,7 +155,6 @@ export default function InventoryChatbot() {
       return;
     }
 
-    // Add user message and placeholder for assistant response
     setMessages(prev => {
       const newMessages = [
         ...prev,
@@ -181,7 +185,6 @@ export default function InventoryChatbot() {
         );
       }
 
-      // Update final message with meta data
       setMessages(prev => {
         const newMessages = [...prev];
         const streamIndex = streamingMessageIndexRef.current;
@@ -219,7 +222,6 @@ export default function InventoryChatbot() {
 
   const handleSuggestedQuestion = (question) => {
     setInputValue(question);
-    // Auto-submit after a brief delay
     setTimeout(() => {
       handleSubmit({ preventDefault: () => { } });
     }, 100);
@@ -228,7 +230,6 @@ export default function InventoryChatbot() {
   const handleGetSummary = async () => {
     if (isLoading || isStreaming || !currentUser) return;
 
-    // Add user message and placeholder for assistant response
     setMessages(prev => {
       const newMessages = [
         ...prev,
@@ -257,7 +258,6 @@ export default function InventoryChatbot() {
         );
       }
 
-      // Update final message with meta data
       setMessages(prev => {
         const newMessages = [...prev];
         const streamIndex = streamingMessageIndexRef.current;
@@ -296,7 +296,6 @@ export default function InventoryChatbot() {
   const handleLowStockAnalysis = async () => {
     if (isLoading || isStreaming || !currentUser) return;
 
-    // Add user message and placeholder for assistant response
     setMessages(prev => {
       const newMessages = [
         ...prev,
@@ -320,7 +319,6 @@ export default function InventoryChatbot() {
         handleStreamChunk
       );
 
-      // Update final message with meta data
       setMessages(prev => {
         const newMessages = [...prev];
         const streamIndex = streamingMessageIndexRef.current;
@@ -383,41 +381,11 @@ export default function InventoryChatbot() {
     return parts.length > 0 ? `Analyzed: ${parts.join(', ')}` : null;
   };
 
-  // #region agent log
-  useEffect(() => {
-    const el = document.querySelector('.inventory-chatbot-wrapper');
-    if (el) {
-      const cs = getComputedStyle(el);
-      fetch('http://127.0.0.1:7710/ingest/0b56bff7-3ca1-489d-b185-0178fff3f432',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'44bb60'},body:JSON.stringify({sessionId:'44bb60',location:'InventoryChatbot.jsx:wrapper',message:'inventory-chatbot-wrapper computed styles',data:{position:cs.position,bottom:cs.bottom,right:cs.right,zIndex:cs.zIndex},timestamp:Date.now()})}).catch(()=>{});
-    }
-    if (isOpen) {
-      setTimeout(() => {
-        const container = document.querySelector('.inventory-chatbot-container');
-        if (container) {
-          const ccs = getComputedStyle(container);
-          fetch('http://127.0.0.1:7710/ingest/0b56bff7-3ca1-489d-b185-0178fff3f432',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'44bb60'},body:JSON.stringify({sessionId:'44bb60',location:'InventoryChatbot.jsx:container',message:'inventory-chatbot-container computed styles',data:{border:ccs.border,borderRadius:ccs.borderRadius,boxShadow:ccs.boxShadow,outline:ccs.outline,maxHeight:ccs.maxHeight,width:ccs.width},timestamp:Date.now()})}).catch(()=>{});
-        }
-        const header = document.querySelector('.inventory-chatbot-header');
-        if (header) {
-          const hcs = getComputedStyle(header);
-          fetch('http://127.0.0.1:7710/ingest/0b56bff7-3ca1-489d-b185-0178fff3f432',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'44bb60'},body:JSON.stringify({sessionId:'44bb60',location:'InventoryChatbot.jsx:header',message:'inventory-chatbot-header computed styles',data:{background:hcs.background,border:hcs.border,color:hcs.color},timestamp:Date.now()})}).catch(()=>{});
-        }
-        const input = document.querySelector('.inventory-chatbot-input');
-        if (input) {
-          const ics = getComputedStyle(input);
-          fetch('http://127.0.0.1:7710/ingest/0b56bff7-3ca1-489d-b185-0178fff3f432',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'44bb60'},body:JSON.stringify({sessionId:'44bb60',location:'InventoryChatbot.jsx:input',message:'inventory-chatbot-input computed styles',data:{border:ics.border,borderRadius:ics.borderRadius,outline:ics.outline},timestamp:Date.now()})}).catch(()=>{});
-        }
-      }, 500);
-    }
-  }, [isOpen]);
-  // #endregion
-
-  return (
-    <div className={`inventory-chatbot-wrapper${isOpen ? ' chatbot-open' : ''}`}>
-      {/* Chat toggle button */}
+  return createPortal(
+    <div className={`fixed z-[2500] font-sans ${isOpen ? 'bottom-0 right-0' : 'bottom-6 right-6'}`}>
       {!isOpen && (
         <button
-          className="inventory-chatbot-toggle"
+          className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-800 to-blue-500 border-none text-white cursor-pointer flex items-center justify-center shadow-[0_4px_20px_rgba(59,130,246,0.4)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:scale-105 hover:shadow-[0_6px_25px_rgba(59,130,246,0.5)]"
           onClick={() => setIsOpen(true)}
           aria-label="Open chat"
         >
@@ -430,13 +398,11 @@ export default function InventoryChatbot() {
         </button>
       )}
 
-      {/* Chat window */}
       {isOpen && (
-        <div className="inventory-chatbot-container">
-          {/* Header */}
-          <div className="inventory-chatbot-header">
-            <div className="inventory-chatbot-header-info">
-              <div className="inventory-chatbot-avatar">
+        <div className="fixed bottom-5 right-5 w-[390px] h-[min(540px,calc(100dvh-100px))] bg-white dark:bg-gray-800 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden border border-slate-200 dark:border-gray-700 animate-chatbot-slide-up isolate max-[480px]:w-[calc(100vw-1.5rem)] max-[480px]:h-[calc(100dvh-80px)] max-[480px]:bottom-3 max-[480px]:right-3">
+          <div className="px-3 py-3 pl-[1.125rem] min-h-14 box-border bg-gradient-to-br from-blue-800 to-blue-500 text-white flex justify-between items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <div className="w-9 h-9 rounded-[10px] bg-white/20 flex items-center justify-center shrink-0">
                 {isCrmPage ? (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z"></path>
@@ -453,16 +419,16 @@ export default function InventoryChatbot() {
                 )}
               </div>
               <div>
-                <h4>{isCrmPage ? 'CRM Assistant' : 'Inventory Assistant'}</h4>
-                <span className="inventory-chatbot-status">
-                  <span className="status-dot"></span>
+                <h4 className="text-[0.9375rem] font-semibold m-0 mb-0.5 leading-tight">{isCrmPage ? 'CRM Assistant' : 'Inventory Assistant'}</h4>
+                <span className="text-xs opacity-90 flex items-center gap-1.5 leading-tight min-h-4 whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse-opacity"></span>
                   Powered by Gemini AI
                 </span>
               </div>
             </div>
-            <div className="inventory-chatbot-header-actions">
+            <div className="flex items-center gap-1 shrink-0">
               <button
-                className="inventory-chatbot-action-btn"
+                className="w-[30px] h-[30px] rounded-lg border-none bg-white/15 text-white cursor-pointer flex items-center justify-center transition-all duration-200 hover:enabled:bg-white/30 disabled:opacity-50"
                 onClick={handleGetSummary}
                 disabled={isLoading || isStreaming}
                 title="Get business summary"
@@ -476,7 +442,7 @@ export default function InventoryChatbot() {
               </button>
               {!isCrmPage && (
                 <button
-                  className="inventory-chatbot-action-btn warning"
+                  className="w-[30px] h-[30px] rounded-lg border-none bg-amber-500/30 text-white cursor-pointer flex items-center justify-center transition-all duration-200 hover:enabled:bg-amber-500/50 disabled:opacity-50"
                   onClick={handleLowStockAnalysis}
                   disabled={isLoading || isStreaming}
                   title="Analyze low stock"
@@ -489,7 +455,7 @@ export default function InventoryChatbot() {
                 </button>
               )}
               <button
-                className="inventory-chatbot-action-btn"
+                className="w-[30px] h-[30px] rounded-lg border-none bg-white/15 text-white cursor-pointer flex items-center justify-center transition-all duration-200 hover:bg-white/30"
                 onClick={clearChat}
                 title="Clear chat"
               >
@@ -499,7 +465,7 @@ export default function InventoryChatbot() {
                 </svg>
               </button>
               <button
-                className="inventory-chatbot-close-btn"
+                className="w-[30px] h-[30px] rounded-lg border-none bg-white/20 text-white cursor-pointer flex items-center justify-center transition-all duration-200 ml-1 hover:bg-red-500/70"
                 onClick={() => setIsOpen(false)}
                 title="Close chat"
                 aria-label="Close chat"
@@ -511,49 +477,55 @@ export default function InventoryChatbot() {
               </button>
             </div>
           </div>
-          {/* Messages */}
-          <div className="inventory-chatbot-messages">
+
+          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 min-h-0 bg-slate-50 dark:bg-gray-900">
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`inventory-chatbot-message ${msg.role} ${msg.isError ? 'error' : ''} ${msg.isStreaming ? 'streaming' : ''}`}
+                className={`max-w-[85%] animate-message-fade-in ${msg.role === 'user' ? 'self-end' : 'self-start'}`}
               >
-                {/* Show streaming indicator for empty streaming message */}
                 {msg.isStreaming && !msg.content ? (
-                  <div className="message-content loading">
-                    <div className="loading-indicator">
-                      <div className="ai-thinking-icon">
+                  <div className="px-4 py-3 rounded-xl text-sm leading-relaxed whitespace-pre-wrap bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-bl-sm min-w-[180px]">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="text-blue-500 animate-bobble">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
                           <line x1="3" y1="6" x2="21" y2="6" />
                           <path d="M16 10a4 4 0 0 1-8 0" />
                         </svg>
                       </div>
-                      <div className="loading-text">Analyzing</div>
-                      <div className="typing-dots">
-                        <span className="typing-dot"></span>
-                        <span className="typing-dot"></span>
-                        <span className="typing-dot"></span>
+                      <div className="text-[0.8125rem] text-slate-600 dark:text-gray-400">Analyzing</div>
+                      <div className="flex gap-[3px] ml-auto">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-typing-bounce"></span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-typing-bounce [animation-delay:0.2s]"></span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-typing-bounce [animation-delay:0.4s]"></span>
                       </div>
                     </div>
-                    <div className="shimmer-bar"></div>
+                    <div className="h-2 rounded bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 bg-[length:200%_100%] animate-shimmer"></div>
                   </div>
                 ) : (
                   <>
-                    <div className="message-content">
+                    <div className={`px-4 py-3 rounded-xl text-sm leading-relaxed whitespace-pre-wrap ${
+                      msg.role === 'user'
+                        ? 'bg-gradient-to-br from-blue-800 to-blue-500 text-white rounded-br-sm'
+                        : msg.isError
+                          ? 'bg-red-50 dark:bg-red-900/20 border border-red-600 text-red-600 rounded-bl-sm'
+                          : 'bg-white dark:bg-gray-800 text-slate-900 dark:text-gray-50 border border-slate-200 dark:border-gray-700 rounded-bl-sm'
+                    } ${msg.isStreaming ? 'border-blue-500 shadow-[0_0_0_1px_rgba(59,130,246,0.2)]' : ''}`}>
                       {msg.content}
-                      {msg.isStreaming && <span className="streaming-cursor">▊</span>}
+                      {msg.isStreaming && <span className="inline-block text-blue-500 animate-blink ml-0.5 font-normal">▊</span>}
                     </div>
                     {msg.meta && !msg.isStreaming && (
-                      <div className="message-meta">
+                      <div className="text-[0.6875rem] text-slate-400 dark:text-gray-500 mt-1.5 pl-1">
                         {formatMeta(msg.meta)}
                       </div>
                     )}
-                    {/* Feedback buttons */}
                     {!msg.isStreaming && msg.role === 'assistant' && !msg.isError && (
-                      <div className="message-feedback">
+                      <div className="flex items-center gap-1.5 mt-1.5 pl-1">
                         <button
-                          className={`feedback-btn${msg.feedback === 'up' ? ' active' : ''}`}
+                          className={`inline-flex items-center justify-center w-[26px] h-[26px] border-none rounded-md bg-transparent cursor-pointer transition-all duration-150 p-0 ${
+                            msg.feedback === 'up' ? 'text-blue-500 bg-blue-500/10' : 'text-slate-400 dark:text-gray-500 hover:bg-black/5 dark:hover:bg-white/10 hover:text-slate-600 dark:hover:text-gray-400'
+                          }`}
                           onClick={() => handleFeedback(index, 'up')}
                           title="Helpful"
                           aria-label="Thumbs up"
@@ -563,7 +535,9 @@ export default function InventoryChatbot() {
                           </svg>
                         </button>
                         <button
-                          className={`feedback-btn${msg.feedback === 'down' ? ' active' : ''}`}
+                          className={`inline-flex items-center justify-center w-[26px] h-[26px] border-none rounded-md bg-transparent cursor-pointer transition-all duration-150 p-0 ${
+                            msg.feedback === 'down' ? 'text-blue-500 bg-blue-500/10' : 'text-slate-400 dark:text-gray-500 hover:bg-black/5 dark:hover:bg-white/10 hover:text-slate-600 dark:hover:text-gray-400'
+                          }`}
                           onClick={() => handleFeedback(index, 'down')}
                           title="Not helpful"
                           aria-label="Thumbs down"
@@ -574,7 +548,7 @@ export default function InventoryChatbot() {
                         </button>
                         {msg.feedback && (
                           <button
-                            className="feedback-comment-toggle"
+                            className="inline-flex items-center justify-center w-[26px] h-[26px] border-none rounded-md bg-transparent text-slate-400 dark:text-gray-500 cursor-pointer transition-all duration-150 p-0 hover:bg-black/5 dark:hover:bg-white/10 hover:text-slate-600 dark:hover:text-gray-400"
                             onClick={() => setFeedbackComment(prev => prev.messageId === msg.id ? { messageId: null, text: '' } : { messageId: msg.id, text: '' })}
                             title="Add comment"
                           >
@@ -585,17 +559,17 @@ export default function InventoryChatbot() {
                         )}
                       </div>
                     )}
-                    {/* Feedback comment input */}
                     {feedbackComment.messageId === msg.id && (
-                      <div className="feedback-comment">
+                      <div className="flex flex-col gap-1.5 mt-1.5 pl-1">
                         <textarea
                           value={feedbackComment.text}
                           onChange={(e) => setFeedbackComment(prev => ({ ...prev, text: e.target.value }))}
                           placeholder="Tell us more about this response..."
                           rows={2}
+                          className="w-full p-2 border border-slate-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-slate-900 dark:text-gray-50 text-xs font-[inherit] resize-y min-h-10 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15"
                         />
                         <button
-                          className="feedback-comment-submit"
+                          className="self-end px-3 py-1 border-none rounded-md bg-blue-500 text-white text-xs cursor-pointer transition-colors duration-150 hover:enabled:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
                           onClick={() => handleFeedbackComment(index)}
                           disabled={!feedbackComment.text.trim()}
                         >
@@ -611,13 +585,12 @@ export default function InventoryChatbot() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Suggested questions (only show if few messages) */}
           {messages.length <= 2 && (
-            <div className="inventory-chatbot-suggestions">
+            <div className="px-4 py-3 flex flex-wrap gap-2 bg-slate-50 dark:bg-gray-900 border-t border-slate-200 dark:border-gray-700">
               {suggestedQuestions.map((q, i) => (
                 <button
                   key={i}
-                  className="suggestion-chip"
+                  className="px-3.5 py-2 text-xs rounded-[20px] bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-slate-600 dark:text-gray-400 cursor-pointer transition-all duration-200 whitespace-nowrap hover:enabled:border-blue-500 hover:enabled:text-blue-500 hover:enabled:bg-blue-500/10 disabled:opacity-50 disabled:cursor-not-allowed max-[480px]:text-[0.6875rem] max-[480px]:px-3 max-[480px]:py-1.5"
                   onClick={() => handleSuggestedQuestion(q)}
                   disabled={isLoading || isStreaming}
                 >
@@ -627,15 +600,13 @@ export default function InventoryChatbot() {
             </div>
           )}
 
-          {/* Error display */}
           {error && (
-            <div className="inventory-chatbot-error">
+            <div className="px-4 py-3 bg-red-50 dark:bg-red-900/20 border-t border-red-600 text-red-600 text-[0.8125rem]">
               {error}
             </div>
           )}
 
-          {/* Input */}
-          <form className="inventory-chatbot-input-form" onSubmit={handleSubmit}>
+          <form className="p-4 bg-white dark:bg-gray-800 border-t border-slate-200 dark:border-gray-700 flex gap-3" onSubmit={handleSubmit}>
             <input
               ref={inputRef}
               type="text"
@@ -643,12 +614,12 @@ export default function InventoryChatbot() {
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={isCrmPage ? "Ask about your customers..." : "Ask about inventory, sales, stores..."}
               disabled={isLoading || isStreaming}
-              className="inventory-chatbot-input"
+              className="flex-1 px-4 py-3 text-sm border border-slate-200 dark:border-gray-700 rounded-3xl bg-slate-50 dark:bg-gray-900 text-slate-900 dark:text-gray-50 outline-none transition-all duration-200 placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/15"
             />
             <button
               type="submit"
               disabled={isLoading || isStreaming || !inputValue.trim()}
-              className="inventory-chatbot-send-btn"
+              className="w-[42px] h-[42px] rounded-full bg-gradient-to-br from-blue-800 to-blue-500 border-none text-white cursor-pointer flex items-center justify-center transition-all duration-200 shrink-0 hover:enabled:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -659,5 +630,7 @@ export default function InventoryChatbot() {
         </div>
       )}
     </div>
+    ,
+    document.body
   );
 }

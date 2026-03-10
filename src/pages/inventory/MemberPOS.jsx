@@ -80,17 +80,15 @@ export default function MemberPOS() {
   }, []);
 
   async function handleCheckout() {
-    if (cart.length === 0 || processing) return; // Guard against duplicate calls
+    if (cart.length === 0 || processing) return;
 
     setError('');
 
-    // Validate payment method is selected
     if (!checkoutForm.paymentMethod) {
       setError('Please select a payment method');
       return;
     }
 
-    // Validate customer details are provided
     if (!checkoutForm.customerName || !checkoutForm.customerName.trim()) {
       setError('Please enter customer name');
       return;
@@ -101,7 +99,6 @@ export default function MemberPOS() {
       return;
     }
 
-    // Validate phone number format (basic validation)
     const phoneRegex = /^[0-9]{10,15}$/;
     if (!phoneRegex.test(checkoutForm.customerPhone.replace(/[-\s()]/g, ''))) {
       setError('Please enter a valid phone number (10-15 digits)');
@@ -146,23 +143,21 @@ export default function MemberPOS() {
 
   if (!storeId) {
     return (
-      <main className="dashboard-content">
-        <div className="error-state">
-          <h2>No Store Assigned</h2>
-          <p>Please contact your administrator to be assigned to a store.</p>
+      <main className="flex flex-col gap-5 flex-1 min-h-0">
+        <div className="min-h-[170px] flex flex-col items-center justify-center border border-dashed border-red-600/35 dark:border-red-400/35 rounded-xl mt-2 text-red-600 dark:text-red-400 bg-red-600/5 dark:bg-red-400/5 px-4">
+          <h2 className="text-base font-semibold mb-1">No Store Assigned</h2>
+          <p className="text-sm">Please contact your administrator to be assigned to a store.</p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="pos-modern-layout">
-      {/* Left Panel - Products */}
-      <div className="pos-products-section">
-        {/* Store Header */}
-        <div className="pos-store-header">
-          <div className="pos-store-info">
-            <div className="pos-store-icon">
+    <main className="grid grid-cols-1 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_440px] h-[calc(100vh-70px)] bg-slate-50 dark:bg-[#0a0f1a]">
+      <div className="flex flex-col overflow-hidden bg-slate-50 dark:bg-[#0a0f1a]">
+        <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6 sm:py-4 bg-white dark:bg-gray-800 border-b border-slate-200 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg text-white shrink-0">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
                 <line x1="3" y1="6" x2="21" y2="6" />
@@ -170,32 +165,31 @@ export default function MemberPOS() {
               </svg>
             </div>
             <div>
-              <h1 className="pos-store-name">{storeName || 'Point of Sale'}</h1>
-              <span className="pos-store-subtitle">POS Terminal</span>
+              <h1 className="text-lg font-bold text-slate-900 dark:text-gray-50 tracking-tight leading-tight">{storeName || 'Point of Sale'}</h1>
+              <span className="text-xs font-medium text-slate-400 dark:text-gray-500 uppercase tracking-wider">POS Terminal</span>
             </div>
           </div>
-          <div className="pos-header-stats">
-            <div className="pos-header-stat">
-              <span className="pos-stat-number">{products.length}</span>
-              <span className="pos-stat-text">Products</span>
+          <div className="hidden lg:flex gap-2">
+            <div className="flex flex-col items-center px-3.5 py-1.5 rounded-lg bg-blue-600/10 dark:bg-blue-400/10">
+              <span className="text-base font-bold text-blue-600 dark:text-blue-400 leading-tight">{products.length}</span>
+              <span className="text-[0.625rem] font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wide">Products</span>
             </div>
-            <div className="pos-header-stat warning">
-              <span className="pos-stat-number">{lowStockCount}</span>
-              <span className="pos-stat-text">Low Stock</span>
+            <div className="flex flex-col items-center px-3.5 py-1.5 rounded-lg bg-amber-600/10 dark:bg-amber-400/10">
+              <span className="text-base font-bold text-amber-600 dark:text-amber-400 leading-tight">{lowStockCount}</span>
+              <span className="text-[0.625rem] font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wide">Low Stock</span>
             </div>
             {outOfStockCount > 0 && (
-              <div className="pos-header-stat danger">
-                <span className="pos-stat-number">{outOfStockCount}</span>
-                <span className="pos-stat-text">Out</span>
+              <div className="flex flex-col items-center px-3.5 py-1.5 rounded-lg bg-red-600/10 dark:bg-red-400/10">
+                <span className="text-base font-bold text-red-600 dark:text-red-400 leading-tight">{outOfStockCount}</span>
+                <span className="text-[0.625rem] font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wide">Out</span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="pos-search-bar">
-          <div className="pos-search-input-wrap">
-            <svg className="pos-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <div className="px-4 py-2 sm:px-6 sm:py-3 bg-white dark:bg-gray-800 border-b border-slate-200 dark:border-gray-700">
+          <div className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 dark:bg-[#0a0f1a] border-[1.5px] border-slate-200 dark:border-gray-700 rounded-lg transition-all focus-within:border-blue-600 dark:focus-within:border-blue-400 focus-within:ring-[3px] focus-within:ring-blue-600/20 dark:focus-within:ring-blue-400/20">
+            <svg className="text-slate-400 dark:text-gray-500 shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
@@ -205,9 +199,13 @@ export default function MemberPOS() {
               placeholder="Search products or scan barcode..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-1 border-none bg-transparent text-[0.9375rem] text-slate-900 dark:text-gray-50 outline-none font-[inherit] placeholder:text-slate-400 dark:placeholder:text-gray-500"
             />
             {searchTerm && (
-              <button className="pos-search-clear" onClick={() => setSearchTerm('')}>
+              <button
+                className="w-[26px] h-[26px] flex items-center justify-center border-none bg-white dark:bg-gray-900 rounded text-slate-400 dark:text-gray-500 cursor-pointer transition-colors hover:bg-red-600/10 hover:text-red-600 dark:hover:bg-red-400/10 dark:hover:text-red-400"
+                onClick={() => setSearchTerm('')}
+              >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
@@ -217,18 +215,25 @@ export default function MemberPOS() {
           </div>
         </div>
 
-        {/* Category Tabs */}
         {categories.length > 1 && (
-          <div className="pos-category-bar">
+          <div className="flex gap-1.5 px-4 py-2 sm:px-6 sm:py-2.5 bg-white dark:bg-gray-800 border-b border-slate-200 dark:border-gray-700 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {categories.map((cat) => (
               <button
                 key={cat}
-                className={`pos-category-chip ${activeCategory === cat ? 'active' : ''}`}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 border-[1.5px] rounded-full text-xs font-medium whitespace-nowrap cursor-pointer transition-all ${
+                  activeCategory === cat
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-500 border-transparent text-white shadow-[0_2px_8px_rgba(37,99,235,0.3)]'
+                    : 'bg-slate-50 dark:bg-[#0a0f1a] border-slate-200 dark:border-gray-700 text-slate-600 dark:text-gray-400 hover:border-blue-600 dark:hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-600/10 dark:hover:bg-blue-400/10'
+                }`}
                 onClick={() => setActiveCategory(cat)}
               >
                 {cat === 'all' ? 'All Items' : cat}
                 {cat !== 'all' && (
-                  <span className="pos-category-count">
+                  <span className={`text-[0.6875rem] font-semibold px-1.5 py-0.5 rounded-full ${
+                    activeCategory === cat
+                      ? 'bg-white/25 text-white'
+                      : 'bg-white dark:bg-gray-900 text-slate-400 dark:text-gray-500'
+                  }`}>
                     {products.filter(p => p.category === cat).length}
                   </span>
                 )}
@@ -237,21 +242,20 @@ export default function MemberPOS() {
           </div>
         )}
 
-        {/* Products Grid */}
-        <div className="pos-grid-container">
+        <div className="flex-1 overflow-y-auto p-3 sm:px-6 sm:py-5">
           {displayedProducts.length === 0 ? (
-            <div className="pos-empty-state">
-              <div className="pos-empty-icon">
+            <div className="flex flex-col items-center justify-center py-16 px-8 text-center">
+              <div className="w-[88px] h-[88px] flex items-center justify-center bg-white dark:bg-gray-900 rounded-full text-slate-400 dark:text-gray-500 mb-5">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <circle cx="11" cy="11" r="8" />
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
               </div>
-              <h3>No products found</h3>
-              <p>Try adjusting your search or category filter</p>
+              <h3 className="text-base font-semibold text-slate-600 dark:text-gray-400 mb-1.5">No products found</h3>
+              <p className="text-[0.8125rem] text-slate-400 dark:text-gray-500">Try adjusting your search or category filter</p>
             </div>
           ) : (
-            <div className="pos-products-grid">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-[repeat(auto-fill,minmax(185px,1fr))] sm:gap-3.5 content-start">
               {displayedProducts.map((product) => {
                 const inCart = cart.find(item => item.productId === product.id);
                 const isOutOfStock = product.quantity === 0;
@@ -260,38 +264,64 @@ export default function MemberPOS() {
                 return (
                   <div
                     key={product.id}
-                    className={`pos-card ${isOutOfStock ? 'out-of-stock' : ''} ${inCart ? 'in-cart' : ''}`}
+                    className={`group relative flex flex-col bg-white dark:bg-gray-800 border-[1.5px] rounded-xl p-2.5 sm:p-3.5 cursor-pointer transition-all duration-200 overflow-hidden outline-none focus-visible:outline-2 focus-visible:outline-blue-600 dark:focus-visible:outline-blue-400 focus-visible:outline-offset-2 ${
+                      isOutOfStock
+                        ? 'opacity-45 cursor-not-allowed grayscale-[0.3] border-slate-200 dark:border-gray-700'
+                        : inCart
+                          ? 'border-emerald-600 dark:border-emerald-500 bg-gradient-to-b from-emerald-600/[0.04] to-white dark:from-emerald-400/[0.06] dark:to-gray-800 hover:-translate-y-[3px] hover:shadow-lg'
+                          : 'border-slate-200 dark:border-gray-700 hover:border-blue-600 dark:hover:border-blue-400 hover:-translate-y-[3px] hover:shadow-lg'
+                    }`}
                     onClick={() => !isOutOfStock && addToCart(product, 1)}
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => e.key === 'Enter' && !isOutOfStock && addToCart(product, 1)}
                   >
-                    {inCart && <div className="pos-card-cart-qty">{inCart.quantity}</div>}
+                    <div className={`absolute top-0 left-0 right-0 h-[3px] transition-opacity duration-200 ${
+                      inCart
+                        ? 'bg-emerald-600 dark:bg-emerald-400 opacity-100'
+                        : isOutOfStock
+                          ? 'opacity-0'
+                          : 'bg-gradient-to-r from-blue-600 to-blue-500 opacity-0 group-hover:opacity-100'
+                    }`} />
 
-                    <div className="pos-card-visual">
+                    {inCart && (
+                      <div className="absolute top-2 right-2 min-w-[22px] h-[22px] flex items-center justify-center bg-emerald-600 dark:bg-emerald-500 text-white text-[0.6875rem] font-bold rounded-full px-1.5 z-[2] shadow-[0_2px_6px_rgba(5,150,105,0.3)]">
+                        {inCart.quantity}
+                      </div>
+                    )}
+
+                    <div className="relative w-full h-[52px] sm:h-[68px] flex items-center justify-center bg-slate-50 dark:bg-[#0a0f1a] rounded-md mb-2 sm:mb-3 text-slate-400 dark:text-gray-500">
                       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                         <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
                         <line x1="3" y1="6" x2="21" y2="6" />
                         <path d="M16 10a4 4 0 0 1-8 0" />
                       </svg>
-                      {isOutOfStock && <span className="pos-card-badge out">Out of stock</span>}
-                      {!isOutOfStock && isLowStock && <span className="pos-card-badge low">Low stock</span>}
+                      {isOutOfStock && (
+                        <span className="absolute top-1.5 left-1.5 px-2 py-0.5 text-[0.5625rem] font-bold uppercase tracking-wide rounded bg-red-600/10 text-red-600 dark:bg-red-400/10 dark:text-red-400">
+                          Out of stock
+                        </span>
+                      )}
+                      {!isOutOfStock && isLowStock && (
+                        <span className="absolute top-1.5 left-1.5 px-2 py-0.5 text-[0.5625rem] font-bold uppercase tracking-wide rounded bg-amber-600/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400">
+                          Low stock
+                        </span>
+                      )}
                     </div>
 
-                    <div className="pos-card-body">
-                      <h4 className="pos-card-name">{product.name}</h4>
-                      <span className="pos-card-sku">{product.sku || product.barcode || ''}</span>
+                    <div className="flex-1 flex flex-col min-h-0">
+                      <h4 className="text-[0.8125rem] sm:text-sm font-semibold text-slate-900 dark:text-gray-50 leading-tight line-clamp-2">{product.name}</h4>
+                      <span className="text-[0.6875rem] text-slate-400 dark:text-gray-500 mb-auto font-mono">{product.sku || product.barcode || ''}</span>
                     </div>
 
-                    <div className="pos-card-footer">
-                      <span className="pos-card-price">{formatCurrency(product.price)}</span>
-                      <span className="pos-card-stock">
+                    <div className="flex justify-between items-end mt-2.5 pt-2 border-t border-slate-200 dark:border-gray-700">
+                      <span className="text-sm sm:text-base font-bold text-blue-600 dark:text-blue-400 tracking-tight">{formatCurrency(product.price)}</span>
+                      <span className="text-[0.6875rem] text-slate-400 dark:text-gray-500">
                         {isOutOfStock ? 'Unavailable' : `${product.quantity} in stock`}
                       </span>
                     </div>
 
                     {!isOutOfStock && (
-                      <div className="pos-card-add">
+                      <div className="absolute bottom-3 right-3 w-8 h-8 hidden sm:flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-500 rounded-md text-white opacity-0 scale-[0.8] translate-y-1 transition-all duration-200 pointer-events-none shadow-[0_2px_8px_rgba(37,99,235,0.25)] group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                           <line x1="12" y1="5" x2="12" y2="19" />
                           <line x1="5" y1="12" x2="19" y2="12" />
@@ -306,20 +336,26 @@ export default function MemberPOS() {
         </div>
       </div>
 
-      {/* Right Panel - Cart */}
-      <div className="pos-cart-panel">
-        <div className="pos-cart-header">
-          <div className="pos-cart-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <div className="flex flex-col bg-white dark:bg-gray-800 border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-gray-700 max-h-[50vh] lg:max-h-none">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-gray-700">
+          <div className="flex items-center gap-2.5 text-slate-900 dark:text-gray-50">
+            <svg className="text-blue-600 dark:text-blue-400" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="9" cy="21" r="1" />
               <circle cx="20" cy="21" r="1" />
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
             </svg>
-            <h2>Current Sale</h2>
-            {cart.length > 0 && <span className="pos-cart-badge">{totals.itemCount}</span>}
+            <h2 className="text-base font-bold tracking-tight">Current Sale</h2>
+            {cart.length > 0 && (
+              <span className="min-w-[22px] h-[22px] flex items-center justify-center bg-gradient-to-r from-blue-600 to-blue-500 text-white text-[0.6875rem] font-bold rounded-full px-1.5">
+                {totals.itemCount}
+              </span>
+            )}
           </div>
           {cart.length > 0 && (
-            <button className="pos-cart-clear" onClick={clearCart}>
+            <button
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-red-600/10 dark:bg-red-400/10 border-none rounded text-red-600 dark:text-red-400 text-xs font-semibold cursor-pointer transition-colors hover:bg-red-600 hover:text-white dark:hover:bg-red-500 dark:hover:text-white"
+              onClick={clearCart}
+            >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="3 6 5 6 21 6" />
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -329,30 +365,30 @@ export default function MemberPOS() {
           )}
         </div>
 
-        <div className="pos-cart-body">
+        <div className="flex-1 overflow-y-auto px-4 py-3">
           {cart.length === 0 ? (
-            <div className="pos-cart-empty">
-              <div className="pos-cart-empty-visual">
+            <div className="flex flex-col items-center justify-center h-full px-6 py-8 text-center">
+              <div className="w-20 h-20 flex items-center justify-center bg-slate-50 dark:bg-[#0a0f1a] rounded-full mb-5 text-slate-400 dark:text-gray-500">
                 <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <circle cx="9" cy="21" r="1" />
                   <circle cx="20" cy="21" r="1" />
                   <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                 </svg>
               </div>
-              <h3>Your cart is empty</h3>
-              <p>Click on a product or scan a barcode to get started</p>
+              <h3 className="text-[0.9375rem] font-semibold text-slate-600 dark:text-gray-400 mb-1.5">Your cart is empty</h3>
+              <p className="text-[0.8125rem] text-slate-400 dark:text-gray-500 max-w-[220px] leading-relaxed">Click on a product or scan a barcode to get started</p>
             </div>
           ) : (
-            <div className="pos-cart-items">
+            <div className="flex flex-col gap-2">
               {cart.map((item) => (
-                <div key={item.productId} className="pos-cart-item">
-                  <div className="pos-cart-item-info">
-                    <h4>{item.productName}</h4>
-                    <span>{formatCurrency(item.price)} each</span>
+                <div key={item.productId} className="flex items-center gap-2.5 px-3 py-2.5 bg-slate-50 dark:bg-[#0a0f1a] border border-slate-200 dark:border-gray-700 rounded-lg transition-all hover:border-slate-300 dark:hover:border-gray-600 hover:shadow-sm">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-[0.8125rem] font-semibold text-slate-900 dark:text-gray-50 truncate leading-tight">{item.productName}</h4>
+                    <span className="text-[0.6875rem] text-slate-400 dark:text-gray-500">{formatCurrency(item.price)} each</span>
                   </div>
-                  <div className="pos-cart-item-controls">
+                  <div className="flex items-center gap-0.5 bg-white dark:bg-gray-900 rounded p-0.5">
                     <button
-                      className="pos-qty-btn minus"
+                      className="w-[26px] h-[26px] flex items-center justify-center border-none rounded cursor-pointer transition-colors bg-red-600/10 text-red-600 dark:bg-red-400/10 dark:text-red-400 hover:bg-red-600/20 dark:hover:bg-red-400/20"
                       onClick={() => updateCartItemQuantity(item.productId, item.quantity - 1)}
                       aria-label="Decrease quantity"
                     >
@@ -360,9 +396,9 @@ export default function MemberPOS() {
                         <line x1="5" y1="12" x2="19" y2="12" />
                       </svg>
                     </button>
-                    <span className="pos-qty-value">{item.quantity}</span>
+                    <span className="min-w-7 text-center font-bold text-sm text-slate-900 dark:text-gray-50">{item.quantity}</span>
                     <button
-                      className="pos-qty-btn plus"
+                      className="w-[26px] h-[26px] flex items-center justify-center border-none rounded cursor-pointer transition-colors bg-emerald-600/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400 hover:bg-emerald-600/20 dark:hover:bg-emerald-400/20 disabled:opacity-35 disabled:cursor-not-allowed"
                       onClick={() => {
                         if (item.quantity < item.availableStock) {
                           updateCartItemQuantity(item.productId, item.quantity + 1);
@@ -377,9 +413,9 @@ export default function MemberPOS() {
                       </svg>
                     </button>
                   </div>
-                  <span className="pos-cart-item-total">{formatCurrency(item.subtotal)}</span>
+                  <span className="font-bold text-sm text-blue-600 dark:text-blue-400 min-w-[60px] text-right">{formatCurrency(item.subtotal)}</span>
                   <button
-                    className="pos-cart-item-remove"
+                    className="w-[26px] h-[26px] flex items-center justify-center bg-transparent border-none rounded text-slate-400 dark:text-gray-500 cursor-pointer transition-colors hover:bg-red-600/10 hover:text-red-600 dark:hover:bg-red-400/10 dark:hover:text-red-400"
                     onClick={() => removeFromCart(item.productId)}
                     aria-label="Remove item"
                   >
@@ -394,31 +430,30 @@ export default function MemberPOS() {
           )}
         </div>
 
-        {/* Cart Footer */}
-        <div className="pos-cart-footer">
-          <div className="pos-cart-totals">
-            <div className="pos-total-line">
+        <div className="px-5 pt-4 pb-5 bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-gray-700">
+          <div className="mb-4">
+            <div className="flex justify-between items-center py-1.5 text-sm text-slate-600 dark:text-gray-400">
               <span>Subtotal</span>
               <span>{formatCurrency(totals.subtotal)}</span>
             </div>
-            <div className="pos-total-line">
+            <div className="flex justify-between items-center py-1.5 text-sm text-slate-600 dark:text-gray-400">
               <span>Tax (8%)</span>
               <span>{formatCurrency(totals.tax)}</span>
             </div>
-            <div className="pos-total-line grand">
+            <div className="flex justify-between items-center pt-2.5 mt-1.5 border-t-2 border-slate-200 dark:border-gray-700 text-lg font-bold text-slate-900 dark:text-gray-50">
               <span>Total</span>
-              <span>{formatCurrency(totals.total)}</span>
+              <span className="text-xl text-blue-600 dark:text-blue-400">{formatCurrency(totals.total)}</span>
             </div>
           </div>
 
           <button
-            className="pos-checkout-btn"
+            className="w-full flex items-center justify-center gap-2.5 py-3.5 px-6 bg-gradient-to-r from-blue-600 to-blue-500 border-none rounded-lg text-white text-base font-semibold relative overflow-hidden cursor-pointer transition-all duration-250 shadow-[0_4px_14px_rgba(37,99,235,0.25)] hover:not-disabled:-translate-y-0.5 hover:not-disabled:shadow-[0_8px_24px_rgba(37,99,235,0.35)] active:not-disabled:translate-y-0 active:not-disabled:scale-[0.98] disabled:bg-slate-400 dark:disabled:bg-gray-500 disabled:shadow-none disabled:cursor-not-allowed before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-b before:from-white/15 before:to-transparent before:pointer-events-none"
             onClick={() => setShowCheckout(true)}
             disabled={cart.length === 0 || processing}
           >
             {processing ? (
               <>
-                <span className="pos-spinner"></span>
+                <span className="w-[18px] h-[18px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 Processing...
               </>
             ) : (
@@ -432,19 +467,31 @@ export default function MemberPOS() {
             )}
           </button>
 
-          <div className="pos-quick-pay">
-            <span className="pos-quick-pay-label">Quick Pay</span>
-            <div className="pos-quick-pay-btns">
-              <button onClick={() => { setCheckoutForm({ ...checkoutForm, paymentMethod: 'Cash' }); setShowCheckout(true); }} disabled={cart.length === 0}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <div className="mt-3.5 pt-3 border-t border-dashed border-slate-200 dark:border-gray-700">
+            <span className="block text-[0.6875rem] font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider mb-2 text-center">Quick Pay</span>
+            <div className="flex gap-2">
+              <button
+                className="flex-1 flex items-center justify-center gap-1.5 px-2.5 py-2 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded text-xs font-medium text-slate-600 dark:text-gray-400 cursor-pointer transition-all hover:not-disabled:border-blue-600 dark:hover:not-disabled:border-blue-400 hover:not-disabled:text-blue-600 dark:hover:not-disabled:text-blue-400 hover:not-disabled:bg-blue-600/10 dark:hover:not-disabled:bg-blue-400/10 disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={() => { setCheckoutForm({ ...checkoutForm, paymentMethod: 'Cash' }); setShowCheckout(true); }}
+                disabled={cart.length === 0}
+              >
+                <svg className="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                 Cash
               </button>
-              <button onClick={() => { setCheckoutForm({ ...checkoutForm, paymentMethod: 'Card' }); setShowCheckout(true); }} disabled={cart.length === 0}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              <button
+                className="flex-1 flex items-center justify-center gap-1.5 px-2.5 py-2 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded text-xs font-medium text-slate-600 dark:text-gray-400 cursor-pointer transition-all hover:not-disabled:border-blue-600 dark:hover:not-disabled:border-blue-400 hover:not-disabled:text-blue-600 dark:hover:not-disabled:text-blue-400 hover:not-disabled:bg-blue-600/10 dark:hover:not-disabled:bg-blue-400/10 disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={() => { setCheckoutForm({ ...checkoutForm, paymentMethod: 'Card' }); setShowCheckout(true); }}
+                disabled={cart.length === 0}
+              >
+                <svg className="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                 Card
               </button>
-              <button onClick={() => { setCheckoutForm({ ...checkoutForm, paymentMethod: 'UPI' }); setShowCheckout(true); }} disabled={cart.length === 0}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              <button
+                className="flex-1 flex items-center justify-center gap-1.5 px-2.5 py-2 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded text-xs font-medium text-slate-600 dark:text-gray-400 cursor-pointer transition-all hover:not-disabled:border-blue-600 dark:hover:not-disabled:border-blue-400 hover:not-disabled:text-blue-600 dark:hover:not-disabled:text-blue-400 hover:not-disabled:bg-blue-600/10 dark:hover:not-disabled:bg-blue-400/10 disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={() => { setCheckoutForm({ ...checkoutForm, paymentMethod: 'UPI' }); setShowCheckout(true); }}
+                disabled={cart.length === 0}
+              >
+                <svg className="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
                 UPI
               </button>
             </div>
@@ -452,16 +499,18 @@ export default function MemberPOS() {
         </div>
       </div>
 
-      {/* Checkout Modal */}
       {showCheckout && (
-        <div className="pos-modal-overlay" onClick={() => setShowCheckout(false)}>
-          <div className="pos-checkout-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="pos-modal-head">
+        <div className="fixed inset-0 bg-black/55 backdrop-blur-[8px] flex items-center justify-center z-[1000] p-6 animate-fade-in" onClick={() => setShowCheckout(false)}>
+          <div className="w-full max-w-[480px] bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl sm:rounded-2xl overflow-hidden animate-modal-slide-up shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between px-6 pt-6 pb-5 border-b border-slate-200 dark:border-gray-700">
               <div>
-                <h2>Complete Sale</h2>
-                <p>Review and finalize the transaction</p>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-gray-50 tracking-tight mb-0.5">Complete Sale</h2>
+                <p className="text-[0.8125rem] text-slate-400 dark:text-gray-500">Review and finalize the transaction</p>
               </div>
-              <button className="pos-modal-close" onClick={() => setShowCheckout(false)}>
+              <button
+                className="w-[34px] h-[34px] flex items-center justify-center bg-slate-50 dark:bg-[#0a0f1a] border border-slate-200 dark:border-gray-700 rounded cursor-pointer transition-all shrink-0 text-slate-400 dark:text-gray-500 hover:bg-red-600/10 hover:border-red-600 hover:text-red-600 dark:hover:bg-red-400/10 dark:hover:border-red-400 dark:hover:text-red-400"
+                onClick={() => setShowCheckout(false)}
+              >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
@@ -469,29 +518,29 @@ export default function MemberPOS() {
               </button>
             </div>
 
-            <div className="pos-modal-content">
+            <div className="px-6 py-5 max-h-[60vh] overflow-y-auto">
               {error && (
-                <div className="pos-modal-error">
+                <div className="flex items-center gap-2.5 px-4 py-3 bg-red-600/10 dark:bg-red-400/10 border border-red-600 dark:border-red-400 rounded-lg text-red-600 dark:text-red-400 text-sm font-medium mb-5">
                   <span>{error}</span>
                 </div>
               )}
 
-              {/* Total Banner */}
-              <div className="pos-modal-total-banner">
-                <span>Total Amount</span>
-                <strong>{formatCurrency(totals.total)}</strong>
+              <div className="flex justify-between items-center px-5 py-[1.125rem] bg-blue-600/10 dark:bg-blue-400/10 border border-blue-600/50 dark:border-blue-400/30 rounded-lg mb-6">
+                <span className="text-slate-600 dark:text-gray-400 text-[0.9375rem] font-medium">Total Amount</span>
+                <strong className="text-[1.625rem] font-extrabold text-blue-600 dark:text-blue-400 tracking-tight">{formatCurrency(totals.total)}</strong>
               </div>
 
-              {/* Payment Method */}
-              <div className="pos-modal-section">
-                <label>Payment Method *</label>
-                <div className="pos-payment-options">
+              <div className="mb-5">
+                <label className="flex items-center gap-2 text-[0.8125rem] font-semibold text-slate-600 dark:text-gray-400 mb-2.5 uppercase tracking-wide">Payment Method *</label>
+                <div className="grid grid-cols-3 gap-2.5">
                   {['Cash', 'Card', 'UPI'].map((method) => (
                     <button
                       key={method}
                       type="button"
-                      className={`pos-payment-option ${
-                        checkoutForm.paymentMethod === method ? 'selected' : ''
+                      className={`flex flex-col items-center gap-2 py-3.5 px-2 border-[1.5px] rounded-lg cursor-pointer transition-all text-[0.8125rem] font-semibold ${
+                        checkoutForm.paymentMethod === method
+                          ? 'border-blue-600 dark:border-blue-400 bg-blue-600/10 dark:bg-blue-400/10 text-blue-600 dark:text-blue-400 ring-[3px] ring-blue-600/20 dark:ring-blue-400/20'
+                          : 'bg-slate-50 dark:bg-[#0a0f1a] border-slate-200 dark:border-gray-700 text-slate-400 dark:text-gray-500 hover:border-blue-600 dark:hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400'
                       }`}
                       onClick={() =>
                         setCheckoutForm({ ...checkoutForm, paymentMethod: method })
@@ -503,10 +552,9 @@ export default function MemberPOS() {
                 </div>
               </div>
 
-              {/* Customer Details */}
-              <div className="pos-modal-section">
-                <label>Customer Details *</label>
-                <div className="pos-modal-row">
+              <div className="mb-5">
+                <label className="flex items-center gap-2 text-[0.8125rem] font-semibold text-slate-600 dark:text-gray-400 mb-2.5 uppercase tracking-wide">Customer Details *</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <input
                     type="text"
                     placeholder="Customer Name"
@@ -514,6 +562,7 @@ export default function MemberPOS() {
                     onChange={(e) =>
                       setCheckoutForm({ ...checkoutForm, customerName: e.target.value })
                     }
+                    className="w-full px-3.5 py-3 bg-slate-50 dark:bg-[#0a0f1a] border-[1.5px] border-slate-200 dark:border-gray-700 rounded text-sm text-slate-900 dark:text-gray-50 outline-none font-[inherit] transition-all focus:border-blue-600 dark:focus:border-blue-400 focus:ring-[3px] focus:ring-blue-600/20 dark:focus:ring-blue-400/20 placeholder:text-slate-400 dark:placeholder:text-gray-500"
                   />
                   <input
                     type="tel"
@@ -522,13 +571,13 @@ export default function MemberPOS() {
                     onChange={(e) =>
                       setCheckoutForm({ ...checkoutForm, customerPhone: e.target.value })
                     }
+                    className="w-full px-3.5 py-3 bg-slate-50 dark:bg-[#0a0f1a] border-[1.5px] border-slate-200 dark:border-gray-700 rounded text-sm text-slate-900 dark:text-gray-50 outline-none font-[inherit] transition-all focus:border-blue-600 dark:focus:border-blue-400 focus:ring-[3px] focus:ring-blue-600/20 dark:focus:ring-blue-400/20 placeholder:text-slate-400 dark:placeholder:text-gray-500"
                   />
                 </div>
               </div>
 
-              {/* Notes */}
-              <div className="pos-modal-section">
-                <label>Notes (Optional)</label>
+              <div className="mb-5">
+                <label className="flex items-center gap-2 text-[0.8125rem] font-semibold text-slate-600 dark:text-gray-400 mb-2.5 uppercase tracking-wide">Notes (Optional)</label>
                 <textarea
                   placeholder="Add any notes for this sale..."
                   value={checkoutForm.notes}
@@ -536,22 +585,26 @@ export default function MemberPOS() {
                     setCheckoutForm({ ...checkoutForm, notes: e.target.value })
                   }
                   rows={3}
+                  className="w-full px-3.5 py-3 bg-slate-50 dark:bg-[#0a0f1a] border-[1.5px] border-slate-200 dark:border-gray-700 rounded text-sm text-slate-900 dark:text-gray-50 outline-none font-[inherit] transition-all resize-none focus:border-blue-600 dark:focus:border-blue-400 focus:ring-[3px] focus:ring-blue-600/20 dark:focus:ring-blue-400/20 placeholder:text-slate-400 dark:placeholder:text-gray-500"
                 />
               </div>
             </div>
 
-            <div className="pos-modal-actions">
-              <button className="pos-modal-cancel" onClick={() => setShowCheckout(false)}>
+            <div className="flex gap-3 px-6 py-5 bg-slate-50 dark:bg-gray-900 border-t border-slate-200 dark:border-gray-700">
+              <button
+                className="flex-1 py-3 px-4 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg text-slate-600 dark:text-gray-400 text-sm font-semibold cursor-pointer transition-all hover:border-slate-300 dark:hover:border-gray-600 hover:text-slate-900 dark:hover:text-gray-50"
+                onClick={() => setShowCheckout(false)}
+              >
                 Cancel
               </button>
               <button
-                className="pos-modal-confirm"
+                className="flex-[2] flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-br from-emerald-600 to-emerald-700 border-none rounded-lg text-white text-sm font-semibold relative overflow-hidden cursor-pointer transition-all hover:not-disabled:-translate-y-px hover:not-disabled:shadow-[0_6px_20px_rgba(5,150,105,0.4)] disabled:bg-slate-400 dark:disabled:bg-gray-500 disabled:shadow-none disabled:cursor-not-allowed disabled:bg-none"
                 onClick={handleCheckout}
                 disabled={processing || !checkoutForm.paymentMethod || !checkoutForm.customerName || !checkoutForm.customerPhone}
               >
                 {processing ? (
                   <>
-                    <span className="pos-spinner"></span>
+                    <span className="w-[18px] h-[18px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     Processing...
                   </>
                 ) : (

@@ -1,36 +1,22 @@
 <!doctype html>
-<html lang="en" style="background-color: #0f172a;">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>remote-shop-support</title>
+    <title>Wireless POS</title>
     <style>
-      /* Prevent flash on load - CRITICAL */
-      html {
-        background-color: #0f172a !important;
-      }
-      body {
-        background-color: #0f172a !important;
-        margin: 0;
-        padding: 0;
-      }
-      #root {
-        background-color: #0f172a !important;
-      }
-      html[data-theme="light"] {
-        background-color: #ffffff !important;
-      }
-      html[data-theme="light"] body {
-        background-color: #ffffff !important;
-      }
-      html[data-theme="light"] #root {
-        background-color: #ffffff !important;
-      }
+      /* Theme-aware background so overscroll / scroll area matches mode (no black flash) */
+      html { background-color: #0a0f1a; min-height: 100%; }
+      body { background-color: #0a0f1a; margin: 0; padding: 0; min-height: 100%; }
+      #root { background-color: #0a0f1a; min-height: 100%; }
+      html[data-theme="light"] { background-color: #ffffff; }
+      html[data-theme="light"] body { background-color: #ffffff; }
+      html[data-theme="light"] #root { background-color: #ffffff; }
     </style>
   </head>
-  <body style="background-color: #0f172a; margin: 0; padding: 0;">
-    <div id="root" style="background-color: #0f172a;"></div>
+  <body>
+    <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -17,7 +17,6 @@ export default function InventoryVerifyEmailPage() {
     if (!currentUser) {
       navigate('/inventory/login');
     } else if (currentUser.emailVerified) {
-      // Show success message for 2 seconds then redirect
       setTimeout(() => {
         navigate('/inventory/dashboard');
       }, 3000);
@@ -64,27 +63,26 @@ export default function InventoryVerifyEmailPage() {
     return null;
   }
 
-  // Show success state if email is verified
   if (currentUser.emailVerified) {
     return (
-      <div className="auth-page inventory-auth">
-        <div className="auth-brand-panel inventory-brand">
-          <div className="auth-brand-content">
-            <div className="brand-logo inventory-logo">
+      <div className="grid min-h-screen grid-cols-1 bg-slate-50 md:grid-cols-[55%_45%] dark:bg-[#0a0f1a]">
+        <div className="relative hidden overflow-hidden bg-gradient-to-br from-[#1e40af] via-[#3b82f6] to-[#0ea5e9] px-12 py-8 text-white md:flex md:flex-col">
+          <div className="relative z-10 flex h-full flex-col items-center justify-center">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                 <polyline points="22 4 12 14.01 9 11.01"/>
               </svg>
             </div>
-            <h1 className="brand-title">Success!</h1>
-            <p className="brand-tagline">Your account is ready</p>
+            <h1 className="mb-2 text-3xl font-bold">Success!</h1>
+            <p className="text-lg text-white/80">Your account is ready</p>
           </div>
         </div>
 
-        <div className="auth-form-panel">
-          <div className="auth-form-container">
-            <div className="success-animation">
-              <div className="success-checkmark">
+        <div className="relative flex items-center justify-center bg-white p-6 md:p-8 dark:bg-gray-900">
+          <div className="w-full max-w-[400px]">
+            <div className="mb-8 flex justify-center">
+              <div className="flex h-20 w-20 items-center justify-center text-emerald-500">
                 <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                   <polyline points="22 4 12 14.01 9 11.01"/>
@@ -92,20 +90,18 @@ export default function InventoryVerifyEmailPage() {
               </div>
             </div>
 
-            <div className="form-header" style={{ textAlign: 'center' }}>
-              <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Your email has been verified</h2>
-              <p style={{ fontSize: '1.125rem', color: 'var(--text-secondary)' }}>
+            <div className="mb-8 text-center">
+              <h2 className="mb-4 text-[2rem] font-bold text-slate-900 dark:text-gray-50">Your email has been verified</h2>
+              <p className="text-lg text-slate-600 dark:text-gray-400">
                 You can now sign in with your new account
               </p>
             </div>
 
-            <div className="verify-actions" style={{ marginTop: '2rem' }}>
+            <div className="mt-8">
               <button 
                 onClick={() => navigate('/inventory/dashboard')}
-                className="btn btn-full btn-inventory"
+                className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border-0 px-8 py-4 text-lg font-semibold text-white transition-all hover:-translate-y-px"
                 style={{ 
-                  padding: '1rem 2rem',
-                  fontSize: '1.125rem',
                   background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                   boxShadow: '0 4px 12px rgba(16, 185, 129, 0.4)'
                 }}
@@ -114,19 +110,8 @@ export default function InventoryVerifyEmailPage() {
               </button>
             </div>
 
-            <div style={{ 
-              marginTop: '2rem', 
-              textAlign: 'center',
-              padding: '1rem',
-              background: 'rgba(16, 185, 129, 0.1)',
-              borderRadius: '12px',
-              border: '1px solid rgba(16, 185, 129, 0.2)'
-            }}>
-              <p style={{ 
-                margin: 0, 
-                color: 'var(--text-secondary)',
-                fontSize: '0.875rem'
-              }}>
+            <div className="mt-8 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-center">
+              <p className="m-0 text-sm text-slate-600 dark:text-gray-400">
                 Redirecting you to the dashboard in a moment...
               </p>
             </div>
@@ -137,11 +122,11 @@ export default function InventoryVerifyEmailPage() {
   }
 
   return (
-    <div className="auth-page inventory-auth">
+    <div className="grid min-h-screen grid-cols-1 bg-slate-50 md:grid-cols-[55%_45%] dark:bg-[#0a0f1a]">
       {/* Left Panel - Branding */}
-      <div className="auth-brand-panel inventory-brand">
-        <div className="auth-brand-content">
-          <Link to="/" className="back-to-home">
+      <div className="relative hidden overflow-hidden bg-gradient-to-br from-[#1e40af] via-[#3b82f6] to-[#0ea5e9] px-12 py-8 text-white md:flex md:flex-col">
+        <div className="relative z-10 flex h-full flex-col">
+          <Link to="/" className="inline-flex items-center gap-2 text-white/80 no-underline transition-colors hover:text-white">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="19" y1="12" x2="5" y2="12"/>
               <polyline points="12 19 5 12 12 5"/>
@@ -149,23 +134,23 @@ export default function InventoryVerifyEmailPage() {
             Back to Home
           </Link>
           
-          <div className="brand-logo inventory-logo">
+          <div className="mt-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
               <line x1="3" y1="6" x2="21" y2="6"/>
               <path d="M16 10a4 4 0 0 1-8 0"/>
             </svg>
           </div>
-          <h1 className="brand-title">Inventory Management</h1>
-          <p className="brand-tagline">Verify Your Email</p>
+          <h1 className="mb-2 text-3xl font-bold">Inventory Management</h1>
+          <p className="text-lg text-white/80">Verify Your Email</p>
         </div>
       </div>
 
       {/* Right Panel - Verification */}
-      <div className="auth-form-panel">
-        <div className="auth-form-container">
+      <div className="relative flex items-center justify-center bg-white p-6 md:p-8 dark:bg-gray-900">
+        <div className="w-full max-w-[400px]">
           <button 
-            className="theme-toggle"
+            className="absolute top-6 right-6 flex h-10 w-10 cursor-pointer items-center justify-center rounded-[10px] border border-slate-200 bg-slate-50 text-slate-600 transition-colors hover:border-blue-600 hover:bg-gray-100 dark:border-gray-700 dark:bg-[#0a0f1a] dark:text-gray-400 dark:hover:border-blue-400 dark:hover:bg-gray-700"
             onClick={toggleTheme}
             aria-label="Toggle theme"
           >
@@ -188,21 +173,21 @@ export default function InventoryVerifyEmailPage() {
             )}
           </button>
 
-          <div className="verify-icon">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
               <polyline points="22,6 12,13 2,6"/>
             </svg>
           </div>
 
-          <div className="form-header">
-            <h2>Check Your Email</h2>
-            <p>We've sent a verification link to:</p>
-            <p className="email-display">{currentUser.email}</p>
+          <div className="mb-8 text-center">
+            <h2 className="mb-2 text-[1.75rem] font-bold text-slate-900 dark:text-gray-50">Check Your Email</h2>
+            <p className="m-0 text-[0.9375rem] text-slate-600 dark:text-gray-400">We've sent a verification link to:</p>
+            <p className="mt-2 font-semibold text-blue-600 dark:text-blue-400">{currentUser.email}</p>
           </div>
 
           {error && (
-            <div className="alert alert-error">
+            <div className="mb-6 flex items-center gap-2 rounded-lg border border-red-600 bg-red-100 px-4 py-3 text-sm text-red-600 dark:border-red-400 dark:bg-red-900/30 dark:text-red-400">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"/>
                 <line x1="12" y1="8" x2="12" y2="12"/>
@@ -213,7 +198,7 @@ export default function InventoryVerifyEmailPage() {
           )}
 
           {message && (
-            <div className="alert alert-success">
+            <div className="mb-6 flex items-center gap-2 rounded-lg border border-emerald-600 bg-emerald-100 px-4 py-3 text-sm text-emerald-600 dark:border-emerald-400 dark:bg-emerald-900/30 dark:text-emerald-400">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                 <polyline points="22 4 12 14.01 9 11.01"/>
@@ -222,22 +207,22 @@ export default function InventoryVerifyEmailPage() {
             </div>
           )}
 
-          <div className="verify-actions">
+          <div className="mt-8 flex flex-col gap-4">
             <button 
               onClick={handleRefresh}
-              className="btn btn-full btn-inventory"
+              className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border-0 bg-gradient-to-br from-blue-800 to-blue-500 px-6 py-3.5 text-base font-semibold text-white transition-all hover:-translate-y-px hover:shadow-md"
             >
               I've Verified My Email
             </button>
 
             <button 
               onClick={handleResend}
-              className="btn btn-outline btn-full"
+              className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-slate-200 bg-transparent px-6 py-3.5 text-base font-medium text-slate-600 transition-colors hover:bg-gray-100 hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:border-gray-600"
               disabled={loading || countdown > 0}
             >
               {loading ? (
                 <>
-                  <span className="spinner"></span>
+                  <span className="inline-block h-[18px] w-[18px] animate-spin rounded-full border-2 border-slate-400/30 border-t-slate-600 dark:border-gray-500/30 dark:border-t-gray-400"></span>
                   Sending...
                 </>
               ) : countdown > 0 ? (
@@ -248,8 +233,8 @@ export default function InventoryVerifyEmailPage() {
             </button>
           </div>
 
-          <div className="verify-footer">
-            <button onClick={handleLogout} className="btn-text">
+          <div className="mt-6 text-center">
+            <button onClick={handleLogout} className="cursor-pointer border-0 bg-transparent text-[13px] font-medium text-slate-600 transition-colors hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
               Sign out and use a different email
             </button>
           </div>

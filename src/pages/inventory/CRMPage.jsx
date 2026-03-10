@@ -31,7 +31,6 @@ export default function CRMPage() {
   const [updatingCustomer, setUpdatingCustomer] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // disable body scroll while the add modal is visible
   useEffect(() => {
     if (showAddModal) {
       document.body.style.overflow = 'hidden';
@@ -46,16 +45,21 @@ export default function CRMPage() {
   async function handleAddCustomer(formData) {
     try {
       const payload = { ...formData };
+
       if (isMaster) {
         const storeId = selectedStoreId || (stores?.length ? stores[0].id : null);
+
         if (!storeId) {
-          alert('Please create a store first (Stores page), or select a store to add customers.');
+          alert(
+            'Please create a store first (Stores page), or select a store to add customers.'
+          );
           return;
         }
+
         payload.storeId = storeId;
       }
+
       await addCustomer(payload);
-      // only close modal after successful addition
       setShowAddModal(false);
     } catch (err) {
       alert(err.message || 'Failed to add customer. Please try again.');
@@ -91,64 +95,120 @@ export default function CRMPage() {
   }
 
   return (
-    <main className="dashboard-content">
-      {error && <div className="error-banner">{error}</div>}
-
-      {isMaster && stores?.length > 0 && (
-        <div className="card store-filter-card" style={{ marginBottom: '1rem' }}>
-          <label htmlFor="crm-store-filter" style={{ marginRight: '0.5rem' }}>Store:</label>
-          <select
-            id="crm-store-filter"
-            value={selectedStoreId || ''}
-            onChange={(e) => setSelectedStoreId(e.target.value || null)}
-            style={{ padding: '0.35rem 0.75rem', borderRadius: 6 }}
-          >
-            <option value="">All stores</option>
-            {stores.map((s) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
+    <main className="min-h-screen p-4 md:p-6 bg-slate-50 dark:bg-[#0a0f1a]">
+      
+      {/* Page Header */}
+      <div className="flex items-start gap-4 mb-6">
+        <div>
+          <h1 className="text-xl sm:text-2xl md:text-[1.9rem] font-bold tracking-tight text-slate-900 dark:text-gray-50">
+            Customer Relationship Management
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">
+            Manage customer details and track interactions
+          </p>
+        </div>
+      </div>
+      
+      {error && (
+        <div className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg p-3 mb-4">
+          {error}
         </div>
       )}
 
-      {/* control bar with add button */}
-      <div className="crm-controls">
-        <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
-          ➕ Create New Customer Details
-        </button>
+      {/* Store Filter + Add Customer */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 p-4 shadow-sm mb-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+
+        {isMaster && stores?.length > 0 && (
+          <div className="flex items-center gap-3 flex-wrap">
+
+            <span className="text-sm font-semibold text-slate-700 dark:text-gray-300">
+              Filter Store
+            </span>
+
+            <select
+              id="crm-store-filter"
+              value={selectedStoreId || ''}
+              onChange={(e) => setSelectedStoreId(e.target.value || null)}
+              className="min-w-[200px] px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-gray-600 
+              bg-white dark:bg-gray-900 text-slate-900 dark:text-gray-100
+              focus:outline-none focus:ring-2 focus:ring-blue-500
+              shadow-sm hover:border-blue-400 transition"
+            >
+              <option value="">All Stores</option>
+
+              {stores.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+
+          </div>
+        )}
+
+        {/* Create Customer Button */}
+        <div className="flex justify-end">
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 
+            bg-gradient-to-r from-blue-600 to-indigo-600
+            hover:from-blue-700 hover:to-indigo-700
+            text-white text-sm font-semibold
+            rounded-lg shadow-md hover:shadow-lg
+            transition-all duration-200"
+          >
+            <span className="text-lg">＋</span>
+            Create New Customer
+          </button>
+        </div>
+
       </div>
 
-      {/* modal for adding new customer */}
+      {/* Add Customer Modal */}
       {showAddModal && (
         <div
-          className="modal-overlay"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
           onClick={() => setShowAddModal(false)}
         >
           <div
-            className="modal-content"
+            className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-xl animate-fade-in"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
           >
-            <div className="modal-header">
-              <h3>➕ Add a New Customer Detail</h3>
+            <div className="flex items-center justify-between mb-4">
+
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-gray-50">
+                ➕ Add a New Customer Detail
+              </h3>
+
               <button
-                className="modal-close"
+                className="text-2xl leading-none text-slate-400 dark:text-gray-500 hover:text-slate-700 dark:hover:text-gray-300 bg-transparent border-none cursor-pointer"
                 onClick={() => setShowAddModal(false)}
                 aria-label="Close"
               >
                 ×
               </button>
+
             </div>
+
             <CustomerForm onSubmit={handleAddCustomer} loading={addingCustomer} />
           </div>
         </div>
       )}
 
+      {/* Customer Table */}
       {loading ? (
-        <div className="loading-container card">
-          <h3>Submitted Customer Details</h3>
-          <div className="loading">Loading...</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 p-6 shadow-sm text-center">
+
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-gray-50 mb-4">
+            Submitted Customer Details
+          </h3>
+
+          <div className="text-slate-500 dark:text-gray-400">
+            Loading...
+          </div>
+
         </div>
       ) : (
         <CustomerTable

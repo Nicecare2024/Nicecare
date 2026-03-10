@@ -4,14 +4,10 @@
  * usage does not trigger StrictMode warnings (UNSAFE_componentWillReceiveProps) in our app.
  */
 
-const tableStyles = {
-  table: { width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem', fontSize: '0.9rem' },
-  th: { padding: '0.5rem 0.75rem', textAlign: 'left', borderBottom: '2px solid var(--border-color, #ddd)', background: 'var(--table-header-bg, #f5f5f5)' },
-  td: { padding: '0.5rem 0.75rem', borderBottom: '1px solid var(--border-color, #eee)', verticalAlign: 'top' },
-  section: { marginBottom: '2rem' },
-  sectionTitle: { marginBottom: '0.5rem', fontSize: '1.1rem' },
-  sectionDesc: { marginBottom: '0.75rem', color: 'var(--text-muted, #666)', fontSize: '0.9rem' },
-};
+const thCls =
+  'px-3 py-2 text-left border-b-2 border-slate-200 dark:border-gray-700 bg-slate-100 dark:bg-gray-800 text-slate-900 dark:text-gray-50 text-sm font-semibold';
+const tdCls =
+  'px-3 py-2 border-b border-slate-200 dark:border-gray-700 align-top text-slate-900 dark:text-gray-50 text-sm';
 
 const FIRESTORE_MAPPING = [
   { frontend: 'StoreManagement.jsx', hook: 'useStores', backend: 'storesRepository.js', api: 'Firestore collection stores (CRUD)' },
@@ -32,37 +28,43 @@ const HTTP_API_MAPPING = [
 
 export default function ApiDocsPage() {
   return (
-    <main className="dashboard-content" style={{ padding: 0, minHeight: '80vh' }}>
-      <div className="page-header" style={{ marginBottom: 0 }}>
+    <main className="flex flex-col gap-5 flex-1 min-h-0 p-0 min-h-[80vh]">
+      <div className="flex items-start gap-4 mb-0">
         <div>
-          <h1 style={{ paddingLeft: '1rem' }}>API Documentation</h1>
-          <p style={{ paddingLeft: '1rem' }}>Frontend–backend mapping and Cloud Functions HTTP API</p>
+          <h1 className="text-xl sm:text-2xl md:text-[1.9rem] font-bold tracking-tight text-slate-900 dark:text-gray-50 pl-4">
+            API Documentation
+          </h1>
+          <p className="mt-1.5 text-[0.95rem] text-slate-600 dark:text-gray-400 pl-4">
+            Frontend–backend mapping and Cloud Functions HTTP API
+          </p>
         </div>
       </div>
 
-      <div style={{ padding: '0 1rem 1rem' }}>
-        <section style={tableStyles.section}>
-          <h2 style={tableStyles.sectionTitle}>Path ① — Firestore (direct SDK)</h2>
-          <p style={tableStyles.sectionDesc}>
+      <div className="px-4 pb-4">
+        <section className="mb-8">
+          <h2 className="mb-2 text-lg text-slate-900 dark:text-gray-50 font-semibold">
+            Path ① — Firestore (direct SDK)
+          </h2>
+          <p className="mb-3 text-slate-400 dark:text-gray-500 text-sm">
             Pages call hooks → hooks use repositories → repositories talk to Firestore. No HTTP API.
           </p>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={tableStyles.table}>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse mb-6 text-sm">
               <thead>
                 <tr>
-                  <th style={tableStyles.th}>Frontend file</th>
-                  <th style={tableStyles.th}>Hook</th>
-                  <th style={tableStyles.th}>Backend file(s)</th>
-                  <th style={tableStyles.th}>API / mechanism</th>
+                  <th className={thCls}>Frontend file</th>
+                  <th className={thCls}>Hook</th>
+                  <th className={thCls}>Backend file(s)</th>
+                  <th className={thCls}>API / mechanism</th>
                 </tr>
               </thead>
               <tbody>
                 {FIRESTORE_MAPPING.map((row, i) => (
-                  <tr key={i}>
-                    <td style={tableStyles.td}>{row.frontend}</td>
-                    <td style={tableStyles.td}>{row.hook}</td>
-                    <td style={tableStyles.td}>{row.backend}</td>
-                    <td style={tableStyles.td}>{row.api}</td>
+                  <tr key={i} className="hover:bg-blue-50/40 dark:hover:bg-blue-900/20">
+                    <td className={tdCls}>{row.frontend}</td>
+                    <td className={tdCls}>{row.hook}</td>
+                    <td className={tdCls}>{row.backend}</td>
+                    <td className={tdCls}>{row.api}</td>
                   </tr>
                 ))}
               </tbody>
@@ -70,28 +72,30 @@ export default function ApiDocsPage() {
           </div>
         </section>
 
-        <section style={tableStyles.section}>
-          <h2 style={tableStyles.sectionTitle}>Path ② — Cloud Functions HTTP API</h2>
-          <p style={tableStyles.sectionDesc}>
+        <section className="mb-8">
+          <h2 className="mb-2 text-lg text-slate-900 dark:text-gray-50 font-semibold">
+            Path ② — Cloud Functions HTTP API
+          </h2>
+          <p className="mb-3 text-slate-400 dark:text-gray-500 text-sm">
             Components call endpoint modules → HTTP client sends requests to Firebase Cloud Functions.
           </p>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={tableStyles.table}>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse mb-6 text-sm">
               <thead>
                 <tr>
-                  <th style={tableStyles.th}>Frontend file</th>
-                  <th style={tableStyles.th}>Endpoint layer</th>
-                  <th style={tableStyles.th}>APIs involved</th>
-                  <th style={tableStyles.th}>Backend file</th>
+                  <th className={thCls}>Frontend file</th>
+                  <th className={thCls}>Endpoint layer</th>
+                  <th className={thCls}>APIs involved</th>
+                  <th className={thCls}>Backend file</th>
                 </tr>
               </thead>
               <tbody>
                 {HTTP_API_MAPPING.map((row, i) => (
-                  <tr key={i}>
-                    <td style={tableStyles.td}>{row.frontend}</td>
-                    <td style={tableStyles.td}>{row.endpointLayer}</td>
-                    <td style={tableStyles.td}>{row.apis}</td>
-                    <td style={tableStyles.td}>{row.backend}</td>
+                  <tr key={i} className="hover:bg-blue-50/40 dark:hover:bg-blue-900/20">
+                    <td className={tdCls}>{row.frontend}</td>
+                    <td className={tdCls}>{row.endpointLayer}</td>
+                    <td className={tdCls}>{row.apis}</td>
+                    <td className={tdCls}>{row.backend}</td>
                   </tr>
                 ))}
               </tbody>
@@ -100,22 +104,22 @@ export default function ApiDocsPage() {
         </section>
       </div>
 
-      <div className="page-header" style={{ marginTop: '1.5rem', marginBottom: 0 }}>
+      <div className="flex items-start gap-4 mt-6 mb-0">
         <div>
-          <h2 style={{ fontSize: '1.1rem', margin: 0 }}>Swagger — HTTP endpoints</h2>
-          <p style={{ margin: '0.25rem 0 0', fontSize: '0.9rem', color: 'var(--text-muted, #666)' }}>Request bodies, auth, and response shapes</p>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-50 m-0 pl-4">
+            Swagger — HTTP endpoints
+          </h2>
+          <p className="mt-1 text-sm text-slate-400 dark:text-gray-500 pl-4">
+            Request bodies, auth, and response shapes
+          </p>
         </div>
       </div>
-      <div className="swagger-ui-wrapper" style={{ marginTop: '1rem', minHeight: '70vh', padding: '0 1rem' }}>
+
+      <div className="mt-4 min-h-[70vh] px-4">
         <iframe
           title="API Documentation"
           src="/api-docs.html"
-          style={{
-            width: '100%',
-            minHeight: '70vh',
-            border: 'none',
-            display: 'block',
-          }}
+          className="w-full min-h-[70vh] border-none block"
         />
       </div>
     </main>

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 // Mock the sale data
 const mockSale = {
@@ -287,7 +287,7 @@ describe('DigitalReceipt Component', () => {
   });
 
   describe('Confetti Animation', () => {
-    it('should render confetti container', () => {
+    it('should render confetti particles initially', async () => {
       const { container } = render(
         <DigitalReceipt 
           sale={mockSale} 
@@ -296,7 +296,9 @@ describe('DigitalReceipt Component', () => {
         />
       );
 
-      expect(container.querySelector('.confetti-container')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(container.querySelectorAll('.animate-confetti-fall').length).toBeGreaterThan(0);
+      });
     });
   });
 
