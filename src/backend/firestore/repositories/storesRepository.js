@@ -3,6 +3,7 @@ import {
   query,
   where,
   orderBy,
+  getDocs,
   onSnapshot,
   addDoc,
   updateDoc,
@@ -11,6 +12,19 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../../../config/firebase';
+
+export async function getStoresOnce(ownerUid) {
+  const q = query(
+    collection(db, 'stores'),
+    where('ownerUid', '==', ownerUid),
+    orderBy('createdAt', 'desc')
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((docItem) => ({
+    id: docItem.id,
+    ...docItem.data(),
+  }));
+}
 
 export function subscribeStores(ownerUid, onData, onError) {
   const q = query(
