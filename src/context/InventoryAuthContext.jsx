@@ -367,9 +367,6 @@ export function InventoryAuthProvider({ children }) {
     const profileDoc = await getDoc(doc(db, COLLECTIONS.INVENTORY_INTERNAL_USER_PROFILES, uid));
     if (profileDoc.exists()) {
       const profile = profileDoc.data();
-      // #region agent log
-      fetch('http://127.0.0.1:7555/ingest/14177494-399b-47b1-a251-61383150f196',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b7d8d0'},body:JSON.stringify({sessionId:'b7d8d0',runId:'initial',hypothesisId:'H6',location:'src/context/InventoryAuthContext.jsx',message:'Inventory profile fetched',data:{role:profile?.role||null,accountType:profile?.accountType||null,hasOwnerUid:!!(profile?.ownerUid||profile?.masterUid),assignedStoreId:profile?.assignedStoreId||null,isActive:profile?.isActive??null},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       setUserProfile(profile);
       return profile;
     }
