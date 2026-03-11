@@ -1,5 +1,4 @@
-import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
 
 // Mock map component (replace with actual map library like Mapbox or Google Maps)
 const StoreMap = ({ stores, performanceData, className = '' }) => {
@@ -41,14 +40,10 @@ const StoreMap = ({ stores, performanceData, className = '' }) => {
   const StoreMarker = ({ store, index }) => {
     const coords = mockCoordinates[index] || { x: 50, y: 50 };
     const performance = getStorePerformance(store.id);
-    const isSelected = selectedStore?.id === store.id;
     const isHovered = hoveredStore?.id === store.id;
 
     return (
-      <motion.div
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: index * 0.1 }}
+      <div
         className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
         style={{ left: `${coords.x}%`, top: `${coords.y}%` }}
         onClick={() => setSelectedStore(store)}
@@ -56,13 +51,7 @@ const StoreMap = ({ stores, performanceData, className = '' }) => {
         onMouseLeave={() => setHoveredStore(null)}
       >
         {/* Store Marker */}
-        <motion.div
-          animate={{ 
-            scale: isSelected || isHovered ? 1.2 : 1,
-            boxShadow: isSelected || isHovered ? '0 8px 25px rgba(0,0,0,0.15)' : '0 4px 15px rgba(0,0,0,0.1)'
-          }}
-          className="relative"
-        >
+        <div className="relative">
           <div
             className="w-6 h-6 rounded-full border-3 border-white shadow-lg flex items-center justify-center"
             style={{ backgroundColor: getMarkerColor(store.id) }}
@@ -72,14 +61,12 @@ const StoreMap = ({ stores, performanceData, className = '' }) => {
           
           {/* Pulse animation for active stores */}
           {performance.employeeCount > 0 && (
-            <motion.div
-              animate={{ scale: [1, 1.5, 1], opacity: [0.7, 0, 0.7] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="absolute inset-0 rounded-full border-2"
+            <div
+              className="absolute inset-0 rounded-full border-2 animate-ping"
               style={{ borderColor: getMarkerColor(store.id) }}
             />
           )}
-        </motion.div>
+        </div>
 
         {/* Store Label */}
         <div className="absolute top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
@@ -92,11 +79,7 @@ const StoreMap = ({ stores, performanceData, className = '' }) => {
 
         {/* Hover Tooltip */}
         {isHovered && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="absolute top-12 left-1/2 transform -translate-x-1/2 z-10"
-          >
+          <div className="absolute top-12 left-1/2 transform -translate-x-1/2 z-10">
             <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg shadow-lg p-3 min-w-48">
               <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">
                 {store.name}
@@ -128,17 +111,14 @@ const StoreMap = ({ stores, performanceData, className = '' }) => {
                 )}
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </motion.div>
+      </div>
     );
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
+    <div
       className={`bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm ${className}`}
     >
       <div className="p-6 border-b border-slate-200 dark:border-gray-700">
@@ -206,11 +186,7 @@ const StoreMap = ({ stores, performanceData, className = '' }) => {
 
         {/* Selected Store Details */}
         {selectedStore && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-6 p-4 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600"
-          >
+          <div className="mt-6 p-4 bg-slate-50 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white">
                 {selectedStore.name}
@@ -259,10 +235,10 @@ const StoreMap = ({ stores, performanceData, className = '' }) => {
                 );
               })()}
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

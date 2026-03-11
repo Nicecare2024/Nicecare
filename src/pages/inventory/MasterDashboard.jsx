@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { Navigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { useInventoryAuth } from '../../context/InventoryAuthContext';
 import { useEnhancedDashboard } from '../../hooks/useEnhancedDashboard';
 
@@ -30,16 +29,6 @@ export default function MasterDashboard() {
 
   return <EnterpriseDashboard userProfile={userProfile} isMaster={isMaster} isManager={isManager} />;
 }
-
-// ---------- Animation variants ----------
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
-};
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-};
 
 // ---------- Skeleton loading ----------
 const LoadingSkeleton = () => (
@@ -132,12 +121,7 @@ function EnterpriseDashboard({ userProfile, isMaster, isManager }) {
     <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f1a]">
 
       {/* ── Header ── */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="bg-gradient-to-br from-[#0f1f3d] via-[#0d2d6b] to-[#1a56db]"
-      >
+      <div className="bg-gradient-to-br from-[#0f1f3d] via-[#0d2d6b] to-[#1a56db]">
         <div className="px-4 sm:px-6 lg:px-8 py-8">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
@@ -145,12 +129,7 @@ function EnterpriseDashboard({ userProfile, isMaster, isManager }) {
               {/* Left: identity */}
               <div className="text-white">
                 <div className="flex items-center gap-3 mb-2">
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.15 }}
-                    className="flex items-center gap-3"
-                  >
+                  <div className="flex items-center gap-3">
                     <span className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-white/10 border border-white/20">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                         <rect x="3" y="3" width="7" height="7" rx="1" />
@@ -162,26 +141,16 @@ function EnterpriseDashboard({ userProfile, isMaster, isManager }) {
                     <span className="text-xs font-semibold text-blue-200 uppercase tracking-widest">
                       Operations Command Center
                     </span>
-                  </motion.div>
+                  </div>
                 </div>
 
-                <motion.h1
-                  className="text-3xl lg:text-4xl font-bold tracking-tight"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
+                <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">
                   {greeting},{' '}
                   {userProfile?.displayName?.split(' ')[0] ||
                     (isMaster ? 'Owner' : 'Manager')}
-                </motion.h1>
+                </h1>
 
-                <motion.div
-                  className="flex flex-wrap items-center gap-3 mt-3"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.35 }}
-                >
+                <div className="flex flex-wrap items-center gap-3 mt-3">
                   <OperationalStatus alerts={alerts} />
                   {isManager && userProfile?.assignedStoreName && (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-blue-100 text-xs font-semibold border border-white/15">
@@ -193,18 +162,15 @@ function EnterpriseDashboard({ userProfile, isMaster, isManager }) {
                     </span>
                   )}
                   <span className="text-xs text-blue-300">
-                    Refreshed {new Date(lastRefresh).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    Refreshed {lastRefresh
+                      ? new Date(lastRefresh).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                      : '--:--'}
                   </span>
-                </motion.div>
+                </div>
               </div>
 
               {/* Right: 4 quick stats */}
-              <motion.div
-                className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-white lg:min-w-[480px]"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.45 }}
-              >
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-white lg:min-w-[480px]">
                 {[
                   {
                     label: "Today's Revenue",
@@ -242,22 +208,17 @@ function EnterpriseDashboard({ userProfile, isMaster, isManager }) {
                     <div className={`text-xs mt-0.5 ${stat.subColor}`}>{stat.sub}</div>
                   </div>
                 ))}
-              </motion.div>
+              </div>
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* ── Body ── */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10"
-      >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
 
         {/* KPI Cards */}
-        <motion.div variants={itemVariants}>
+        <div>
           <SectionLabel>Key Performance Indicators</SectionLabel>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <RevenueKPICard
@@ -280,34 +241,34 @@ function EnterpriseDashboard({ userProfile, isMaster, isManager }) {
               sparklineData={revenueSparkline}
             />
           </div>
-        </motion.div>
+        </div>
 
         {/* Repair Pipeline */}
-        <motion.div variants={itemVariants}>
+        <div>
           <SectionLabel>Repair Workflow Pipeline</SectionLabel>
           <RepairPipeline
             stores={stores}
             queueLength={summary?.repairs?.queueLength || 0}
           />
-        </motion.div>
+        </div>
 
         {/* Charts row */}
-        <motion.div variants={itemVariants}>
+        <div>
           <SectionLabel>Revenue & Store Performance</SectionLabel>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <RevenueChart data={chartData.revenue} />
             <PerformanceChart data={chartData.performance} />
           </div>
-        </motion.div>
+        </div>
 
         {/* Store Map */}
-        <motion.div variants={itemVariants}>
+        <div>
           <SectionLabel>Store Locations</SectionLabel>
           <StoreMap stores={stores} performanceData={chartData.performance} />
-        </motion.div>
+        </div>
 
         {/* Employee Rankings + Action Items + Repair Type */}
-        <motion.div variants={itemVariants}>
+        <div>
           <SectionLabel>Team Performance & Operations</SectionLabel>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
@@ -317,10 +278,10 @@ function EnterpriseDashboard({ userProfile, isMaster, isManager }) {
               <ActionItems alerts={alerts} summary={summary} />
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Repair type breakdown */}
-        <motion.div variants={itemVariants}>
+        <div>
           <SectionLabel>Repair Type Analysis</SectionLabel>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <RepairTypeChart data={chartData.repairTypes ?? []} />
@@ -389,9 +350,9 @@ function EnterpriseDashboard({ userProfile, isMaster, isManager }) {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-      </motion.div>
+      </div>
     </div>
   );
 }

@@ -6,11 +6,9 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ReferenceLine,
   ResponsiveContainer,
 } from 'recharts';
-import { motion } from 'framer-motion';
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat('en-US', {
@@ -79,16 +77,12 @@ const RevenueChart = ({ data = [], timeframe = '30d', className = '' }) => {
     partsCost: Math.round((d.revenue || 0) * 0.40),
   }));
 
-  const maxRevenue = enriched.length ? Math.max(...enriched.map(d => d.revenue)) : 0;
   const weeklyAvg = enriched.length
     ? Math.round(enriched.slice(-7).reduce((s, d) => s + (d.revenue || 0), 0) / Math.min(7, enriched.length))
     : 0;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+    <div
       className={`bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm ${className}`}
     >
       <div className="p-6 border-b border-slate-200 dark:border-gray-700">
@@ -174,7 +168,7 @@ const RevenueChart = ({ data = [], timeframe = '30d', className = '' }) => {
           </AreaChart>
         </ResponsiveContainer>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

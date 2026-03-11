@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
 
 const PIPELINE_STAGES = [
   {
@@ -85,12 +84,7 @@ const RepairPipeline = ({ stores = [], queueLength = 0 }) => {
   const total = Math.max(queueLength, 6);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm"
-    >
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm">
       <div className="p-6 border-b border-slate-200 dark:border-gray-700">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
@@ -119,11 +113,8 @@ const RepairPipeline = ({ stores = [], queueLength = 0 }) => {
         {/* Pipeline stages */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {PIPELINE_STAGES.map((stage, idx) => (
-            <motion.div
+            <div
               key={stage.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: idx * 0.07 }}
               className={`relative rounded-xl border ${stage.borderColor} ${stage.bgLight} p-4 text-center`}
             >
               {idx < PIPELINE_STAGES.length - 1 && (
@@ -152,7 +143,7 @@ const RepairPipeline = ({ stores = [], queueLength = 0 }) => {
               <div className="text-xs font-medium text-slate-500 dark:text-gray-400 leading-tight">
                 {stage.label}
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
@@ -193,7 +184,7 @@ const RepairPipeline = ({ stores = [], queueLength = 0 }) => {
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

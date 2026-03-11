@@ -7,22 +7,24 @@ import { useCustomers } from './useCustomers';
 // import { useServiceTickets } from './useServiceTickets'; // TODO: Add when service tickets feature is merged
 import AnalyticsEngine from '../services/analyticsEngine';
 
+const EMPTY_TICKETS = [];
+
 /**
  * Enhanced Dashboard Hook
  * Provides comprehensive analytics and KPIs for enterprise dashboard
  */
 export const useEnhancedDashboard = () => {
   const [refreshInterval, setRefreshInterval] = useState(30000); // 30 seconds
-  const [lastRefresh, setLastRefresh] = useState(Date.now());
+  const [lastRefresh, setLastRefresh] = useState(null);
 
   // Core data hooks
   const { stores, loading: storesLoading } = useStores();
   const { employees, loading: employeesLoading } = useEmployees();
-  const { products, lowStockProducts, loading: productsLoading } = useProducts();
-  const { stats, sales, loading: salesLoading } = useSales();
+  const { products, loading: productsLoading } = useProducts();
+  const { sales, loading: salesLoading } = useSales();
   const { customers, loading: customersLoading } = useCustomers();
   // const { tickets, loading: ticketsLoading } = useServiceTickets(); // TODO: Add when service tickets feature is merged
-  const tickets = []; // Fallback empty array
+  const tickets = EMPTY_TICKETS; // Fallback empty array
   const ticketsLoading = false;
 
   // Loading state
@@ -63,7 +65,7 @@ export const useEnhancedDashboard = () => {
         performance: [],
         trends: [],
         employeePerformance: [],
-        repairTypes: []
+        repairTypes: [],
       };
     }
 
@@ -93,7 +95,7 @@ export const useEnhancedDashboard = () => {
         name,
         value: totalRepairs ? Math.round((count / totalRepairs) * 100) : 0,
         count,
-        color: palette[index % palette.length]
+        color: palette[index % palette.length],
       }));
 
     return {
@@ -101,7 +103,7 @@ export const useEnhancedDashboard = () => {
       performance: kpis.performance.stores,
       trends: kpis.trends.weeklyTrends,
       employeePerformance: kpis.employees.topPerformers,
-      repairTypes
+      repairTypes,
     };
   }, [kpis, customers]);
 
@@ -119,7 +121,7 @@ export const useEnhancedDashboard = () => {
         title: 'Critical Stock Levels',
         message: `${kpis.inventory.criticalStockCount} products are critically low`,
         action: 'View Inventory',
-        href: '/inventory/products'
+        href: '/inventory/products',
       });
     }
 
@@ -131,7 +133,7 @@ export const useEnhancedDashboard = () => {
         title: 'Stale Repair Tickets',
         message: `${kpis.repairs.staleTickets} tickets need attention`,
         action: 'View Tickets',
-        href: '/inventory/service-tickets'
+        href: '/inventory/service-tickets',
       });
     }
 
@@ -143,7 +145,7 @@ export const useEnhancedDashboard = () => {
         title: 'Store Performance',
         message: `${kpis.performance.underPerforming.length} stores need attention`,
         action: 'View Stores',
-        href: '/inventory/stores'
+        href: '/inventory/stores',
       });
     }
 
@@ -159,26 +161,26 @@ export const useEnhancedDashboard = () => {
         today: kpis.revenue.today,
         growth: kpis.revenue.todayGrowth,
         week: kpis.revenue.week,
-        month: kpis.revenue.month
+        month: kpis.revenue.month,
       },
       operations: {
         totalStores: kpis.performance.totalStores,
         activeStores: kpis.performance.activeStores,
         totalEmployees: kpis.employees.total,
-        activeEmployees: kpis.employees.active
+        activeEmployees: kpis.employees.active,
       },
       inventory: {
         totalProducts: kpis.inventory.totalProducts,
         lowStock: kpis.inventory.lowStockCount,
         criticalStock: kpis.inventory.criticalStockCount,
-        totalValue: kpis.inventory.totalInventoryValue
+        totalValue: kpis.inventory.totalInventoryValue,
       },
       repairs: {
         totalTickets: kpis.repairs.totalTickets,
         queueLength: Object.values(kpis.repairs.repairQueueByStore).reduce((sum, store) => sum + store.queue, 0),
         staleTickets: kpis.repairs.staleTickets,
-        completionRate: kpis.repairs.completionRate
-      }
+        completionRate: kpis.repairs.completionRate,
+      },
     };
   }, [kpis]);
 
@@ -193,13 +195,13 @@ export const useEnhancedDashboard = () => {
       insights.push({
         type: 'positive',
         title: 'Strong Revenue Growth',
-        description: `Today's revenue is ${kpis.revenue.todayGrowth.toFixed(1)}% higher than yesterday`
+        description: `Today's revenue is ${kpis.revenue.todayGrowth.toFixed(1)}% higher than yesterday`,
       });
     } else if (kpis.revenue.todayGrowth < -10) {
       insights.push({
         type: 'negative',
         title: 'Revenue Decline',
-        description: `Today's revenue is ${Math.abs(kpis.revenue.todayGrowth).toFixed(1)}% lower than yesterday`
+        description: `Today's revenue is ${Math.abs(kpis.revenue.todayGrowth).toFixed(1)}% lower than yesterday`,
       });
     }
 
@@ -208,7 +210,7 @@ export const useEnhancedDashboard = () => {
       insights.push({
         type: 'positive',
         title: 'High Accessory Sales',
-        description: `${kpis.inventory.accessoryAttachRate.toFixed(1)}% of sales include accessories`
+        description: `${kpis.inventory.accessoryAttachRate.toFixed(1)}% of sales include accessories`,
       });
     }
 
@@ -217,7 +219,7 @@ export const useEnhancedDashboard = () => {
       insights.push({
         type: 'positive',
         title: 'Team Performance',
-        description: 'Employee performance is above average across all locations'
+        description: 'Employee performance is above average across all locations',
       });
     }
 
@@ -232,22 +234,22 @@ export const useEnhancedDashboard = () => {
     sales,
     customers,
     tickets,
-    
+
     // Analytics
     kpis,
     summary,
     chartData,
     alerts,
     insights,
-    
+
     // State
     loading,
     lastRefresh,
-    
+
     // Controls
     refreshInterval,
     setRefreshInterval,
-    
+
     // Utilities
     formatCurrency: (value) => new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -255,10 +257,10 @@ export const useEnhancedDashboard = () => {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value || 0),
-    
+
     formatNumber: (value) => new Intl.NumberFormat('en-US').format(value || 0),
-    
-    formatPercentage: (value) => `${(value || 0).toFixed(1)}%`
+
+    formatPercentage: (value) => `${(value || 0).toFixed(1)}%`,
   };
 };
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat('en-US', {
@@ -80,10 +79,7 @@ const EmployeeRanking = ({ employees = [], className = '' }) => {
   const topEmployee = employees[0];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
+    <div
       className={`bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm ${className}`}
     >
       {/* Header */}
@@ -148,11 +144,8 @@ const EmployeeRanking = ({ employees = [], className = '' }) => {
             const rankDelta = RANK_CHANGE[index] ?? null;
 
             return (
-              <motion.div
+              <div
                 key={employee.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.08 }}
                 className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-gray-700/50 hover:bg-slate-100 dark:hover:bg-gray-700 transition-colors"
               >
                 {/* Rank */}
@@ -198,18 +191,16 @@ const EmployeeRanking = ({ employees = [], className = '' }) => {
                 {/* Progress bar */}
                 <div className="flex-shrink-0 w-14">
                   <div className="w-full bg-slate-200 dark:bg-gray-600 rounded-full h-1.5">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${Math.min(employee.performance * 50, 100)}%` }}
-                      transition={{ delay: index * 0.1 + 0.5, duration: 0.8 }}
+                    <div
                       className="h-1.5 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600"
+                      style={{ width: `${Math.min(employee.performance * 50, 100)}%` }}
                     />
                   </div>
                   <div className="text-xs text-center text-slate-400 dark:text-gray-500 mt-1 tabular-nums">
                     {(employee.performance * 100).toFixed(0)}%
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
@@ -248,7 +239,7 @@ const EmployeeRanking = ({ employees = [], className = '' }) => {
           </a>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 };
 

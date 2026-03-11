@@ -1,5 +1,4 @@
 import React, { useId } from 'react';
-import { motion } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 
 // ---------- Mini sparkline ----------
@@ -131,11 +130,7 @@ const KPICard = ({
   const sizeClass = size === 'small' ? 'p-4' : size === 'large' ? 'p-8' : 'p-6';
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -2, boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
-      transition={{ duration: 0.2 }}
+    <div
       className={`bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200 relative overflow-hidden ${onClick ? 'cursor-pointer' : ''} ${className}`}
       onClick={onClick}
     >
@@ -179,7 +174,7 @@ const KPICard = ({
           <MiniSparkline data={sparklineData} color={colors.sparkColor} uid={uid} />
         </div>
       )}
-    </motion.div>
+    </div>
   );
 };
 

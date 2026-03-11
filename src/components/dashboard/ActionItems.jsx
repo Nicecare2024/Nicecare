@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
 
 const SEVERITY = {
   high: {
@@ -87,12 +86,7 @@ const ActionItems = ({ alerts = [], summary }) => {
   const criticalCount = items.filter(i => i.severity === 'high').length;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm flex flex-col"
-    >
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm flex flex-col">
       <div className="p-6 border-b border-slate-200 dark:border-gray-700 flex items-center justify-between flex-shrink-0">
         <div>
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">Action Required</h3>
@@ -124,14 +118,11 @@ const ActionItems = ({ alerts = [], summary }) => {
             <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">No actions required right now</p>
           </div>
         ) : (
-          items.map((item, idx) => {
+          items.map((item) => {
             const cfg = SEVERITY[item.severity];
             return (
-              <motion.div
+              <div
                 key={item.id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.06 }}
                 className={`flex items-start gap-3 p-3 rounded-lg border-l-4 ${cfg.borderLeft} bg-slate-50 dark:bg-gray-700/50`}
               >
                 <div
@@ -153,12 +144,12 @@ const ActionItems = ({ alerts = [], summary }) => {
                 >
                   {item.action} →
                 </a>
-              </motion.div>
+              </div>
             );
           })
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

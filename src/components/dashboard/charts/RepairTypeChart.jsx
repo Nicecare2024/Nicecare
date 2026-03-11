@@ -7,7 +7,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { motion } from 'framer-motion';
 
 const FALLBACK_DATA = [
   { name: 'Screen Repair', value: 38, count: 38, color: '#3b82f6' },
@@ -36,12 +35,7 @@ const RepairTypeChart = ({ data = [] }) => {
   const chartData = hasData ? data : FALLBACK_DATA;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm"
-    >
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm">
       <div className="p-6 border-b border-slate-200 dark:border-gray-700">
         <h3 className="text-lg font-bold text-slate-900 dark:text-white">
           Repair Type Breakdown
@@ -89,7 +83,7 @@ const RepairTypeChart = ({ data = [] }) => {
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

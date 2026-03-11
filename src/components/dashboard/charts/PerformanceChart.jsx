@@ -1,17 +1,53 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { motion } from 'framer-motion';
+
+const formatCurrency = (value) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+
+  const entry = payload[0].payload;
+
+  return (
+    <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg shadow-lg p-4">
+      <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">
+        {label}
+      </p>
+      <div className="space-y-1">
+        <p className="text-sm text-slate-600 dark:text-gray-400">
+          Revenue: <span className="font-semibold text-slate-900 dark:text-white">
+            {formatCurrency(entry.revenue)}
+          </span>
+        </p>
+        <p className="text-sm text-slate-600 dark:text-gray-400">
+          Employees: <span className="font-semibold text-slate-900 dark:text-white">
+            {entry.employeeCount}
+          </span>
+        </p>
+        <p className="text-sm text-slate-600 dark:text-gray-400">
+          Efficiency: <span className="font-semibold text-slate-900 dark:text-white">
+            {Math.round(entry.efficiency * 100)}%
+          </span>
+        </p>
+        {entry.repairQueue > 0 && (
+          <p className="text-sm text-amber-600 dark:text-amber-400">
+            Repair Queue: <span className="font-semibold">
+              {entry.repairQueue}
+            </span>
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const PerformanceChart = ({ data, className = '' }) => {
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
   // Color coding based on performance
   const getBarColor = (value, maxValue) => {
     const ratio = value / maxValue;
@@ -23,49 +59,8 @@ const PerformanceChart = ({ data, className = '' }) => {
 
   const maxRevenue = Math.max(...data.map(item => item.revenue));
 
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg shadow-lg p-4">
-          <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">
-            {label}
-          </p>
-          <div className="space-y-1">
-            <p className="text-sm text-slate-600 dark:text-gray-400">
-              Revenue: <span className="font-semibold text-slate-900 dark:text-white">
-                {formatCurrency(data.revenue)}
-              </span>
-            </p>
-            <p className="text-sm text-slate-600 dark:text-gray-400">
-              Employees: <span className="font-semibold text-slate-900 dark:text-white">
-                {data.employeeCount}
-              </span>
-            </p>
-            <p className="text-sm text-slate-600 dark:text-gray-400">
-              Efficiency: <span className="font-semibold text-slate-900 dark:text-white">
-                {Math.round(data.efficiency * 100)}%
-              </span>
-            </p>
-            {data.repairQueue > 0 && (
-              <p className="text-sm text-amber-600 dark:text-amber-400">
-                Repair Queue: <span className="font-semibold">
-                  {data.repairQueue}
-                </span>
-              </p>
-            )}
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.1 }}
+    <div
       className={`bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm ${className}`}
     >
       <div className="p-6 border-b border-slate-200 dark:border-gray-700">
@@ -128,7 +123,7 @@ const PerformanceChart = ({ data, className = '' }) => {
           </BarChart>
         </ResponsiveContainer>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
