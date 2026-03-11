@@ -488,7 +488,7 @@ export default function DataMigrationHub() {
               className="p-4 rounded-xl border-2 border-dashed border-[#6c5ce7] dark:border-[#6c5ce7] hover:bg-[#f5f3fa] dark:hover:bg-gray-700/50 text-left transition-all w-full max-w-sm"
             >
               <span className="font-semibold text-[#6c5ce7] dark:text-violet-400 block">Import complete workbook</span>
-              <span className="text-xs text-[#6b6580] dark:text-[#9690a8] mt-1">Excel (.xlsx, .xls) with multiple sheets</span>
+              <span className="text-xs text-[#6b6580] dark:text-[#9690a8] mt-1">Excel (.xlsx) with multiple sheets</span>
             </button>
           </div>
         </section>
@@ -500,7 +500,7 @@ export default function DataMigrationHub() {
           <h2 className="text-lg font-semibold text-[#2d2b3d] dark:text-gray-100 mb-4">Upload CSV or Excel for {spec?.label}</h2>
           <input
             type="file"
-            accept=".csv,.xlsx,.xls"
+            accept=".csv,.xlsx"
             onChange={handleFileUpload}
             className="block w-full text-sm text-[#6b6580] dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#6c5ce7] file:text-white file:font-medium file:cursor-pointer hover:file:bg-[#5a4bd1]"
           />
@@ -515,7 +515,7 @@ export default function DataMigrationHub() {
           <h2 className="text-lg font-semibold text-[#2d2b3d] dark:text-gray-100 mb-4">Upload Excel workbook</h2>
           <input
             type="file"
-            accept=".xlsx,.xls"
+            accept=".xlsx"
             onChange={handleWorkbookUpload}
             className="block w-full text-sm text-[#6b6580] dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#6c5ce7] file:text-white file:font-medium file:cursor-pointer hover:file:bg-[#5a4bd1]"
           />
