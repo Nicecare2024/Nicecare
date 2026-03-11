@@ -3,6 +3,7 @@ import { useStores } from './useStores';
 import { useEmployees } from './useEmployees';
 import { useProducts } from './useProducts';
 import { useSales } from './useSales';
+import { useCustomers } from './useCustomers';
 // import { useServiceTickets } from './useServiceTickets'; // TODO: Add when service tickets feature is merged
 import AnalyticsEngine from '../services/analyticsEngine';
 
@@ -19,12 +20,19 @@ export const useEnhancedDashboard = () => {
   const { employees, loading: employeesLoading } = useEmployees();
   const { products, lowStockProducts, loading: productsLoading } = useProducts();
   const { stats, sales, loading: salesLoading } = useSales();
+  const { customers, loading: customersLoading } = useCustomers();
   // const { tickets, loading: ticketsLoading } = useServiceTickets(); // TODO: Add when service tickets feature is merged
   const tickets = []; // Fallback empty array
   const ticketsLoading = false;
 
   // Loading state
-  const loading = storesLoading || employeesLoading || productsLoading || salesLoading || ticketsLoading;
+  const loading =
+    storesLoading ||
+    employeesLoading ||
+    productsLoading ||
+    salesLoading ||
+    customersLoading ||
+    ticketsLoading;
 
   // Analytics Engine Instance
   const analyticsEngine = useMemo(() => {
@@ -49,15 +57,53 @@ export const useEnhancedDashboard = () => {
 
   // Chart data preparation
   const chartData = useMemo(() => {
-    if (!kpis) return { revenue: [], performance: [], trends: [] };
+    if (!kpis) {
+      return {
+        revenue: [],
+        performance: [],
+        trends: [],
+        employeePerformance: [],
+        repairTypes: []
+      };
+    }
+
+    const repairTypeCounts = {};
+
+    customers.forEach((customer) => {
+      const type = (customer.repairType || '').trim();
+      if (!type) return;
+
+      const status = customer.status || '';
+      if (['Delivered', 'Cancelled', 'Unrepairable'].includes(status)) return;
+
+      repairTypeCounts[type] = (repairTypeCounts[type] || 0) + 1;
+    });
+
+    const totalRepairs = Object.values(repairTypeCounts).reduce(
+      (sum, count) => sum + count,
+      0
+    );
+
+    const palette = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#94a3b8'];
+
+    const repairTypes = Object.entries(repairTypeCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([name, count], index) => ({
+        name,
+        value: totalRepairs ? Math.round((count / totalRepairs) * 100) : 0,
+        count,
+        color: palette[index % palette.length]
+      }));
 
     return {
       revenue: kpis.trends.dailyTrends.slice(-30), // Last 30 days
       performance: kpis.performance.stores,
       trends: kpis.trends.weeklyTrends,
-      employeePerformance: kpis.employees.topPerformers
+      employeePerformance: kpis.employees.topPerformers,
+      repairTypes
     };
-  }, [kpis]);
+  }, [kpis, customers]);
 
   // Critical alerts
   const alerts = useMemo(() => {
@@ -184,6 +230,7 @@ export const useEnhancedDashboard = () => {
     employees,
     products,
     sales,
+    customers,
     tickets,
     
     // Analytics
