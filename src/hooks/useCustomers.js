@@ -14,6 +14,7 @@ import {
 import { db } from '../config/firebase';
 import { useInventoryAuth } from '../context/InventoryAuthContext';
 import { COLLECTIONS } from '../backend/firestore/collections';
+import { resolveOwnerUid, resolveScopedStoreId, isStoreScopedRole } from '../utils/inventoryScope';
 
 /**
  * Store-scoped CRM customers. Pass storeId to filter by store (master only).
@@ -34,11 +35,9 @@ export function useCustomers(storeId = null) {
       return;
     }
 
-    const ownerUid = userProfile.role === 'master'
-      ? currentUser.uid
-      : (userProfile.ownerUid || userProfile.masterUid || currentUser.uid);
+    const ownerUid = resolveOwnerUid(currentUser, userProfile);
     const customersRef = collection(db, COLLECTIONS.EXTERNAL_CUSTOMER_RECORDS);
-    const isStoreScopedUser = userProfile.role === 'member' || userProfile.role === 'manager';
+    const isStoreScopedUser = isStoreScopedRole(userProfile.role);
 
     let q;
 
@@ -73,10 +72,6 @@ export function useCustomers(storeId = null) {
       }
     }
 
-    // #region agent log
-    fetch('http://127.0.0.1:7555/ingest/14177494-399b-47b1-a251-61383150f196',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b7d8d0'},body:JSON.stringify({sessionId:'b7d8d0',runId:'initial',hypothesisId:'H2',location:'src/hooks/useCustomers.js',message:'Customers query resolved',data:{role:userProfile?.role||null,isStoreScopedUser,hasOwnerUid:!!ownerUid,assignedStoreId:userProfile?.assignedStoreId||null,requestedStoreId:storeId||null},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
-
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
@@ -89,9 +84,6 @@ export function useCustomers(storeId = null) {
         setError(null);
       },
       (err) => {
-        // #region agent log
-        fetch('http://127.0.0.1:7555/ingest/14177494-399b-47b1-a251-61383150f196',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b7d8d0'},body:JSON.stringify({sessionId:'b7d8d0',runId:'initial',hypothesisId:'H4',location:'src/hooks/useCustomers.js',message:'Customers query failed',data:{role:userProfile?.role||null,errorCode:err?.code||null,errorMessage:err?.message||String(err)},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
         console.error('Error fetching customers:', err);
         setError('Failed to load customers');
         setLoading(false);
@@ -104,14 +96,9 @@ export function useCustomers(storeId = null) {
   async function addCustomer(customerData) {
     if (!currentUser || !userProfile) throw new Error('Not authenticated');
 
-    const ownerUid = userProfile.role === 'master'
-      ? currentUser.uid
-      : (userProfile.ownerUid || userProfile.masterUid || currentUser.uid);
-    const resolvedStoreId = customerData.storeId ?? (
-      userProfile.role === 'member' || userProfile.role === 'manager'
-        ? userProfile.assignedStoreId
-        : null
-    );
+    const ownerUid = resolveOwnerUid(currentUser, userProfile);
+    if (!ownerUid) throw new Error('Unable to determine owner. Please contact your administrator.');
+    const resolvedStoreId = customerData.storeId ?? resolveScopedStoreId(userProfile, null);
 
     if (!resolvedStoreId) {
       throw new Error('Store is required to add a customer. Please select a store.');

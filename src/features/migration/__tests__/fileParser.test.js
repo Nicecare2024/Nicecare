@@ -1,18 +1,37 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { parseImportFile, parseExcelFile, parseExcelWorkbook } from '../fileParser';
-import * as XLSX from 'xlsx';
 
-// Mock xlsx for Excel parsing
-const mockSheetToJson = vi.fn();
-vi.mock('xlsx', () => ({
-  read: vi.fn(() => ({
-    SheetNames: ['Sheet1'],
-    Sheets: { Sheet1: {} },
-  })),
-  utils: {
-    sheet_to_json: (...args) => mockSheetToJson(...args),
+const mockLoad = vi.fn();
+let mockWorksheets = [];
+
+vi.mock('exceljs', () => ({
+  default: {
+    Workbook: function MockWorkbook() {
+      this.xlsx = {
+        load: (...args) => mockLoad(...args),
+      };
+      Object.defineProperty(this, 'worksheets', {
+        get() {
+          return mockWorksheets;
+        },
+      });
+    },
   },
 }));
+
+function createWorksheet(name, rows) {
+  return {
+    name,
+    rowCount: rows.length,
+    getRow: (rowNumber) => {
+      const rowValues = rows[rowNumber - 1] || [];
+      return {
+        values: [undefined, ...rowValues],
+        getCell: (index) => ({ value: rowValues[index - 1] ?? null }),
+      };
+    },
+  };
+}
 
 /** Create a file-like object with arrayBuffer for tests (jsdom File may not have arrayBuffer) */
 function createFileWithArrayBuffer(name) {
@@ -27,14 +46,19 @@ function createFileWithArrayBuffer(name) {
 describe('fileParser', () => {
   describe('parseExcelFile', () => {
     beforeEach(() => {
-      mockSheetToJson.mockReset();
+      mockLoad.mockReset();
+      mockLoad.mockResolvedValue(undefined);
+      mockWorksheets = [];
     });
 
     it('parses Excel and returns headers and rows', async () => {
-      mockSheetToJson.mockReturnValue([
-        { name: 'Store A', address: '123 Main' },
-        { name: 'Store B', address: '456 Oak' },
-      ]);
+      mockWorksheets = [
+        createWorksheet('Sheet1', [
+          ['name', 'address'],
+          ['Store A', '123 Main'],
+          ['Store B', '456 Oak'],
+        ]),
+      ];
 
       const file = createFileWithArrayBuffer('test.xlsx');
       const result = await parseExcelFile(file);
@@ -45,9 +69,12 @@ describe('fileParser', () => {
     });
 
     it('normalizes numbers and dates to strings', async () => {
-      mockSheetToJson.mockReturnValue([
-        { name: 'Item', price: 9.99, qty: 5, date: new Date('2024-01-15') },
-      ]);
+      mockWorksheets = [
+        createWorksheet('Sheet1', [
+          ['name', 'price', 'qty', 'date'],
+          ['Item', 9.99, 5, new Date('2024-01-15')],
+        ]),
+      ];
 
       const file = createFileWithArrayBuffer('test.xlsx');
       const result = await parseExcelFile(file);
@@ -58,7 +85,7 @@ describe('fileParser', () => {
     });
 
     it('returns empty structure for empty sheet', async () => {
-      mockSheetToJson.mockReturnValue([]);
+      mockWorksheets = [createWorksheet('Sheet1', [])];
 
       const file = createFileWithArrayBuffer('test.xlsx');
       const result = await parseExcelFile(file);
@@ -70,7 +97,14 @@ describe('fileParser', () => {
 
   describe('parseImportFile', () => {
     beforeEach(() => {
-      mockSheetToJson.mockReturnValue([{ name: 'X' }]);
+      mockLoad.mockReset();
+      mockLoad.mockResolvedValue(undefined);
+      mockWorksheets = [
+        createWorksheet('Sheet1', [
+          ['name'],
+          ['X'],
+        ]),
+      ];
     });
 
     it('routes .csv to CSV parser', async () => {
@@ -89,11 +123,9 @@ describe('fileParser', () => {
       expect(result.rows[0].name).toBe('X');
     });
 
-    it('routes .xls to Excel parser', async () => {
+    it('rejects .xls files', async () => {
       const file = createFileWithArrayBuffer('data.xls');
-      const result = await parseImportFile(file);
-      expect(mockSheetToJson).toHaveBeenCalled();
-      expect(result.rows).toHaveLength(1);
+      await expect(parseImportFile(file)).rejects.toThrow('Unsupported file type');
     });
 
     it('throws for unsupported extension', async () => {
@@ -104,17 +136,18 @@ describe('fileParser', () => {
 
   describe('parseExcelWorkbook', () => {
     beforeEach(() => {
-      mockSheetToJson.mockReset();
-      vi.mocked(XLSX.read).mockReturnValue({
-        SheetNames: ['Sheet1'],
-        Sheets: { Sheet1: {} },
-      });
+      mockLoad.mockReset();
+      mockLoad.mockResolvedValue(undefined);
+      mockWorksheets = [];
     });
 
     it('returns sheets array with sheetName, headers, rows, raw', async () => {
-      mockSheetToJson.mockReturnValue([
-        { name: 'Store A', address: '123 Main' },
-      ]);
+      mockWorksheets = [
+        createWorksheet('Sheet1', [
+          ['name', 'address'],
+          ['Store A', '123 Main'],
+        ]),
+      ];
 
       const file = createFileWithArrayBuffer('workbook.xlsx');
       const result = await parseExcelWorkbook(file);
@@ -127,13 +160,16 @@ describe('fileParser', () => {
     });
 
     it('parses multiple sheets', async () => {
-      vi.mocked(XLSX.read).mockReturnValue({
-        SheetNames: ['Stores', 'Products'],
-        Sheets: { Stores: {}, Products: {} },
-      });
-      mockSheetToJson
-        .mockReturnValueOnce([{ name: 'Store A' }])
-        .mockReturnValueOnce([{ name: 'Widget', price: 10 }]);
+      mockWorksheets = [
+        createWorksheet('Stores', [
+          ['name'],
+          ['Store A'],
+        ]),
+        createWorksheet('Products', [
+          ['name', 'price'],
+          ['Widget', 10],
+        ]),
+      ];
 
       const file = createFileWithArrayBuffer('workbook.xlsx');
       const result = await parseExcelWorkbook(file);
@@ -145,7 +181,7 @@ describe('fileParser', () => {
     });
 
     it('includes empty sheets with empty arrays', async () => {
-      mockSheetToJson.mockReturnValue([]);
+      mockWorksheets = [createWorksheet('Sheet1', [])];
 
       const file = createFileWithArrayBuffer('workbook.xlsx');
       const result = await parseExcelWorkbook(file);
@@ -155,7 +191,7 @@ describe('fileParser', () => {
     });
 
     it('throws when workbook has no worksheets', async () => {
-      vi.mocked(XLSX.read).mockReturnValue({ SheetNames: [], Sheets: {} });
+      mockWorksheets = [];
 
       const file = createFileWithArrayBuffer('empty.xlsx');
       await expect(parseExcelWorkbook(file)).rejects.toThrow('no worksheets');

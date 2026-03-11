@@ -12,6 +12,8 @@
     "preview": "vite preview",
     "migrate:firestore-collections": "node functions/scripts/migrateFirestoreCollectionNames.js",
     "migrate:firestore-collections:write": "node functions/scripts/migrateFirestoreCollectionNames.js --write",
+    "reconcile:inventory-consistency": "node functions/scripts/reconcileInventoryConsistency.js",
+    "reconcile:inventory-consistency:write": "node functions/scripts/reconcileInventoryConsistency.js --write",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage"
@@ -20,6 +22,7 @@
     "@google/generative-ai": "^0.24.1",
     "@tailwindcss/vite": "^4.2.1",
     "date-fns": "^4.1.0",
+    "exceljs": "^4.4.0",
     "firebase": "^12.7.0",
     "framer-motion": "^12.35.2",
     "lodash": "^4.17.23",
@@ -31,8 +34,7 @@
     "react-map-gl": "^8.1.0",
     "react-router-dom": "^7.12.0",
     "recharts": "^3.8.0",
-    "tailwindcss": "^4.2.1",
-    "xlsx": "^0.18.5"
+    "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
