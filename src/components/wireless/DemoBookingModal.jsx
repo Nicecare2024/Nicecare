@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { wirelessDb } from '../../config/firebaseWireless';
 
 const DemoBookingModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -12,7 +12,12 @@ const DemoBookingModal = ({ isOpen, onClose }) => {
     storeCount: '1',
     currentSystem: '',
     timeframe: '',
-    message: ''
+    message: '',
+    location: '',
+    monthlyRevenue: '',
+    googleProfileLink: '',
+    posSystem: '',
+    topProblems: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
@@ -31,8 +36,8 @@ const DemoBookingModal = ({ isOpen, onClose }) => {
     setSubmitStatus(null);
 
     try {
-      // Save to Firestore
-      await addDoc(collection(db, 'demoRequests'), {
+      // Save to Firestore (wireless project)
+      const docRef = await addDoc(collection(wirelessDb, 'demoRequests'), {
         ...formData,
         source: 'WirelessPOS Landing Page',
         status: 'new',
@@ -40,6 +45,7 @@ const DemoBookingModal = ({ isOpen, onClose }) => {
         updatedAt: serverTimestamp()
       });
 
+      console.log('Demo request saved successfully with ID:', docRef.id);
       setSubmitStatus('success');
       
       // Reset form after successful submission
@@ -53,7 +59,12 @@ const DemoBookingModal = ({ isOpen, onClose }) => {
           storeCount: '1',
           currentSystem: '',
           timeframe: '',
-          message: ''
+          message: '',
+          location: '',
+          monthlyRevenue: '',
+          googleProfileLink: '',
+          posSystem: '',
+          topProblems: ''
         });
         setSubmitStatus(null);
         onClose();
@@ -61,6 +72,7 @@ const DemoBookingModal = ({ isOpen, onClose }) => {
 
     } catch (error) {
       console.error('Error submitting demo request:', error);
+      console.error('Error details:', error.message, error.code);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -244,6 +256,84 @@ const DemoBookingModal = ({ isOpen, onClose }) => {
               onChange={handleInputChange}
               className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
               placeholder="e.g., Square, Clover, Excel, or 'None'"
+            />
+          </div>
+
+          {/* New Fields */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">
+              Store Location *
+            </label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleInputChange}
+              required
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
+              placeholder="City, State"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">
+              Average Monthly Revenue
+            </label>
+            <select
+              name="monthlyRevenue"
+              value={formData.monthlyRevenue}
+              onChange={handleInputChange}
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
+            >
+              <option value="">Select revenue range</option>
+              <option value="<50k">Less than $50,000</option>
+              <option value="50k-100k">$50,000 - $100,000</option>
+              <option value="100k-250k">$100,000 - $250,000</option>
+              <option value="250k-500k">$250,000 - $500,000</option>
+              <option value="500k-1m">$500,000 - $1,000,000</option>
+              <option value="1m+">$1,000,000+</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">
+              Link to Google Business Profile
+            </label>
+            <input
+              type="url"
+              name="googleProfileLink"
+              value={formData.googleProfileLink}
+              onChange={handleInputChange}
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
+              placeholder="https://g.page/your-business"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">
+              POS System You Currently Use
+            </label>
+            <input
+              type="text"
+              name="posSystem"
+              value={formData.posSystem}
+              onChange={handleInputChange}
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
+              placeholder="e.g., Square, Clover, Toast, or 'None'"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">
+              Top 3 Problems You're Facing
+            </label>
+            <textarea
+              name="topProblems"
+              value={formData.topProblems}
+              onChange={handleInputChange}
+              rows={3}
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none text-sm sm:text-base"
+              placeholder="1. Problem one&#10;2. Problem two&#10;3. Problem three"
             />
           </div>
 

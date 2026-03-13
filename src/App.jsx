@@ -6,6 +6,11 @@ import { InventoryAuthProvider } from './context/InventoryAuthContext';
 import LandingPage from './pages/LandingPage';
 import WirelessPOSLanding from './pages/WirelessPOSLanding';
 
+// Admin Pages
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
+
 // Inventory Components
 import InventoryProtectedRoute from './components/inventory/InventoryProtectedRoute';
 import InventoryLayout from './components/inventory/InventoryLayout';
@@ -36,6 +41,17 @@ function App() {
           
           {/* WirelessPOS Landing Page */}
           <Route path="/wireless" element={<WirelessPOSLanding />} />
+
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route 
+            path="/admin/demo-requests" 
+            element={
+              <AdminProtectedRoute>
+                <AdminDashboard />
+              </AdminProtectedRoute>
+            } 
+          />
 
           {/* Legacy auth routes - redirect to inventory */}
           <Route path="/login" element={<Navigate to="/inventory/login" replace />} />
