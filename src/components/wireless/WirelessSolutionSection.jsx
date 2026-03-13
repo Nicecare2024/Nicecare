@@ -77,35 +77,35 @@ const WirelessSolutionSection = () => {
   ];
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-16 sm:py-20 md:py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-20">
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+        <div className="text-center mb-12 sm:mb-16 md:mb-20">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
             The <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Solution</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto mb-6 sm:mb-8 px-4">
             <span className="font-bold text-blue-600">WirelessPOS.ai</span> delivers total store control with everything you need in one powerful platform:
           </p>
         </div>
 
         {/* Solutions Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10">
           {solutions.map((solution, index) => (
             <div
               key={index}
-              className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200 hover:from-blue-50 hover:to-purple-50"
+              className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200 hover:from-blue-50 hover:to-purple-50"
             >
               {/* Icon */}
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center text-blue-600 mb-6 group-hover:from-blue-600 group-hover:to-purple-600 group-hover:text-white transition-all duration-300 group-hover:scale-110">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center text-blue-600 mb-4 sm:mb-6 group-hover:from-blue-600 group-hover:to-purple-600 group-hover:text-white transition-all duration-300 group-hover:scale-110">
                 {solution.icon}
               </div>
 
               {/* Content */}
-              <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight group-hover:text-blue-900">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight group-hover:text-blue-900">
                 {solution.title}
               </h3>
-              <p className="text-gray-600 leading-relaxed group-hover:text-gray-700">
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed group-hover:text-gray-700">
                 {solution.description}
               </p>
             </div>
@@ -113,12 +113,12 @@ const WirelessSolutionSection = () => {
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center mt-20">
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-green-50 to-blue-50 text-green-800 px-6 py-3 rounded-full border border-green-200">
-            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+        <div className="text-center mt-12 sm:mt-16 md:mt-20">
+          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-green-50 to-blue-50 text-green-800 px-4 sm:px-6 py-3 rounded-full border border-green-200">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
             </svg>
-            <span className="font-semibold">Everything you need. Nothing you don't. Built for wireless stores.</span>
+            <span className="font-semibold text-sm sm:text-base">Everything you need. Nothing you don't. Built for wireless stores.</span>
           </div>
         </div>
       </div>

@@ -50,35 +50,35 @@ const WirelessProblemSection = () => {
   ];
 
   return (
-    <section className="py-24 bg-blue-50">
+    <section className="py-16 sm:py-20 md:py-24 bg-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-20">
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+        <div className="text-center mb-12 sm:mb-16 md:mb-20">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
             The <span className="text-red-600">Problem</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
             Every day you delay, money walks out the door. Here's what's costing you:
           </p>
         </div>
 
         {/* Problems Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10">
           {problems.map((problem, index) => (
             <div
               key={index}
-              className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-red-200"
+              className="group bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-red-200"
             >
               {/* Icon */}
-              <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center text-red-600 mb-6 group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-red-100 rounded-2xl flex items-center justify-center text-red-600 mb-4 sm:mb-6 group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
                 {problem.icon}
               </div>
 
               {/* Content */}
-              <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight">
                 {problem.title}
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                 {problem.description}
               </p>
             </div>
@@ -86,12 +86,12 @@ const WirelessProblemSection = () => {
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center mt-20">
-          <div className="inline-flex items-center gap-3 bg-red-50 text-red-800 px-6 py-3 rounded-full border border-red-200">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <div className="text-center mt-12 sm:mt-16 md:mt-20">
+          <div className="inline-flex items-center gap-3 bg-red-50 text-red-800 px-4 sm:px-6 py-3 rounded-full border border-red-200">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
             </svg>
-            <span className="font-semibold">Sound familiar? You're not alone. But there's a better way...</span>
+            <span className="font-semibold text-sm sm:text-base">Sound familiar? You're not alone. But there's a better way...</span>
           </div>
         </div>
       </div>

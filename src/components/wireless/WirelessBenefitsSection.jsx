@@ -90,24 +90,24 @@ const WirelessBenefitsSection = () => {
   ];
 
   return (
-    <section className="py-24 bg-blue-50">
+    <section className="py-16 sm:py-20 md:py-24 bg-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-20">
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+        <div className="text-center mb-12 sm:mb-16 md:mb-20">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
             Transform Your <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Business</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
             Stop guessing. Start knowing. Get the insights you need to maximize every opportunity.
           </p>
         </div>
 
         {/* Benefits Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 md:gap-10">
           {benefits.map((benefit, index) => (
             <div
               key={index}
-              className={`group relative bg-gradient-to-br ${benefit.bgColor} rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border-2 ${benefit.borderColor} hover:scale-105 overflow-hidden`}
+              className={`group relative bg-gradient-to-br ${benefit.bgColor} rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border-2 ${benefit.borderColor} hover:scale-105 overflow-hidden`}
             >
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-5">
@@ -115,25 +115,25 @@ const WirelessBenefitsSection = () => {
               </div>
 
               {/* Icon */}
-              <div className={`relative w-20 h-20 bg-gradient-to-br ${benefit.color} rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+              <div className={`relative w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br ${benefit.color} rounded-2xl flex items-center justify-center text-white mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                 {benefit.icon}
               </div>
 
               {/* Title */}
-              <h3 className="relative text-2xl font-bold text-gray-900 mb-6 leading-tight">
+              <h3 className="relative text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
                 {benefit.title}
               </h3>
 
               {/* Features List */}
-              <ul className="relative space-y-3">
+              <ul className="relative space-y-2 sm:space-y-3">
                 {benefit.features.map((feature, featureIndex) => (
-                  <li key={featureIndex} className="flex items-start gap-3">
-                    <div className={`w-6 h-6 bg-gradient-to-br ${benefit.color} rounded-full flex items-center justify-center flex-shrink-0 mt-0.5`}>
-                      <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <li key={featureIndex} className="flex items-start gap-2 sm:gap-3">
+                    <div className={`w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br ${benefit.color} rounded-full flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                      <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     </div>
-                    <span className="text-gray-700 font-medium leading-relaxed">
+                    <span className="text-sm sm:text-base text-gray-700 font-medium leading-relaxed">
                       {feature}
                     </span>
                   </li>
