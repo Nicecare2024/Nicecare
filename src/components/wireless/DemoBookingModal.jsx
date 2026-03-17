@@ -207,6 +207,21 @@ const DemoBookingModal = ({ isOpen, onClose }) => {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">
+              Main Location Address *
+            </label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleInputChange}
+              required
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
+              placeholder="City, State"
+            />
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">
@@ -247,7 +262,7 @@ const DemoBookingModal = ({ isOpen, onClose }) => {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">
-              Current System/Software
+              POS System You Currently Use (existing)
             </label>
             <input
               type="text"
@@ -256,22 +271,6 @@ const DemoBookingModal = ({ isOpen, onClose }) => {
               onChange={handleInputChange}
               className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
               placeholder="e.g., Square, Clover, Excel, or 'None'"
-            />
-          </div>
-
-          {/* New Fields */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">
-              Store Location *
-            </label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
-              placeholder="City, State"
             />
           </div>
 
@@ -374,7 +373,7 @@ const DemoBookingModal = ({ isOpen, onClose }) => {
                   <span>Submitting...</span>
                 </div>
               ) : (
-                'Book My Demo'
+                'Join the Waitlist'
               )}
             </button>
           </div>

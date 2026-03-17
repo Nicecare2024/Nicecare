@@ -58,7 +58,7 @@ const ProductScreenshot = () => {
             </div>
           </div>
         </div>
-        <p className="text-center text-slate-500 text-sm mt-4">Real-time visibility into your entire store operations</p>
+        <p className="text-center text-slate-500 text-sm mt-4">See exactly what is happening in your store — and what actions to take next.</p>
       </div>
     </section>
   );

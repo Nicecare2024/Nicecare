@@ -37,7 +37,7 @@ const WirelessCEOSection = () => {
             Meet WirelessCEO — Your AI Store Operator
           </h2>
           <p className="text-lg max-w-2xl mx-auto leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
-            WirelessCEO turns your store data into daily decisions and recommended actions.
+            WirelessCEO acts like an AI store manager that analyzes your numbers and tells you what to fix.
           </p>
         </div>
 

@@ -40,7 +40,7 @@ const WirelessProblemSection = () => {
             style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.2)' }}>
             <span className="text-2xl shrink-0">📉</span>
             <p className="font-semibold leading-snug" style={{ color: '#374151' }}>
-              Result: Most stores operate reactively instead of strategically — and it costs them thousands every month.
+              Result: Wireless stores lose thousands every month from invisible problems.
             </p>
           </div>
         </div>

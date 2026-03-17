@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import WirelessHeroSection from '../components/wireless/WirelessHeroSection';
 import ProductScreenshot from '../components/wireless/ProductScreenshot';
 import WirelessProblemSection from '../components/wireless/WirelessProblemSection';
+import TwoWaysProfitSection from '../components/wireless/TwoWaysProfitSection';
 import WirelessSolutionSection from '../components/wireless/WirelessSolutionSection';
 import WhyDifferentSection from '../components/wireless/WhyDifferentSection';
 import WirelessCEOSection from '../components/wireless/WirelessCEOSection';
@@ -17,6 +18,7 @@ const WirelessPOSLanding = () => {
       <WirelessHeroSection onJoinWaitlist={() => setShowModal(true)} />
       <ProductScreenshot />
       <WirelessProblemSection />
+      <TwoWaysProfitSection />
       <WirelessSolutionSection />
       <WhyDifferentSection />
       <WirelessCEOSection />

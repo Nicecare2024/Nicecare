@@ -32,7 +32,7 @@ const WhyDifferentSection = () => {
         <div className="text-center mb-12 md:mb-16">
           <span className="inline-block py-2 px-4 rounded-full text-sm font-bold uppercase tracking-wider mb-4"
             style={{ background: 'rgba(14,165,233,0.08)', border: '1px solid rgba(14,165,233,0.25)', color: '#0284c7' }}>
-            Why Different
+            AI OPERATING SYSTEM
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 tracking-tight" style={{ color: '#0d1117' }}>
             The First AI Operating System
