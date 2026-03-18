@@ -1,147 +1,57 @@
 import React from 'react';
 
-const WirelessBenefitsSection = () => {
-  const benefits = [
-    {
-      icon: (
-        <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-      title: "See Real Profit",
-      color: "from-green-500 to-emerald-600",
-      bgColor: "from-green-50 to-emerald-50",
-      borderColor: "border-green-200",
-      features: [
-        "Track daily revenue and daily profit",
-        "COGS tracking",
-        "Warranty margin",
-        "Unlock margin",
-        "Trade-in profit visibility"
-      ]
-    },
-    {
-      icon: (
-        <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-      ),
-      title: "Make More Per Customer",
-      color: "from-blue-500 to-indigo-600",
-      bgColor: "from-blue-50 to-indigo-50",
-      borderColor: "border-blue-200",
-      features: [
-        "Warranty upsells",
-        "Loyalty rewards",
-        "Trade-in offers",
-        "Unlock margins",
-        "SMS follow-ups"
-      ]
-    },
-    {
-      icon: (
-        <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-        </svg>
-      ),
-      title: "Inventory Control",
-      color: "from-purple-500 to-violet-600",
-      bgColor: "from-purple-50 to-violet-50",
-      borderColor: "border-purple-200",
-      features: [
-        "Monthly average sold",
-        "30 / 60 / 90 day views",
-        "Suggested reorder quantities",
-        "Aging inventory alerts"
-      ]
-    },
-    {
-      icon: (
-        <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-      ),
-      title: "Reputation Protection",
-      color: "from-orange-500 to-red-600",
-      bgColor: "from-orange-50 to-red-50",
-      borderColor: "border-orange-200",
-      features: [
-        "4–5 star customers redirected to Google",
-        "1–3 star customers captured privately"
-      ]
-    },
-    {
-      icon: (
-        <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-        </svg>
-      ),
-      title: "Staff Accountability",
-      color: "from-teal-500 to-cyan-600",
-      bgColor: "from-teal-50 to-cyan-50",
-      borderColor: "border-teal-200",
-      features: [
-        "Revenue per employee",
-        "Warranty attach rate",
-        "Repair completion time",
-        "Rework tracking"
-      ]
-    }
-  ];
+const benefits = [
+  { emoji: '💰', title: 'See Real Profit', accent: '#00d4aa', bg: 'rgba(0,212,170,0.05)', border: 'rgba(0,212,170,0.2)', features: ['Track daily revenue and daily profit', 'COGS tracking', 'Warranty margin', 'Unlock margin', 'Trade-in profit visibility'] },
+  { emoji: '📈', title: 'Make More Per Customer', accent: '#0ea5e9', bg: 'rgba(14,165,233,0.05)', border: 'rgba(14,165,233,0.2)', features: ['Warranty upsells', 'Loyalty rewards', 'Trade-in offers', 'Unlock margins', 'SMS follow-ups'] },
+  { emoji: '📦', title: 'Inventory Control', accent: '#f59e0b', bg: 'rgba(245,158,11,0.05)', border: 'rgba(245,158,11,0.2)', features: ['Monthly average sold', '30 / 60 / 90 day views', 'Suggested reorder quantities', 'Aging inventory alerts'] },
+  { emoji: '⭐', title: 'Reputation Protection', accent: '#ea580c', bg: 'rgba(234,88,12,0.05)', border: 'rgba(234,88,12,0.2)', features: ['4–5 star customers redirected to Google', '1–3 star customers captured privately'] },
+  { emoji: '👥', title: 'Staff Accountability', accent: '#10b981', bg: 'rgba(16,185,129,0.05)', border: 'rgba(16,185,129,0.2)', features: ['Revenue per employee', 'Warranty attach rate', 'Repair completion time', 'Rework tracking'] },
+];
 
+const WirelessBenefitsSection = () => {
   return (
-    <section className="py-16 sm:py-20 md:py-24 bg-blue-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center mb-12 sm:mb-16 md:mb-20">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
-            Transform Your <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Business</span>
+    <section className="py-16 sm:py-20 md:py-24 bg-white">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12 md:mb-16">
+          <span className="inline-block py-2 px-4 rounded-full text-sm font-bold uppercase tracking-wider mb-4"
+            style={{ background: 'rgba(0,212,170,0.08)', border: '1px solid rgba(0,212,170,0.25)', color: '#00a88a' }}>
+            Transform Your Business
+          </span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 tracking-tight" style={{ color: '#0d1117' }}>
+            Stop Guessing.{' '}
+            <span style={{ background: 'linear-gradient(90deg, #00d4aa, #0ea5e9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              Start Knowing.
+            </span>
           </h2>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
-            Stop guessing. Start knowing. Get the insights you need to maximize every opportunity.
+          <p className="text-lg max-w-2xl mx-auto leading-relaxed" style={{ color: '#64748b' }}>
+            Get the insights you need to maximize every opportunity in your store.
           </p>
         </div>
 
-        {/* Benefits Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 md:gap-10">
-          {benefits.map((benefit, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
+          {benefits.map((b, i) => (
             <div
-              key={index}
-              className={`group relative bg-gradient-to-br ${benefit.bgColor} rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border-2 ${benefit.borderColor} hover:scale-105 overflow-hidden`}
+              key={i}
+              className="group rounded-3xl p-7 sm:p-8 transition-all duration-300 hover:-translate-y-1"
+              style={{ background: b.bg, border: `2px solid ${b.border}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
             >
-              {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-5">
-                <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-transparent"></div>
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-5 transition-transform duration-300 group-hover:scale-110 shadow-lg"
+                style={{ background: b.accent }}>
+                {b.emoji}
               </div>
-
-              {/* Icon */}
-              <div className={`relative w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br ${benefit.color} rounded-2xl flex items-center justify-center text-white mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                {benefit.icon}
-              </div>
-
-              {/* Title */}
-              <h3 className="relative text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
-                {benefit.title}
-              </h3>
-
-              {/* Features List */}
-              <ul className="relative space-y-2 sm:space-y-3">
-                {benefit.features.map((feature, featureIndex) => (
-                  <li key={featureIndex} className="flex items-start gap-2 sm:gap-3">
-                    <div className={`w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br ${benefit.color} rounded-full flex items-center justify-center flex-shrink-0 mt-0.5`}>
-                      <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <h3 className="text-xl font-extrabold mb-4" style={{ color: '#0d1117' }}>{b.title}</h3>
+              <ul className="flex flex-col gap-2.5">
+                {b.features.map((f, j) => (
+                  <li key={j} className="flex items-start gap-2.5">
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ background: b.accent }}>
+                      <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     </div>
-                    <span className="text-sm sm:text-base text-gray-700 font-medium leading-relaxed">
-                      {feature}
-                    </span>
+                    <span className="text-sm font-medium leading-relaxed" style={{ color: '#374151' }}>{f}</span>
                   </li>
                 ))}
               </ul>
-
-              {/* Hover Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl"></div>
             </div>
           ))}
         </div>
