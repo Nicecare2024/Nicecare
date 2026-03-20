@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { collection, doc, updateDoc, deleteDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { wirelessDb } from '../../config/firebaseWireless';
 import Papa from 'papaparse';
 import EditRequestModal from '../../components/admin/EditRequestModal';
@@ -17,32 +17,29 @@ const AdminDashboard = () => {
   const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
-    fetchRequests();
+    setIsLoading(true);
+    setError(null);
+    console.log('[Admin] Setting up onSnapshot listener on demoRequests...');
+    const q = query(collection(wirelessDb, 'demoRequests'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      console.log('[Admin] Snapshot received, docs count:', snapshot.size);
+      const requestsData = snapshot.docs.map(d => ({
+        id: d.id,
+        ...d.data(),
+        createdAt: d.data().createdAt?.toDate?.() || new Date()
+      }));
+      console.log('[Admin] Requests data:', requestsData);
+      setRequests(requestsData);
+      setIsLoading(false);
+    }, (err) => {
+      console.error('[Admin] onSnapshot error:', err.code, err.message);
+      setError(`Failed to load: ${err.message}`);
+      setIsLoading(false);
+    });
+    return () => unsubscribe();
   }, []);
 
-  const fetchRequests = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      console.log('Fetching demo requests from wirelessDb...');
-      const q = query(collection(wirelessDb, 'demoRequests'), orderBy('createdAt', 'desc'));
-      const querySnapshot = await getDocs(q);
-      console.log('Query snapshot size:', querySnapshot.size);
-      const requestsData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate?.() || new Date()
-      }));
-      console.log('Fetched requests:', requestsData);
-      setRequests(requestsData);
-    } catch (err) {
-      console.error('Error fetching requests:', err);
-      console.error('Error details:', err.message, err.code);
-      setError('Failed to load demo requests. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const fetchRequests = () => {};
 
   const handleLogout = () => {
     sessionStorage.removeItem('wirelessAdminAuth');
@@ -61,11 +58,7 @@ const AdminDashboard = () => {
   const handleUpdateRequest = async (id, updatedData) => {
     try {
       const requestRef = doc(wirelessDb, 'demoRequests', id);
-      await updateDoc(requestRef, {
-        ...updatedData,
-        updatedAt: new Date()
-      });
-      await fetchRequests();
+      await updateDoc(requestRef, { ...updatedData, updatedAt: new Date() });
       setEditingRequest(null);
     } catch (err) {
       alert('Failed to update request. Please try again.');
@@ -74,10 +67,8 @@ const AdminDashboard = () => {
 
   const handleConfirmDelete = async () => {
     if (!deletingRequest) return;
-    
     try {
       await deleteDoc(doc(wirelessDb, 'demoRequests', deletingRequest.id));
-      await fetchRequests();
       setDeletingRequest(null);
     } catch (err) {
       alert('Failed to delete request. Please try again.');
