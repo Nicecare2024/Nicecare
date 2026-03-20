@@ -4,11 +4,6 @@ const ProductScreenshot = () => {
   return (
     <section className="py-12 md:py-16 bg-slate-50 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-black" style={{ color: '#0d1117' }}>
-            See Your Store Like <span style={{ background: 'linear-gradient(90deg, #00d4aa, #0ea5e9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Never Before</span>
-          </h2>
-        </div>
         <div className="relative rounded-2xl overflow-hidden border shadow-2xl" style={{ background: '#0d1117', borderColor: 'rgba(255,255,255,0.08)' }}>
           {/* Browser chrome */}
           <div className="flex items-center gap-2 px-4 py-3 border-b" style={{ background: '#161b22', borderColor: 'rgba(255,255,255,0.08)' }}>
