@@ -1,10 +1,10 @@
 import { useState } from 'react';
+import WirelessNav from '../components/wireless/WirelessNav';
 import AuditHeroSection from '../components/wireless/AuditHeroSection';
-import WirelessHeroSection from '../components/wireless/WirelessHeroSection';
 import WirelessProblemSection from '../components/wireless/WirelessProblemSection';
 import WhatWirelessCEODoes from '../components/wireless/WhatWirelessCEODoes';
 import HowItWorksSection from '../components/wireless/HowItWorksSection';
-import ProductScreenshot from '../components/wireless/ProductScreenshot';
+
 import WirelessFinalCTA from '../components/wireless/WirelessFinalCTA';
 import DemoBookingModal from '../components/wireless/DemoBookingModal';
 import AuditFunnel from '../components/wireless/AuditFunnel';
@@ -15,23 +15,20 @@ const WirelessPOSLanding = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Sticky nav */}
+      <WirelessNav onStartAudit={() => setShowAudit(true)} onJoinWaitlist={() => setShowWaitlist(true)} />
+
       {/* 1. New Hero — Autopilot + system diagram */}
       <AuditHeroSection onStartAudit={() => setShowAudit(true)} onJoinWaitlist={() => setShowWaitlist(true)} />
 
-      {/* 2. Old Hero repositioned — "Run Your Store Like a System" */}
-      <WirelessHeroSection onJoinWaitlist={() => setShowWaitlist(true)} />
-
-      {/* 3. Problem — tightened */}
+      {/* 2. Problem — with dollar amounts */}
       <WirelessProblemSection />
 
-      {/* 4. What WirelessCEO Does — merged */}
+      {/* 4. What WirelessCEO Does */}
       <WhatWirelessCEODoes onStartAudit={() => setShowAudit(true)} />
 
-      {/* 5. How It Works — 3 steps */}
+      {/* 5. How It Works */}
       <HowItWorksSection />
-
-      {/* 6. Dashboard — "See Your Store Like Never Before" */}
-      <ProductScreenshot />
 
       {/* 7. Final CTA */}
       <WirelessFinalCTA onJoinWaitlist={() => setShowAudit(true)} />

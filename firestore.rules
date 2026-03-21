@@ -313,6 +313,18 @@ service cloud.firestore {
       allow delete: if false;
     }
     
+    // WirelessPOS demo requests - public write (form submissions), read for admin
+    match /demoRequests/{docId} {
+      allow create: if true;
+      allow read, update, delete: if true;
+    }
+
+    // WirelessPOS audit submissions - public write
+    match /auditSubmissions/{docId} {
+      allow create: if true;
+      allow read, update, delete: if true;
+    }
+
     // Block all other access by default
     match /{document=**} {
       allow read, write: if false;

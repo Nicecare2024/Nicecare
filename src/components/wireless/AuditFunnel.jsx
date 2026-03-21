@@ -16,7 +16,7 @@ function calcScore(d){
   s+=inv[d.inventoryTurnover]??0;
   s+=price[d.pricingStrategy]??0;
   s+=emp[d.employeeTracking]??0;
-  s+=CHALLENGES.find(c=>c.label===d.biggestChallenge)?.score??0;
+  // challenges scoring handled below
   return s;
 }
 
@@ -34,7 +34,7 @@ Store: ${data.storeName}
 Monthly Revenue: ${data.monthlyRevenue}
 Employees: ${data.employees}
 Services: ${data.services.join(", ")}
-Biggest Challenge: ${data.biggestChallenge}
+Biggest Challenges: ${(Array.isArray(data.challenges)?data.challenges:[]).join(", ")}
 Inventory Turnover: ${data.inventoryTurnover}
 Pricing Strategy: ${data.pricingStrategy}
 Employee Tracking: ${data.employeeTracking}
@@ -48,7 +48,7 @@ Paragraph 4: What is possible — quantify 15-30% profit improvement potential.
 
 Be direct, specific, no fluff. Address them by store name.`;
   try{
-    const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key="+GKEY,{
+    const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key="+GKEY,{
       method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:800}})
     });
@@ -57,14 +57,34 @@ Be direct, specific, no fluff. Address them by store name.`;
   }catch(e){console.error("Gemini:",e);return null;}
 }
 
-async function sendEmail(data,score,report){
+async function sendEmail(data,score,aiReport){
   const{level}=getLabel(score);
-  const body=report||`Hi ${data.name},\n\nYour WirelessCEO Store Profit Audit for ${data.storeName} is complete.\n\nScore: ${score}/16 — ${level}\n\nBased on your inputs, your store has opportunities to improve profitability. Contact us to get your full action plan.\n\n— The WirelessCEO Team`;
-  await emailjs.send(ESID,ETID,{
-    to_name:data.name,to_email:data.email,email:data.email,
-    from_name:"WirelessCEO",message:body,report_text:body,
-    store_name:data.storeName,audit_score:score+"/16",audit_level:level
-  },EPKEY);
+  const challenges=(data.challenges||[]).join(", ");
+  const plainText=aiReport
+    ? aiReport
+    : `Hi ${data.name},\n\nYour WirelessCEO Store Profit Audit for ${data.storeName} is complete.\n\nScore: ${score}/16 — ${level}\nChallenges: ${challenges}\nPricing: ${data.pricingStrategy} | Inventory: ${data.inventoryTurnover} | Employees: ${data.employeeTracking}\n\nStores like yours typically recover 15-25% in lost profit within 90 days.\n\nJoin Early Access: https://wirelesspos.ai/early-access\n\n— The WirelessCEO Team`;
+
+  const result = await emailjs.send(ESID,ETID,{
+    to_name: data.name,
+    to_email: data.email,
+    email: data.email,
+    from_name: "WirelessCEO",
+    subject: `Your Store Profit Audit — ${data.storeName}`,
+    message: plainText,
+    report_text: plainText,
+    store_name: data.storeName,
+    audit_score: `${score}/16`,
+    audit_level: level,
+    challenges: challenges,
+    monthly_revenue: data.monthlyRevenue,
+    employees: data.employees,
+    services: data.services.join(", "),
+    pricing_strategy: data.pricingStrategy,
+    inventory_turnover: data.inventoryTurnover,
+    employee_tracking: data.employeeTracking
+  }, EPKEY);
+  console.log("EmailJS result:", result);
+  return result;
 }
 
 const ic="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-400 text-sm bg-gray-50 focus:bg-white outline-none transition-colors";
@@ -83,7 +103,7 @@ function Opt({sel,onClick,children,full}){
 
 export default function AuditFunnel({isOpen,onClose}){
   const[step,setStep]=useState(1);
-  const[data,setData]=useState({storeName:"",monthlyRevenue:"",employees:"",services:[],biggestChallenge:"",inventoryTurnover:"",pricingStrategy:"",employeeTracking:"",name:"",email:"",phone:""});
+  const[data,setData]=useState({storeName:"",monthlyRevenue:"",employees:"",services:[],challenges:[],inventoryTurnover:"",pricingStrategy:"",employeeTracking:"",name:"",email:"",phone:""});
   const[report,setReport]=useState(null);
   const[aiText,setAiText]=useState(null);
   const[busy,setBusy]=useState(false);
@@ -91,6 +111,7 @@ export default function AuditFunnel({isOpen,onClose}){
 
   const set=(k,v)=>setData(p=>({...p,[k]:v}));
   const tog=(s)=>setData(p=>({...p,services:p.services.includes(s)?p.services.filter(x=>x!==s):[...p.services,s]}));
+  const togC=(c)=>setData(p=>({...p,challenges:p.challenges.includes(c)?p.challenges.filter(x=>x!==c):[...p.challenges,c]}));
 
   const submit=async()=>{
     setBusy(true);
@@ -109,7 +130,7 @@ export default function AuditFunnel({isOpen,onClose}){
         company:data.storeName,source:"Audit Funnel",status:"new",
         auditScore:sc,auditLevel:level,
         monthlyRevenue:data.monthlyRevenue,employees:data.employees,
-        services:data.services,biggestChallenge:data.biggestChallenge,
+        services:data.services,challenges:data.challenges,biggestChallenge:(data.challenges||[]).join(", "),
         createdAt:serverTimestamp(),updatedAt:serverTimestamp()
       });
     }catch(e){console.error(e);}
@@ -118,7 +139,7 @@ export default function AuditFunnel({isOpen,onClose}){
 
   const close=()=>{
     setStep(1);
-    setData({storeName:"",monthlyRevenue:"",employees:"",services:[],biggestChallenge:"",inventoryTurnover:"",pricingStrategy:"",employeeTracking:"",name:"",email:"",phone:""});
+    setData({storeName:"",monthlyRevenue:"",employees:"",services:[],challenges:[],inventoryTurnover:"",pricingStrategy:"",employeeTracking:"",name:"",email:"",phone:""});
     setReport(null);setAiText(null);setMailSt(null);
     onClose();
   };
@@ -166,10 +187,10 @@ export default function AuditFunnel({isOpen,onClose}){
           )}
           {step===3&&(
             <div className="space-y-4">
-              <div><label className={lc}>Biggest Challenge Right Now</label><div className="flex flex-col gap-2">{CHALLENGES.map(c=><Opt key={c.label} sel={data.biggestChallenge===c.label} onClick={()=>set("biggestChallenge",c.label)} full>{c.label}</Opt>)}</div></div>
+              <div><label className={lc}>Biggest Challenges <span className="text-gray-400 font-normal">(select at least 3)</span></label><div className="flex flex-col gap-2">{CHALLENGES.map(c=><Opt key={c.label} sel={data.challenges.includes(c.label)} onClick={()=>togC(c.label)} full>{c.label}</Opt>)}</div>{data.challenges.length>0&&data.challenges.length<MIN_CHALLENGES&&(<p className="text-xs mt-2" style={{color:"#f59e0b"}}>Select {MIN_CHALLENGES-data.challenges.length} more to continue</p>)}</div>
               <div className="flex gap-3 pt-2">
                 <button onClick={()=>setStep(2)} className="flex-1 py-3 border border-gray-200 text-gray-600 font-semibold rounded-xl text-sm">Back</button>
-                <button onClick={()=>setStep(4)} disabled={!data.biggestChallenge} className="py-3 font-bold rounded-xl text-white text-sm disabled:opacity-40" style={{...grad,flex:2}}>Next</button>
+                <button onClick={()=>setStep(4)} disabled={data.challenges.length<MIN_CHALLENGES} className="py-3 font-bold rounded-xl text-white text-sm disabled:opacity-40" style={{...grad,flex:2}}>Next</button>
               </div>
             </div>
           )}
@@ -213,7 +234,7 @@ export default function AuditFunnel({isOpen,onClose}){
               ):(
                 <div className="rounded-xl p-4" style={{background:"#f8fafc",border:"1px solid #e2e8f0"}}>
                   <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{color:"#00d4aa"}}>Your Personalized Report</p>
-                  <p className="text-sm leading-relaxed whitespace-pre-line" style={{color:"#374151"}}>{aiText||`Based on your audit score of ${report.score}/16, your store is classified as ${report.level}. Your biggest challenge — ${data.biggestChallenge} — combined with ${data.pricingStrategy} pricing and ${data.inventoryTurnover} inventory turnover is costing you profit daily. Stores like yours typically recover 15-25% in lost profit within 90 days of implementing WirelessCEO.`}</p>
+                  <p className="text-sm leading-relaxed whitespace-pre-line" style={{color:"#374151"}}>{aiText||`Based on your audit score of ${report.score}/16, your store is classified as ${report.level}. Your biggest challenge — ${(data.challenges||[]).join(", ")} — combined with ${data.pricingStrategy} pricing and ${data.inventoryTurnover} inventory turnover is costing you profit daily. Stores like yours typically recover 15-25% in lost profit within 90 days of implementing WirelessCEO.`}</p>
                 </div>
               )}
               {mailSt==="sent"&&(
