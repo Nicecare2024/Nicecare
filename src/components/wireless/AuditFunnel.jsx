@@ -6,7 +6,7 @@ import emailjs from "@emailjs/browser";
 const ESID=import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const ETID=import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
 const EPKEY=import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-const GKEY=import.meta.env.VITE_GEMINI_API_KEY;
+const GROQ_KEY=import.meta.env.VITE_GROQ_API_KEY;
 const SERVICES=["Phone Repairs","Accessories Sales","Activations","Bill Payments","Unlocks","Device Sales"];
 const CHALLENGES=["Inventory issues","Low profit margins","Employees not selling enough","No clear reporting","Pricing uncertainty","Disconnected systems"];
 
@@ -90,8 +90,8 @@ function buildLocalReport(data,score){
   return`SECTION 1: ${s1}\n\nSECTION 2: ${s2}\n\nSECTION 3: ${s3}\n\nSECTION 4: ${s4}`;
 }
 
-async function callGemini(data,score){
-  if(!GKEY){console.warn("No Gemini key — using local report");return null;}
+async function callAI(data,score){
+  if(!GROQ_KEY) return null;
   const{level}=getLabel(score);
   const pct=Math.round((score/11)*100);
   const{mid,leakDollar,recoverDollar}=getDollarEstimates(score,data.monthlyRevenue);
@@ -121,30 +121,26 @@ SECTION 3: 3 ACTIONS TO TAKE THIS WEEK
 SECTION 4: WHAT'S POSSIBLE IN 90 DAYS
 2-3 sentences. Use the $${recoverDollar.toLocaleString()}/month recovery number. Be specific about what a ${data.monthlyRevenue} store can realistically achieve. End with what WirelessCEO makes possible for ${data.storeName}.`;
 
-  const doFetch=async()=>{
-    const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+GKEY,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.6,maxOutputTokens:1200,topP:0.9}})
-    });
-    return r.json();
-  };
-
   try{
-    let j=await doFetch();
-    // Rate limited — wait 20s and retry once
-    if(j.error?.code===429){
-      console.warn("Gemini rate limited, retrying in 20s...");
-      await new Promise(res=>setTimeout(res,20000));
-      j=await doFetch();
-    }
-    if(j.error){console.warn("Gemini unavailable, using local report");return null;}
-    const text=j.candidates?.[0]?.content?.parts?.[0]?.text;
-    if(!text){console.warn("Gemini empty response, using local report");return null;}
-    console.log("Gemini OK, length:",text.length);
+    const r=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+GROQ_KEY},
+      body:JSON.stringify({
+        model:"llama-3.3-70b-versatile",
+        messages:[{role:"user",content:prompt}],
+        temperature:0.6,
+        max_tokens:1200,
+      })
+    });
+    const j=await r.json();
+    if(j.error){return null;}
+    const text=j.choices?.[0]?.message?.content;
+    if(!text){return null;}
+    console.log("Groq AI OK, length:",text.length);
     return text;
-  }catch(e){console.warn("Gemini unavailable, using local report");return null;}
+  }catch(e){return null;}
 }
+
 
 function buildEmailHtml(data,score,report){
   const{level,emoji,color}=getLabel(score);
@@ -257,17 +253,16 @@ export default function AuditFunnel({isOpen,onClose}){
     setReport({level,color,score:sc});
     setStep(6);
     try{
-      // Try Gemini first, fall back to local report — never show blank
-      let finalReport=await callGemini(data,sc);
+      // Try Groq AI first, fall back to local report — never show blank
+      let finalReport=await callAI(data,sc);
       if(!finalReport){
-        console.log("Using local report generator");
         finalReport=buildLocalReport(data,sc);
       }
       setReportText(finalReport);
       try{await sendEmail(data,sc,finalReport);setMailSt("sent");}
       catch(e){console.error("email:",e);setMailSt("failed");}
       await addDoc(collection(wirelessDb,"auditSubmissions"),{
-        ...data,score:sc,reportLevel:level,aiGenerated:!!GKEY,report:finalReport,createdAt:serverTimestamp()
+        ...data,score:sc,reportLevel:level,aiGenerated:!!GROQ_KEY,report:finalReport,createdAt:serverTimestamp()
       });
       await addDoc(collection(wirelessDb,"demoRequests"),{
         firstName:data.name,email:data.email,phone:data.phone||"",
