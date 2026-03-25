@@ -4,7 +4,7 @@ import { wirelessDb } from "../../config/firebaseWireless";
 import emailjs from "@emailjs/browser";
 
 const ESID="service_kjsfqm8",ETID="template_kgqk77o",EPKEY="Mae5C2zv5ipo7vuqA";
-const GKEY="AIzaSyBmoAaRhOSa9jt2h3F1k_x64TT3tYndoz8";
+const GKEY=import.meta.env.VITE_GEMINI_API_KEY;
 const SERVICES=["Phone Repairs","Accessories Sales","Activations","Bill Payments","Unlocks","Device Sales"];
 const CHALLENGES=["Inventory issues","Low profit margins","Employees not selling enough","No clear reporting","Pricing uncertainty","Disconnected systems"];
 
@@ -12,8 +12,7 @@ function calcScore(d){
   const inv={Fast:0,Moderate:1,"Slow (30+ days)":3,"Don't track":4};
   const price={"Cost + margin":0,Competitors:1,Guesswork:3,"Not consistent":4};
   const emp={Yes:0,Sometimes:2,No:4};
-  let s=(inv[d.inventoryTurnover]??0)+(price[d.pricingStrategy]??0)+(emp[d.employeeTracking]??0);
-  return s;
+  return (inv[d.inventoryTurnover]??0)+(price[d.pricingStrategy]??0)+(emp[d.employeeTracking]??0);
 }
 
 function getLabel(s){
@@ -23,123 +22,129 @@ function getLabel(s){
   return{level:"Critical Inefficiencies",color:"#ef4444",emoji:"🚨"};
 }
 
-async function callGemini(data,score){
-  const{level}=getLabel(score);
-  const pct=Math.round((score/11)*100);
+const REV_MAP={"Under $10K":7500,"$10K-$25K":17500,"$25K-$50K":37500,"$50K-$100K":75000,"$100K+":120000};
 
-  const revMap={"Under $10K":7500,"$10K-$25K":17500,"$25K-$50K":37500,"$50K-$100K":75000,"$100K+":120000};
-  const mid=revMap[data.monthlyRevenue]||20000;
+function getDollarEstimates(score,monthlyRevenue){
+  const mid=REV_MAP[monthlyRevenue]||20000;
   const leakPct=score<=3?0.05:score<=6?0.12:score<=9?0.20:0.28;
   const leakDollar=Math.round((mid*leakPct)/100)*100;
   const recoverDollar=Math.round(leakDollar*0.70/100)*100;
+  return{mid,leakDollar,recoverDollar};
+}
 
-  const challengeInsights={
-    "Inventory issues":"Inventory problems compound fast — a $500 accessory order sitting 90 days loses 35-40% resale value. Most owners don't know their dead stock number until it's a write-off.",
-    "Low profit margins":"Low margins trace to three things: bad buy prices, wrong sell prices, or high shrinkage. Underperforming stores run 15-20% net margin vs the 28-35% industry benchmark.",
-    "Employees not selling enough":"Top 20% of reps generate 60-70% of revenue in wireless. Without performance data, owners can't identify who's dragging down the team or who deserves incentives.",
-    "No clear reporting":"Running without reporting means reactive decisions. Owners who don't track daily sales by category, by rep, and by service miss 10-20% in opportunities every month.",
-    "Pricing uncertainty":"Inconsistent pricing destroys margin fast. When reps price by feel, you can be profitable on volume but losing money per transaction — and you won't know until it's too late.",
-    "Disconnected systems":"Disconnected systems mean data lives in 3 places — a POS, a spreadsheet, someone's memory. This creates blind spots that cost the average store $1,500-4,000/month in pure inefficiency."
+// Strong local report — fires when Gemini is unavailable
+function buildLocalReport(data,score){
+  const{leakDollar,recoverDollar}=getDollarEstimates(score,data.monthlyRevenue);
+  const topServices=data.services.slice(0,2).join(" and ");
+  const topChallenges=(data.challenges||[]).slice(0,2).join(" and ");
+
+  const priceNote={
+    "Guesswork":"Guesswork pricing is the single fastest way to destroy margin — stores pricing by feel run 12-18% below optimal on repairs and 8-15% below on accessories.",
+    "Not consistent":"Inconsistent pricing means different customers pay different amounts for the same job. That destroys trust and makes revenue forecasting impossible.",
+    "Competitors":"Matching competitors without knowing your own costs means you could be losing money on every transaction and not realize it until end of month.",
+    "Cost + margin":"Cost-plus is the right foundation. The next level is value-based pricing on high-demand services — repairs, unlocks, and activations all have room to charge more."
+  };
+  const invNote={
+    "Don't track":"Not tracking inventory means dead stock is invisible. Accessories depreciate 35-40% in 6 months — capital locked in the wrong products is profit you'll never recover.",
+    "Slow (30+ days)":"Slow-moving inventory locks up capital in depreciating stock. A $10K accessory order sitting 60 days has already lost $3-4K in resale value.",
+    "Moderate":"Moderate turnover leaves room on the table. Optimized stores turn accessories in under 21 days — every extra week is margin erosion.",
+    "Fast":"Fast turnover is a real strength. The risk is stockouts on high-margin items — without reorder triggers, you lose sales you don't even know you're missing."
+  };
+  const empNote={
+    "No":"With no employee tracking, performance variance between your best and worst rep goes completely undetected. That gap is typically 23-35% of total revenue — and it compounds every week.",
+    "Sometimes":"Inconsistent tracking means you catch problems late. By the time you notice an underperformer, they've already cost you weeks of lost sales and missed upsells.",
+    "Yes":"You're tracking — that's ahead of most stores. The opportunity now is using that data to set targets, run incentives, and systematically coach up the bottom 30%."
   };
 
-  const svcInsights={
-    "Phone Repairs":"Phone repairs carry 55-70% gross margin — the highest in wireless. Untracked repair jobs and no upsell system destroy this advantage fast.",
-    "Accessories Sales":"Accessories should run 40-60% margin. Stores without a structured upsell at POS leave $8-15 per transaction on the table.",
-    "Activations":"Carrier activations pay $50-200 spiff per line. Without rep-level tracking, 15-25% of spiff revenue gets lost to misattribution.",
-    "Bill Payments":"Bill payments are $1-3 margin but drive foot traffic. Stores that don't convert bill-pay customers to higher-margin services waste 60-70% of that traffic.",
-    "Unlocks":"Unlocks are 90%+ margin ($15-50 each) but chronically underpriced. Guesswork pricing on unlocks alone costs $200-800/month.",
-    "Device Sales":"Used/refurb device sales run 15-25% margin. Without inventory tracking, stores overbuy slow models and miss fast movers, locking up $5K-20K in dead stock."
+  const actionMap={
+    "Phone Repairs":"Audit your last 30 repair tickets — check if parts cost, labor time, and final price were tracked on every job. Any job without all three is invisible profit.",
+    "Accessories Sales":"Add a structured accessory prompt at every checkout this week. Even a $10 case upsell on 30% of transactions adds $300-600/month at zero extra cost.",
+    "Activations":"Pull your last month of activations and match each one to the rep who processed it. If you can't do that in 10 minutes, your spiff tracking has a hole.",
+    "Bill Payments":"Identify your top 10 bill-pay customers by frequency. These are your highest-traffic customers — they should be getting an offer every single visit.",
+    "Unlocks":"Check your unlock pricing against the market this week. Most stores are $5-15 below optimal. A $10 price increase on 20 unlocks/month is $200 recovered immediately.",
+    "Device Sales":"List every device in inventory sitting over 30 days. That's your dead stock number — price it to move this week before it depreciates further.",
+    "Inventory issues":"Do a physical count of your top 10 accessories and compare to what your system says. The gap between those two numbers is your shrinkage rate.",
+    "Low profit margins":"Calculate your actual net margin on your top 3 services this week — revenue minus parts, labor, and overhead. Most owners are shocked by the real number.",
+    "No clear reporting":"Set up a daily close report this week: total revenue, total transactions, revenue per employee. 10 minutes a day, done manually if needed — just start.",
+    "Pricing uncertainty":"Pick your 5 most common services and set a fixed price for each. Post it. Consistency alone recovers 8-12% margin in the first 30 days.",
+    "Employees not selling enough":"Rank your employees by revenue generated this week. Share the list with the team. Visibility alone shifts behavior — top performers rise, bottom performers self-correct.",
+    "Disconnected systems":"List every place your store data currently lives — POS, spreadsheet, notebook, memory. Every extra location is a blind spot costing you $500-2,000/month in missed decisions."
   };
 
-  const challengeContext=(data.challenges||[]).map(c=>challengeInsights[c]).filter(Boolean).join(" ");
-  const serviceContext=data.services.slice(0,3).map(s=>svcInsights[s]).filter(Boolean).join(" ");
+  const actionSources=[...data.services.slice(0,3),...(data.challenges||[]).slice(0,3)];
+  const usedKeys=new Set();
+  const actions=[];
+  for(const k of actionSources){
+    if(actionMap[k]&&!usedKeys.has(k)){actions.push(actionMap[k]);usedKeys.add(k);if(actions.length===3)break;}
+  }
+  const fallbacks=["Review your pricing on your 5 most common services and set fixed rates this week — consistency alone recovers 8-12% margin.","Pull a revenue-per-employee report for the last 30 days. If you can't generate it in 5 minutes, that's the first system to fix.","Identify your 3 slowest-moving inventory items and discount them to move this week — recovering capital beats holding depreciating stock."];
+  while(actions.length<3)actions.push(fallbacks[actions.length]);
 
-  const priceContext={"Guesswork":"Guesswork pricing is the #1 margin killer. Stores pricing by feel run 12-18% below optimal on repairs and 8-15% below on accessories.","Not consistent":"Inconsistent pricing means different customers pay different prices for the same job — destroys trust and makes revenue forecasting impossible.","Competitors":"Matching competitors without knowing your own costs means you could be losing money on every transaction and not know it.","Cost + margin":"Cost-plus is the right foundation. The next level is value-based pricing on premium services — repairs, unlocks, and activations all have room to go higher."};
-  const invContext={"Don't track":"Not tracking inventory is critical — accessories depreciate 35-40% in 6 months and dead stock is invisible until it's a write-off.","Slow (30+ days)":"Slow inventory means capital locked in depreciating stock. A $10K accessory order sitting 60 days has already lost $3-4K in resale value.","Moderate":"Moderate turnover is manageable but leaves room — optimized stores turn accessories in under 21 days.","Fast":"Fast turnover is a strength. The risk is stockouts on high-margin items — make sure reorder triggers are set."};
-  const empContext={"No":"No employee tracking means 23-35% performance variance between reps goes undetected. Bottom performers drag total revenue without the owner knowing.","Sometimes":"Inconsistent tracking means you catch problems late. By the time you notice an underperformer, they've already cost you weeks of lost sales.","Yes":"Tracking is in place — the opportunity is using that data to set targets, run incentives, and coach the bottom 30% up."};
+  const s1=`${data.storeName} is a ${data.employees}-employee store doing ${data.monthlyRevenue}/month across ${topServices}${data.services.length>2?" and more":""}. Right now the store is running with ${topChallenges} as the primary friction points — and based on this diagnostic, these aren't isolated issues. They're connected problems that compound each other every single day.`;
+  const s2=`The diagnostic puts ${data.storeName}'s monthly profit leak at approximately $${leakDollar.toLocaleString()}. ${priceNote[data.pricingStrategy]||""} ${invNote[data.inventoryTurnover]||""} ${empNote[data.employeeTracking]||""} For a store at ${data.monthlyRevenue}, this combination is particularly damaging because each gap amplifies the others.`;
+  const s3=`1. ${actions[0]} 2. ${actions[1]} 3. ${actions[2]}`;
+  const s4=`Stores at ${data.monthlyRevenue} that address the gaps identified in this audit typically recover $${recoverDollar.toLocaleString()}/month within 90 days — not from working harder, but from eliminating invisible leaks. For ${data.storeName}, that means fixing ${topChallenges} with systems instead of guesswork. WirelessCEO gives you automated inventory tracking, AI-powered pricing recommendations, real-time employee performance dashboards, and daily profit visibility — everything needed to run ${data.storeName} like a system, not chaos.`;
 
-  const prompt=`You are WirelessCEO — a battle-tested AI business analyst who has audited 500+ wireless retail stores across the USA. You have deep expertise in phone repair shops, carrier activation dealers, prepaid wireless retailers, and multi-service wireless stores. You know the exact economics of every service type, the real benchmarks, and the specific ways these stores bleed profit.
+  return`SECTION 1: ${s1}\n\nSECTION 2: ${s2}\n\nSECTION 3: ${s3}\n\nSECTION 4: ${s4}`;
+}
 
-A store owner just completed your Store Profit Diagnostic. Analyze their data and write a sharp, personalized audit report.
+async function callGemini(data,score){
+  if(!GKEY){console.warn("No Gemini key — using local report");return null;}
+  const{level}=getLabel(score);
+  const pct=Math.round((score/11)*100);
+  const{mid,leakDollar,recoverDollar}=getDollarEstimates(score,data.monthlyRevenue);
 
-=== STORE DATA ===
-Store Name: ${data.storeName}
-Monthly Revenue: ${data.monthlyRevenue} (~$${mid.toLocaleString()}/month)
-Team Size: ${data.employees} employees
+  const prompt=`You are WirelessCEO — a battle-tested AI business analyst who has audited 500+ wireless retail stores across the USA. You know the exact economics of phone repairs, activations, accessories, unlocks, and device sales. You know the real benchmarks and the specific ways these stores bleed profit.
+
+A store owner just completed your Store Profit Diagnostic. Write a sharp, personalized audit report.
+
+STORE: ${data.storeName} | Revenue: ${data.monthlyRevenue} (~$${mid.toLocaleString()}/mo) | Team: ${data.employees} employees
 Services: ${data.services.join(", ")}
-Biggest Challenges: ${(data.challenges||[]).join(", ")}
-Inventory Turnover: ${data.inventoryTurnover}
-Pricing Strategy: ${data.pricingStrategy}
-Employee Performance Tracking: ${data.employeeTracking}
+Challenges: ${(data.challenges||[]).join(", ")}
+Inventory Turnover: ${data.inventoryTurnover} | Pricing: ${data.pricingStrategy} | Employee Tracking: ${data.employeeTracking}
+Score: ${score}/11 (${pct}% inefficiency) | Classification: ${level}
+Monthly profit leak: ~$${leakDollar.toLocaleString()} | Recoverable: ~$${recoverDollar.toLocaleString()}/mo
 
-=== DIAGNOSTIC SCORE ===
-Score: ${score}/11 (${pct}% inefficiency index)
-Classification: ${level}
-Estimated monthly profit leak: ~$${leakDollar.toLocaleString()}
-Estimated recoverable profit: ~$${recoverDollar.toLocaleString()}/month
-
-=== DOMAIN CONTEXT — USE THIS TO INFORM YOUR ANALYSIS ===
-Challenges: ${challengeContext}
-Service economics: ${serviceContext}
-Pricing: ${priceContext[data.pricingStrategy]||""}
-Inventory: ${invContext[data.inventoryTurnover]||""}
-Employees: ${empContext[data.employeeTracking]||""}
-
-=== YOUR TASK ===
-Write a 4-section audit report. Be brutally specific. Use the store name "${data.storeName}" naturally. Reference their actual revenue range and calculate real dollar impact. Do NOT be generic — every sentence should feel like it was written specifically for this store.
+Write exactly 4 sections. Start each with the label. Plain text only — no asterisks, no hashtags, no markdown.
 
 SECTION 1: WHAT'S HAPPENING RIGHT NOW
-2-3 sentences. Describe the current operational reality of ${data.storeName} based on their specific answers. Name their challenges directly. Reference their team size and revenue. Make it feel like you've been inside their store.
+2-3 sentences. Name ${data.storeName} directly. Describe their exact operational reality — team size, revenue, specific challenges. Make it feel like you've been inside their store.
 
-SECTION 2: WHERE YOU'RE LOSING PROFIT
-3-4 sentences. Be specific about the dollar leak. Reference the estimated ~$${leakDollar.toLocaleString()}/month leak. Connect their specific combination of challenges + ${data.pricingStrategy} pricing + ${data.inventoryTurnover} inventory + ${data.employeeTracking} employee tracking. Explain WHY this combination is particularly damaging for a store doing ${data.monthlyRevenue}.
+SECTION 2: WHERE THE PROFIT IS LEAKING
+3-4 sentences. Name the specific dollar amount $${leakDollar.toLocaleString()}/month. Explain exactly WHY their combination of ${data.pricingStrategy} pricing + ${data.inventoryTurnover} inventory + ${data.employeeTracking} employee tracking creates this leak. Be brutally specific.
 
-SECTION 3: 3 IMMEDIATE ACTIONS
-Numbered 1, 2, 3. Each action is 1-2 sentences. Specific to their services (${data.services.join(", ")}) and their challenges. Things they can start THIS WEEK — not vague strategy, concrete operational moves.
+SECTION 3: 3 ACTIONS TO TAKE THIS WEEK
+1. [specific action for their services/challenges]. 2. [specific action]. 3. [specific action]. Concrete operational moves, not strategy.
 
 SECTION 4: WHAT'S POSSIBLE IN 90 DAYS
-2-3 sentences. Use the ~$${recoverDollar.toLocaleString()}/month recovery estimate. Be specific about what a store doing ${data.monthlyRevenue} can realistically recover. End with what WirelessCEO makes possible — automated tracking, AI pricing recommendations, employee performance dashboards, real-time profit visibility.
-
-=== FORMAT RULES ===
-- Start each section with exactly: SECTION 1:, SECTION 2:, SECTION 3:, SECTION 4:
-- Plain text only — no asterisks, no hashtags, no markdown symbols
-- Total length: 400-500 words
-- Tone: direct business advisor, confident, specific, zero fluff
-- Address the owner as "you" or use the store name "${data.storeName}"`;
+2-3 sentences. Use the $${recoverDollar.toLocaleString()}/month recovery number. Be specific about what a ${data.monthlyRevenue} store can realistically achieve. End with what WirelessCEO makes possible for ${data.storeName}.`;
 
   try{
     const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+GKEY,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        contents:[{parts:[{text:prompt}]}],
-        generationConfig:{temperature:0.55,maxOutputTokens:1400,topP:0.9,topK:40}
-      })
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.6,maxOutputTokens:1200,topP:0.9}})
     });
     const j=await r.json();
-    if(j.error){console.error("Gemini API error:",j.error);return null;}
+    if(j.error){console.error("Gemini error:",j.error.message||j.error);return null;}
     const text=j.candidates?.[0]?.content?.parts?.[0]?.text;
-    console.log("Gemini OK, length:",text?.length);
-    return text||null;
+    if(!text){console.error("Gemini empty:",j);return null;}
+    console.log("Gemini OK, length:",text.length);
+    return text;
   }catch(e){console.error("Gemini fetch error:",e);return null;}
 }
 
-function buildEmailHtml(data,score,aiReport){
+function buildEmailHtml(data,score,report){
   const{level,emoji,color}=getLabel(score);
   const pct=Math.round((score/11)*100);
-  const titles=["What's Happening Right Now","Where You're Losing Profit","3 Immediate Actions","What's Possible in 90 Days"];
-  let reportHtml="";
-  if(aiReport){
-    const sections=aiReport.split(/SECTION \d+:\s*/i).filter(s=>s.trim());
-    reportHtml=sections.map((s,i)=>`
-      <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #e2e8f0;">
-        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:${color};margin:0 0 8px 0;">${titles[i]||""}</p>
-        <p style="font-size:14px;line-height:1.75;color:#374151;margin:0;white-space:pre-line;">${s.trim()}</p>
-      </div>`).join("");
-  } else {
-    reportHtml=`<p style="font-size:14px;line-height:1.75;color:#374151;">Based on your audit score of ${score}/11, ${data.storeName} is classified as <strong>${level}</strong>. Your challenges — ${(data.challenges||[]).join(", ")} — combined with ${data.pricingStrategy} pricing and ${data.inventoryTurnover} inventory turnover is costing you profit daily. Stores like yours typically recover 15-25% in lost profit within 90 days of implementing WirelessCEO.</p>`;
-  }
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+  const titles=["What's Happening Right Now","Where the Profit Is Leaking","3 Actions to Take This Week","What's Possible in 90 Days"];
+  const sections=report.split(/SECTION \d+:\s*/i).filter(s=>s.trim());
+  const reportHtml=sections.map((s,i)=>`
+    <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #e2e8f0;">
+      <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:${color};margin:0 0 8px 0;">${titles[i]||""}</p>
+      <p style="font-size:14px;line-height:1.75;color:#374151;margin:0;white-space:pre-line;">${s.trim()}</p>
+    </div>`).join("");
+  return`<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
 <div style="max-width:600px;margin:0 auto;padding:24px 16px;">
   <div style="background:linear-gradient(135deg,#0d1117,#1a2332);border-radius:16px 16px 0 0;padding:28px;">
@@ -175,15 +180,14 @@ function buildEmailHtml(data,score,aiReport){
 </div></body></html>`;
 }
 
-async function sendEmail(data,score,aiReport){
+async function sendEmail(data,score,report){
   const{level}=getLabel(score);
-  const htmlBody=buildEmailHtml(data,score,aiReport);
-  const plainText=aiReport||`Hi ${data.name},\n\nYour WirelessCEO Store Profit Audit for ${data.storeName} is complete.\n\nScore: ${score}/11 — ${level}\nChallenges: ${(data.challenges||[]).join(", ")}\nPricing: ${data.pricingStrategy} | Inventory: ${data.inventoryTurnover}\n\nStores like yours typically recover 15-25% in lost profit within 90 days.\n\nJoin Early Access: https://wirelesspos.ai/early-access\n\n— The WirelessCEO Team`;
+  const htmlBody=buildEmailHtml(data,score,report);
   await emailjs.send(ESID,ETID,{
     to_name:data.name,to_email:data.email,email:data.email,
     from_name:"WirelessCEO",
     subject:`Your Store Profit Audit — ${data.storeName}`,
-    message:plainText,report_text:plainText,report_html:htmlBody,
+    message:report,report_text:report,report_html:htmlBody,
     store_name:data.storeName,audit_score:`${score}/11`,audit_level:level,
     challenges:(data.challenges||[]).join(", "),
     monthly_revenue:data.monthlyRevenue,employees:data.employees,
@@ -208,11 +212,13 @@ function Opt({sel,onClick,children,full}){
   );
 }
 
+const SECTION_TITLES=["What's Happening Right Now","Where the Profit Is Leaking","3 Actions to Take This Week","What's Possible in 90 Days"];
+
 export default function AuditFunnel({isOpen,onClose}){
   const[step,setStep]=useState(1);
   const[data,setData]=useState({storeName:"",monthlyRevenue:"",employees:"",services:[],challenges:[],inventoryTurnover:"",pricingStrategy:"",employeeTracking:"",name:"",email:"",phone:""});
   const[report,setReport]=useState(null);
-  const[aiText,setAiText]=useState(null);
+  const[reportText,setReportText]=useState(null);
   const[busy,setBusy]=useState(false);
   const[mailSt,setMailSt]=useState(null);
 
@@ -227,12 +233,17 @@ export default function AuditFunnel({isOpen,onClose}){
     setReport({level,color,score:sc});
     setStep(6);
     try{
-      const ai=await callGemini(data,sc);
-      setAiText(ai);
-      try{await sendEmail(data,sc,ai);setMailSt("sent");}
+      // Try Gemini first, fall back to local report — never show blank
+      let finalReport=await callGemini(data,sc);
+      if(!finalReport){
+        console.log("Using local report generator");
+        finalReport=buildLocalReport(data,sc);
+      }
+      setReportText(finalReport);
+      try{await sendEmail(data,sc,finalReport);setMailSt("sent");}
       catch(e){console.error("email:",e);setMailSt("failed");}
       await addDoc(collection(wirelessDb,"auditSubmissions"),{
-        ...data,score:sc,reportLevel:level,aiGenerated:!!ai,aiReport:ai||"",createdAt:serverTimestamp()
+        ...data,score:sc,reportLevel:level,aiGenerated:!!GKEY,report:finalReport,createdAt:serverTimestamp()
       });
       await addDoc(collection(wirelessDb,"demoRequests"),{
         firstName:data.name,email:data.email,phone:data.phone||"",
@@ -251,12 +262,11 @@ export default function AuditFunnel({isOpen,onClose}){
   const close=()=>{
     setStep(1);
     setData({storeName:"",monthlyRevenue:"",employees:"",services:[],challenges:[],inventoryTurnover:"",pricingStrategy:"",employeeTracking:"",name:"",email:"",phone:""});
-    setReport(null);setAiText(null);setMailSt(null);
+    setReport(null);setReportText(null);setMailSt(null);
     onClose();
   };
 
-  const parsedSections=aiText?aiText.split(/SECTION \d+:\s*/i).filter(s=>s.trim()):[];
-  const sectionTitles=["What's Happening Right Now","Where You're Losing Profit","3 Immediate Actions","What's Possible in 90 Days"];
+  const parsedSections=reportText?reportText.split(/SECTION \d+:\s*/i).filter(s=>s.trim()):[];
 
   if(!isOpen)return null;
   const prog=Math.round((Math.min(step,5)/5)*100);
@@ -292,7 +302,7 @@ export default function AuditFunnel({isOpen,onClose}){
           )}
           {step===2&&(
             <div className="space-y-4">
-              <div><label className={lc}>Top Services (select all)</label><div className="grid grid-cols-2 gap-2">{SERVICES.map(s=><Opt key={s} sel={data.services.includes(s)} onClick={()=>tog(s)}>{s}</Opt>)}</div></div>
+              <div><label className={lc}>Top Services (select all that apply)</label><div className="grid grid-cols-2 gap-2">{SERVICES.map(s=><Opt key={s} sel={data.services.includes(s)} onClick={()=>tog(s)}>{s}</Opt>)}</div></div>
               <div className="flex gap-3 pt-2">
                 <button onClick={()=>setStep(1)} className="flex-1 py-3 border border-gray-200 text-gray-600 font-semibold rounded-xl text-sm">Back</button>
                 <button onClick={()=>setStep(3)} disabled={!data.services.length} className="py-3 font-bold rounded-xl text-white text-sm disabled:opacity-40" style={{...grad,flex:2}}>Next</button>
@@ -328,7 +338,7 @@ export default function AuditFunnel({isOpen,onClose}){
           {step===5&&(
             <div className="space-y-4">
               <div className="rounded-xl p-3 text-xs" style={{background:"rgba(0,212,170,0.06)",border:"1px solid rgba(0,212,170,0.2)",color:"#00a88a"}}>
-                Your full AI audit report will be sent to your email instantly.
+                Your full personalized audit report will be sent to your email instantly.
               </div>
               <div><label className={lc}>Your Name *</label><input type="text" value={data.name} onChange={e=>set("name",e.target.value)} className={ic} placeholder="John Smith"/></div>
               <div><label className={lc}>Email Address *</label><input type="email" value={data.email} onChange={e=>set("email",e.target.value)} className={ic} placeholder="john@store.com"/></div>
@@ -352,7 +362,7 @@ export default function AuditFunnel({isOpen,onClose}){
                 <div className="rounded-xl p-5 text-center" style={{background:"#f8fafc",border:"1px solid #e2e8f0"}}>
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <svg className="w-4 h-4 animate-spin" style={{color:"#00d4aa"}} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                    <span className="text-sm font-semibold" style={{color:"#00d4aa"}}>WirelessCEO AI analyzing your store...</span>
+                    <span className="text-sm font-semibold" style={{color:"#00d4aa"}}>Analyzing your store data...</span>
                   </div>
                   <p className="text-xs" style={{color:"#94a3b8"}}>Generating your personalized profit report</p>
                 </div>
@@ -362,17 +372,13 @@ export default function AuditFunnel({isOpen,onClose}){
                     <p className="text-xs font-bold uppercase tracking-wider" style={{color:"#00d4aa"}}>Your Personalized Profit Report</p>
                   </div>
                   <div className="px-4 py-4 space-y-4" style={{background:"#f8fafc"}}>
-                    {parsedSections.length>0?(
-                      parsedSections.map((sec,i)=>(
-                        <div key={i} className={i<parsedSections.length-1?"pb-4":""} style={i<parsedSections.length-1?{borderBottom:"1px solid #e2e8f0"}:{}}>
-                          {sectionTitles[i]&&<p className="text-xs font-bold uppercase tracking-wider mb-1.5" style={{color:report.color}}>{sectionTitles[i]}</p>}
-                          <p className="text-sm leading-relaxed whitespace-pre-line" style={{color:"#374151"}}>{sec.trim()}</p>
-                        </div>
-                      ))
-                    ):(
-                      <p className="text-sm leading-relaxed" style={{color:"#374151"}}>
-                        {`Based on your audit score of ${report.score}/11, ${data.storeName} is classified as ${report.level}. Your challenges — ${(data.challenges||[]).join(", ")} — combined with ${data.pricingStrategy} pricing and ${data.inventoryTurnover} inventory turnover is costing you profit daily. Stores like yours typically recover 15-25% in lost profit within 90 days of implementing WirelessCEO.`}
-                      </p>
+                    {parsedSections.length>0?parsedSections.map((sec,i)=>(
+                      <div key={i} className={i<parsedSections.length-1?"pb-4":""} style={i<parsedSections.length-1?{borderBottom:"1px solid #e2e8f0"}:{}}>
+                        {SECTION_TITLES[i]&&<p className="text-xs font-bold uppercase tracking-wider mb-1.5" style={{color:report.color}}>{SECTION_TITLES[i]}</p>}
+                        <p className="text-sm leading-relaxed whitespace-pre-line" style={{color:"#374151"}}>{sec.trim()}</p>
+                      </div>
+                    )):(
+                      <p className="text-sm leading-relaxed" style={{color:"#94a3b8"}}>Loading your report...</p>
                     )}
                   </div>
                 </div>
