@@ -3,7 +3,9 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { wirelessDb } from "../../config/firebaseWireless";
 import emailjs from "@emailjs/browser";
 
-const ESID="service_kjsfqm8",ETID="template_kgqk77o",EPKEY="Mae5C2zv5ipo7vuqA";
+const ESID=import.meta.env.VITE_EMAILJS_SERVICE_ID;
+const ETID=import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+const EPKEY=import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 const GKEY=import.meta.env.VITE_GEMINI_API_KEY;
 const SERVICES=["Phone Repairs","Accessories Sales","Activations","Bill Payments","Unlocks","Device Sales"];
 const CHALLENGES=["Inventory issues","Low profit margins","Employees not selling enough","No clear reporting","Pricing uncertainty","Disconnected systems"];
