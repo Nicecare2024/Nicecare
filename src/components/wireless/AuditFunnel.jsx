@@ -121,13 +121,23 @@ SECTION 3: 3 ACTIONS TO TAKE THIS WEEK
 SECTION 4: WHAT'S POSSIBLE IN 90 DAYS
 2-3 sentences. Use the $${recoverDollar.toLocaleString()}/month recovery number. Be specific about what a ${data.monthlyRevenue} store can realistically achieve. End with what WirelessCEO makes possible for ${data.storeName}.`;
 
-  try{
+  const doFetch=async()=>{
     const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+GKEY,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.6,maxOutputTokens:1200,topP:0.9}})
     });
-    const j=await r.json();
+    return r.json();
+  };
+
+  try{
+    let j=await doFetch();
+    // Rate limited — wait 20s and retry once
+    if(j.error?.code===429){
+      console.warn("Gemini rate limited, retrying in 20s...");
+      await new Promise(res=>setTimeout(res,20000));
+      j=await doFetch();
+    }
     if(j.error){console.error("Gemini error:",j.error.message||j.error);return null;}
     const text=j.candidates?.[0]?.content?.parts?.[0]?.text;
     if(!text){console.error("Gemini empty:",j);return null;}
