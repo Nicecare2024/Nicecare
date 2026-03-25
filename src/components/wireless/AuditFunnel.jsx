@@ -138,12 +138,12 @@ SECTION 4: WHAT'S POSSIBLE IN 90 DAYS
       await new Promise(res=>setTimeout(res,20000));
       j=await doFetch();
     }
-    if(j.error){console.error("Gemini error:",j.error.message||j.error);return null;}
+    if(j.error){console.warn("Gemini unavailable, using local report");return null;}
     const text=j.candidates?.[0]?.content?.parts?.[0]?.text;
-    if(!text){console.error("Gemini empty:",j);return null;}
+    if(!text){console.warn("Gemini empty response, using local report");return null;}
     console.log("Gemini OK, length:",text.length);
     return text;
-  }catch(e){console.error("Gemini fetch error:",e);return null;}
+  }catch(e){console.warn("Gemini unavailable, using local report");return null;}
 }
 
 function buildEmailHtml(data,score,report){
@@ -194,20 +194,32 @@ function buildEmailHtml(data,score,report){
 
 async function sendEmail(data,score,report){
   const{level}=getLabel(score);
-  const htmlBody=buildEmailHtml(data,score,report);
+  // Initialize EmailJS with public key before sending
+  emailjs.init(EPKEY);
+  // Build a plain text version for the email body (HTML can exceed EmailJS limits)
+  const sections=report.split(/SECTION \d+:\s*/i).filter(s=>s.trim());
+  const titles=["WHAT'S HAPPENING RIGHT NOW","WHERE THE PROFIT IS LEAKING","3 ACTIONS TO TAKE THIS WEEK","WHAT'S POSSIBLE IN 90 DAYS"];
+  const plainReport=sections.map((s,i)=>`${titles[i]||""}\n${s.trim()}`).join("\n\n---\n\n");
+  const plainText=`Hi ${data.name},\n\nYour WirelessCEO Store Profit Audit for ${data.storeName} is ready.\n\nScore: ${score}/11 — ${level}\n\n${plainReport}\n\nJoin Early Access: https://wirelesspos.ai/early-access\n\n— The WirelessCEO Team`;
+
   await emailjs.send(ESID,ETID,{
-    to_name:data.name,to_email:data.email,email:data.email,
+    to_name:data.name,
+    to_email:data.email,
+    email:data.email,
     from_name:"WirelessCEO",
     subject:`Your Store Profit Audit — ${data.storeName}`,
-    message:report,report_text:report,report_html:htmlBody,
-    store_name:data.storeName,audit_score:`${score}/11`,audit_level:level,
+    message:plainText,
+    store_name:data.storeName,
+    audit_score:`${score}/11`,
+    audit_level:level,
     challenges:(data.challenges||[]).join(", "),
-    monthly_revenue:data.monthlyRevenue,employees:data.employees,
+    monthly_revenue:data.monthlyRevenue,
+    employees:data.employees,
     services:data.services.join(", "),
     pricing_strategy:data.pricingStrategy,
     inventory_turnover:data.inventoryTurnover,
     employee_tracking:data.employeeTracking
-  },EPKEY);
+  });
 }
 
 const ic="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-400 text-sm bg-gray-50 focus:bg-white outline-none transition-colors";
